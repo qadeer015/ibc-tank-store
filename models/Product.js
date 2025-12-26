@@ -54,25 +54,33 @@ class Product {
 
     static async getTopRated(minRating = 4, limit = 5) {
         try {
-            // Convert to numbers and ensure they're valid
             minRating = Number(minRating) || 4;
             limit = Number(limit) || 5;
-            
-            // For TiDB, we need to interpolate the LIMIT values directly
-            const [rows] = await db.execute(
-                `SELECT p.*, c.name AS category_name 
-                 FROM products p
-                 JOIN categories c ON p.category_id = c.id
-                 WHERE p.rating >= ${minRating}
-                 ORDER BY p.rating DESC
-                 LIMIT ${limit}`
-            );
+
+            const sql = `
+      SELECT 
+        p.*,
+        c.name AS category_name,
+        ROUND(AVG(r.rating), 1) AS rating,
+        COUNT(r.id) AS rating_count
+      FROM products p
+      JOIN categories c ON p.category_id = c.id
+      LEFT JOIN ratings r ON r.product_id = p.id
+      GROUP BY p.id
+      HAVING rating >= ?
+      ORDER BY rating DESC, rating_count DESC
+      LIMIT ${limit}
+    `;
+
+            const [rows] = await db.execute(sql, [minRating]);
             return rows;
+
         } catch (error) {
             console.error('Error in getTopRated:', error);
             throw error;
         }
     }
+
     
     static async getLatest(limit = 8) {
         try {

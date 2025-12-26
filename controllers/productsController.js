@@ -52,7 +52,7 @@ const productController = {
 
     async create(req, res) {
         try {
-            const { name, description, price, category_id, condition, stock } = req.body;
+            const { name, description, price, category_id, product_condition, stock } = req.body;
             const image =  getFileUrl(req.file);
 
             if (!image) {
@@ -65,7 +65,7 @@ const productController = {
                 price,
                 image,
                 category_id,
-                condition,
+                product_condition,
                 stock
             );
 
@@ -87,7 +87,7 @@ const productController = {
             }
             product = {
                 ...product,
-                rating: parseFloat(product.rating).toFixed(1),
+                rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
                 price: parseFloat(product.price).toFixed(2)
             };
             if (req.user && req.user.role === 'admin') {
@@ -132,7 +132,7 @@ const productController = {
     async update(req, res) {
         try {
             const { id } = req.params;
-            const { name, description, price, category_id, condition, stock, existingImage } = req.body;
+            const { name, description, price, category_id, product_condition, stock, existingImage } = req.body;
             const product = await Product.getById(id);
             if (!product) {
                 req.flash('error', 'Product not found');
@@ -154,7 +154,7 @@ const productController = {
                 }
                 productImage = req.file.path;
             }
-            await Product.updateProduct(id, name, description, price, productImage, category_id, condition, stock);
+            await Product.updateProduct(id, name, description, price, productImage, category_id, product_condition, stock);
             req.flash('success', 'Product updated successfully');
             res.redirect(`/admin/products/${id}`);
         } catch (error) {
