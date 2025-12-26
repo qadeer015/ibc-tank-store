@@ -1,46 +1,135 @@
-<!-- views/admin/products/show.ejs -->
 <%- include('../partials/_header') %>
-  <div class="px-lg-5 row">
-    <div class="col-lg-4">
-        <div class="card bg-secondary-subtle align-items-center">
-            <div class="card-body">
-                <img src="<%= product.image %>" class="card-img-top product-img" alt="<%= product.name %>">
+
+    <div class="row g-4 mt-3">
+
+        <!-- Product Image -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <img src="<%= product.image %>" class="card-img-top p-4 product-img" alt="<%= product.name %>">
             </div>
         </div>
-    </div>
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title"><%= product.name %></h2>
-                <p class="card-text">
-                    <span class="fw-bold">Price: </span>
-                    <%= product.price %>
-                </p>
-                <p class="card-text">
-                    <span class="fw-bold">Stock: </span>
-                    <%- product.stock > 0 ? '<span class="badge bg-success">' +'In Stock' + '</span>' : '<span class="badge bg-danger">' + 'Out of Stock' + '</span>' %>                
-                </p>
-                <p class="card-text">
-                    <span class="fw-bold">Condition: </span>
-                    <%= product.condition %>
-                </p>
-                <div class="rating mb-2">
-                    <% for(let i=1; i<=5; i++) { %>
-                        <% if(i <= Math.floor(product.rating)) { %>
-                            <i class="bi bi-star-fill text-warning"></i>
-                        <% } else if(i === Math.ceil(product.rating) && product.rating % 1 > 0) { %>
-                            <i class="bi bi-star-half text-warning"></i>
+
+        <!-- Product Info -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+
+                    <h2 class="fw-bold mb-2">
+                        <%= product.name %>
+                    </h2>
+
+                    <h4 class="text-primary fw-semibold mb-3">
+                        Rs <%= product.price %>
+                    </h4>
+
+                    <!-- Stock -->
+                    <p class="mb-2">
+                        <strong>Availability:</strong>
+                        <span class="badge <%= product.stock > 0 ? 'bg-success' : 'bg-danger' %>">
+                            <%= product.stock> 0 ? 'In Stock' : 'Out of Stock' %>
+                        </span>
+                    </p>
+
+                    <p class="mb-3">
+                        <strong>Condition:</strong>
+                        <%= product.condition %>
+                    </p>
+
+                    <!-- Rating Display -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-2">
+                            <% for(let i=1; i<=5; i++) { %>
+                                <% if(i <=Math.floor(product.rating)) { %>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <% } else if(i===Math.ceil(product.rating) && product.rating % 1> 0) { %>
+                                        <i class="bi bi-star-half text-warning"></i>
+                                        <% } else { %>
+                                            <i class="bi bi-star text-warning"></i>
+                                            <% } %>
+                                                <% } %>
+                        </div>
+                        <span class="text-muted">
+                            <%= product.rating_count %>  <%= product.rating_count > 1 ? 'Ratings' : 'Rating' %>
+                        </span>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        <%= product.description %>
+                    </p>
+
+                    <hr>
+
+                    <!-- Rating Form -->
+                    <% if (user) { %>
+                        <form action="/ratings/<%= product.id %>/create" method="POST" class="mt-3">
+
+                            <label class="fw-semibold mb-2 d-block">
+                                Rate this product
+                            </label>
+
+                            <div class="rating-input mb-3">
+                                <% for(let i=5; i>=1; i--) { %>
+                                    <input type="radio" name="rating" value="<%= i %>" id="star<%= i %>">
+                                    <label for="star<%= i %>">
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                    <% } %>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i> Submit Rating
+                            </button>
+
+                        </form>
                         <% } else { %>
-                            <i class="bi bi-star text-warning"></i>
-                        <% } %>
-                    <% } %>
-                    <span class="ms-1"><%= product.rating %></span>
+                            <p class="text-muted mt-3">
+                                <i class="bi bi-lock me-1"></i>
+                                Login to rate this product
+                            </p>
+                            <% } %>
+
                 </div>
-                <p class="card-text">
-                    <%= product.description %>
-                </p>
             </div>
         </div>
+
     </div>
-  </div>
-<%- include('../partials/_footer') %>
+
+    <style>
+        .rating-input {
+  direction: rtl;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.rating-input input {
+  display: none;
+}
+
+.rating-input label {
+  font-size: 32px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label {
+  color: #ffc107;
+  transform: scale(1.1);
+}
+
+.rating-input input:checked ~ label {
+  color: #ffc107;
+}
+
+    </style>
+    <script>
+        document.querySelectorAll('.rating-input input').forEach(input => {
+            input.addEventListener('change', () => {
+                document.querySelectorAll('.rating-input label').forEach(l => l.classList.remove('active'));
+                input.nextElementSibling.classList.add('active');
+            });
+        });
+    </script>
+
+    <%- include('../partials/_footer') %>

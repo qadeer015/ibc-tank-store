@@ -28,6 +28,10 @@ body{
         width: fit-content;
 }
 
+.click-able {
+        cursor: pointer;
+}
+
 .ratting-star {
         cursor: pointer;
         font-size: 0.8rem;

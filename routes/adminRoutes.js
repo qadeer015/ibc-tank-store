@@ -7,7 +7,7 @@ const productController = require('../controllers/productsController');
 const contactController = require('../controllers/contactController');
 const categoryController = require('../controllers/categoryController');
 const settingsController = require('../controllers/settingsController');
-const {upload} = require("../middlewares/upload");
+const { single } = require("../middlewares/upload");
 const router = express.Router();
 router.use(isAuthenticated);
 router.use(isAdmin);
@@ -26,10 +26,10 @@ router.get("/dashboard", async (req, res)=>{
 // Products
 router.get("/products", productController.list);
 router.get("/products/new", productController.createForm);
-router.post("/products/create",upload.single('image'), productController.create);
+router.post("/products/create", single('image'), productController.create);
 router.get("/products/:id", productController.show);
 router.get("/products/:id/edit", productController.editForm);
-router.post("/products/:id/update",upload.single('image'), productController.update);
+router.post("/products/:id/update", single('image'), productController.update);
 router.post("/products/:id/delete", productController.delete);
 
 
@@ -41,6 +41,7 @@ router.post('/contacts/:id/delete', contactController.delete);
 // Categories
 router.get('/categories', categoryController.list);
 router.post('/categories/create', categoryController.create);
+router.post('/categories/:id/update', categoryController.update);
 router.post('/categories/:id/delete', categoryController.delete);
 
 router.get('/settings', settingsController.getSettingsPage);

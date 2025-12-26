@@ -1,0 +1,38 @@
+<!-- breadcrumb.ejs -->
+<nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+    aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+
+        <% if (path && path !=='/admin/dashboard' ) { %>
+            <% const pathSegments=path.replace(/^\/|\/$/g, '' ).split('/'); // Remove 'admin' from the beginning const
+                displaySegments=pathSegments.slice(1); // Filter out numeric IDs and empty segments const
+
+                if (displaySegments.length > 0) {
+                let linkPath = '';
+
+                displaySegments.forEach((segment, index) => {
+                // Format display name
+                let displayName = segment.replace(/-/g, ' ')
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+
+                linkPath += '/' + segment;
+                const isLast = index === displaySegments.length - 1;
+                %>
+
+                <% if (isLast) { %>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <%= displayName %>
+                    </li>
+                    <% } else { %>
+                        <li class="breadcrumb-item"><a href="/admin<%= linkPath %>">
+                                <%= displayName %>
+                            </a></li>
+                        <% } %>
+
+                            <% }); } %>
+                                <% } %>
+    </ol>
+</nav>

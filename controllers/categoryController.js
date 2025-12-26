@@ -14,6 +14,14 @@ const categoryController = {
         res.redirect('/admin/categories');
     },
 
+    async update(req, res) {
+        const { id } = req.params;
+        const { name } = req.body;
+        await Category.update(id, name);
+        req.flash('success', 'Category updated successfully.');
+        res.json({ success: true });
+    },
+
     async delete(req, res) {
         const { id } = req.params;
         await Category.delete(id);

@@ -21,6 +21,14 @@ class Category {
         return rows;
     }
 
+    static async update(id, name) {
+        const [result] = await db.execute(
+            'UPDATE categories SET name = ? WHERE id = ?',
+            [name, id]
+        );
+        return result;
+    }
+
     static async delete(id) {
         const result = await db.execute('DELETE FROM categories WHERE id = ?', [id]);
         return result;

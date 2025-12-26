@@ -55,7 +55,6 @@ const contactController = {
 
     async list(req, res) {
         const contacts = await Contact.getAll();
-        console.log(contacts)
         res.render('admin/contact/index', { title: 'Contacts', contacts, viewPage: 'contacts' });
     },
 
