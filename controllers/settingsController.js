@@ -37,13 +37,15 @@ exports.saveSettings = async (req, res) => {
     const {
       notify_contact_submission,
       notification_method,
-      notification_endpoint
+      notification_endpoint,
+      contact_number
     } = req.body;
 
     const allSettings = {
       notify_contact_submission: !!notify_contact_submission,
       notification_method,
-      notification_endpoint
+      notification_endpoint: notification_endpoint|| oldSettings.notification_endpoint,
+      contact_number
     };
     
     for (const [key, value] of Object.entries(allSettings)) {

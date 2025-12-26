@@ -1,6 +1,7 @@
 // controllers/productsController.js
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { getFileUrl } = require('../middlewares/upload');
 
 const productController = {
     // productController.js
@@ -52,7 +53,7 @@ const productController = {
     async create(req, res) {
         try {
             const { name, description, price, category_id, condition, stock } = req.body;
-            const image =  req.file ? req.file.path : null;
+            const image =  getFileUrl(req.file);
 
             if (!image) {
                 throw new Error('Product image is required');
@@ -73,7 +74,7 @@ const productController = {
         } catch (error) {
             console.error('Create error:', error);
             req.flash('error', error.message || 'Failed to create product');
-            res.redirect('/products/create/new');
+            res.redirect('/products/new');
         }
     },
 

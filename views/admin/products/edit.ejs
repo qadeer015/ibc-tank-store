@@ -22,12 +22,12 @@
                            value="<%= product.stock %>" required>
                 </div>
                 <div class="col-md-4 mb-2">
-                    <label for="condition" class="form-label fw-semibold">Select Condition</label>
-                    <select name="condition" id="condition" class="form-select" required>
+                    <label for="product_condition" class="form-label fw-semibold">Select product condition</label>
+                    <select name="product_condition" id="product_condition" class="form-select" required>
                         <option value=""></option>
-                        <option value="New" <%= product.condition === 'New' ? 'selected' : '' %>>New</option>
-                        <option value="Used" <%= product.condition === 'Used' ? 'selected' : '' %>>Used</option>
-                        <option value="Refurbished" <%= product.condition === 'Refurbished' ? 'selected' : '' %>>Refurbished</option>
+                        <option value="New" <%= product.product_condition === 'New' ? 'selected' : '' %>>New</option>
+                        <option value="Used" <%= product.product_condition === 'Used' ? 'selected' : '' %>>Used</option>
+                        <option value="Refurbished" <%= product.product_condition === 'Refurbished' ? 'selected' : '' %>>Refurbished</option>
                     </select>
                 </div>
                 <div class="col-md-4 mb-2">

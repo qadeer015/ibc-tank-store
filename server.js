@@ -18,6 +18,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const ratingRoutes = require("./routes/ratingsRoutes");
 
 require('dotenv').config({
   quiet: true
@@ -29,6 +30,10 @@ require('./config/passport');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from uploads directory in development
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+}
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -72,6 +77,7 @@ app.use(flash());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    res.locals.path = req.originalUrl;
     res.locals.user = req.user || null; // Make user available in all views
     next();
 });
@@ -157,13 +163,13 @@ app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/contact', contactRoutes);
 app.use("/auth", authRoutes);
+app.use("/ratings", ratingRoutes);
 app.use("/admin", adminRoutes);
 
 // Error handling middleware
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-
     if (req.flash) {
         req.flash('error', 'Something went wrong!');
         return res.redirect('/');
@@ -172,6 +178,5 @@ app.use((err, req, res, next) => {
     // Flash not available → send plain error
     res.status(500).send("Something went wrong!");
 });
-
 
 app.listen(process.env.PORT , () => console.log(`Server running on http://localhost:${process.env.PORT }`));

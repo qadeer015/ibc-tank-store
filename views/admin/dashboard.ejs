@@ -1,34 +1,63 @@
 <!-- views/admin/dashboard.ejs -->
 <%- include('partials/_header') %>
-<div class="row">
-    <div class="col-12">
-        <h1>Dashboard</h1>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Contacts</h5>
-                <p class="card-text"><%= totalContacts %></p>
-            </div>
+    <div class="row">
+        <div class="col-12">
+            <h1>Dashboard</h1>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Products</h5>
-                <p class="card-text"><%= totalProducts %></p>
-            </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <a href="/admin/contacts" class="text-decoration-none">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body d-flex align-items-center justify-content-between position-relative">
+                        <div>
+                            <h5 class="card-title">Contacts</h5>
+                            <p class="card-text display-6">
+                                <%= totalContacts %>
+                            </p>
+                        </div>
+                        <div class="ms-3 opacity-25">
+                            <img src="/img/icons/contact.svg" class="img-fluid" style="width: 80px; height: 80px;"
+                                alt="contacts">
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/admin/products" class="text-decoration-none">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body d-flex align-items-center justify-content-between position-relative">
+                        <div>
+                            <h5 class="card-title">Products</h5>
+                            <p class="card-text display-6">
+                                <%= totalProducts %>
+                            </p>
+                        </div>
+                        <div class="ms-3 opacity-25">
+                            <img src="/img/icons/product.svg" class="img-fluid" style="width: 80px; height: 80px;" alt="contacts">
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/admin/customers" class="text-decoration-none">
+                <div class="card text-white bg-info mb-3">
+                    <div class="card-body d-flex align-items-center justify-content-between position-relative">
+                        <div>
+                            <h5 class="card-title">Customers</h5>
+                            <p class="card-text display-6">
+                                <%= totalCustomers %>
+                            </p>
+                        </div>
+                        <div class="ms-3 opacity-25">
+                            <img src="/img/icons/customer.svg" class="img-fluid" style="width: 80px; height: 80px;" alt="contacts">
+                        </div>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-danger mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Customers</h5>
-                <p class="card-text"><%= totalCustomers %></p>
-            </div>
-        </div>
-    </div>
-</div>
-<%- include('partials/_footer') %>
+    <%- include('partials/_footer') %>

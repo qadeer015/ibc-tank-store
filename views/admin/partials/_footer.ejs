@@ -32,6 +32,17 @@
         });
         sidebarTitle.classList.toggle("d-none");
     });
+
+    const clickableRows = document.querySelectorAll(".click-able");
+    if(clickableRows){
+        clickableRows.forEach(row => {
+            row.addEventListener("click", () => {
+                const resourceBaseUrl = row.getAttribute("data-of");
+                const resourceId = row.getAttribute("data-id");
+                window.location.href = `/admin/${resourceBaseUrl}/${resourceId}`;
+            });
+        });
+    }
 </script>
 
 

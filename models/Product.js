@@ -2,10 +2,10 @@
 const db = require("../config/db");
 
 class Product {
-    static async create(name, description, price, image, category_id, condition, stock) {
+    static async create(name, description, price, image, category_id, product_condition, stock) {
         const [insertResult] = await db.execute(
-            'INSERT INTO products (name, description, price, image, category_id, condition, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, description, price, image, category_id, condition, stock]
+            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [name, description, price, image, category_id, product_condition, stock]
         );
         const [rows] = await db.execute(
             'SELECT * FROM products WHERE id = ?',
@@ -32,11 +32,18 @@ class Product {
 
     static async getById(id) {
         const [rows] = await db.execute(`
-            SELECT p.*, c.name AS category_name 
-            FROM products p
-            JOIN categories c ON p.category_id = c.id
-            WHERE p.id = ?
-        `, [id]);
+    SELECT 
+      p.*,
+      c.name AS category_name,
+      ROUND(AVG(r.rating), 1) AS rating,
+      COUNT(r.id) AS rating_count
+    FROM products p
+    JOIN categories c ON p.category_id = c.id
+    LEFT JOIN ratings r ON r.product_id = p.id
+    WHERE p.id = ?
+    GROUP BY p.id
+  `, [id]);
+
         return rows[0];
     }
 
@@ -86,24 +93,15 @@ class Product {
         }
     }
 
-    static async updateProduct(id, name, description, price, image, category_id, condition, stock) {
+    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock) {
         const [result] = await db.execute(
-            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, condition = ?, stock = ? WHERE id = ?',
-            [name, description, price, image, category_id, condition, stock, id]
+            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ? WHERE id = ?',
+            [name, description, price, image, category_id, product_condition, stock, id]
         );
         return result;
     }
     
-    static async updateRating(id, rating) {
-        const [result] = await db.execute(
-            'UPDATE products SET rating = ? WHERE id = ?',
-            [rating, id]
-        );
-        return result;
-    }
-
-    
-    static async search({ query, categoryId, minPrice, maxPrice, condition }) {
+    static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
         try {
             // Build query safely for TiDB
             let sql = `SELECT p.*, c.name AS category_name 
@@ -132,9 +130,9 @@ class Product {
                 params.push(parseFloat(maxPrice));
             }
 
-            if (condition) {
-                sql += ` AND LOWER(p.condition) = ?`;
-                params.push(condition.toLowerCase());
+            if (product_condition) {
+                sql += ` AND LOWER(p.product_condition) = ?`;
+                params.push(product_condition.toLowerCase());
             }
             
             sql += ` ORDER BY p.created_at DESC`;
@@ -146,7 +144,7 @@ class Product {
             throw error;
         }
     }
-// static async search({ query, categoryId, minPrice, maxPrice, condition }) {
+// static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
 //     let sql = `SELECT p.*, c.name AS category_name 
 //                FROM products p
 //                JOIN categories c ON p.category_id = c.id
@@ -173,9 +171,9 @@ class Product {
 //         params.push(maxPrice);
 //     }
     
-//     if (condition) {
-//         sql += ` AND p.condition = ?`;
-//         params.push(condition);
+//     if (product_condition) {
+//         sql += ` AND p.product_condition = ?`;
+//         params.push(product_condition);
 //     }
     
 //     sql += ` ORDER BY p.created_at DESC`;
