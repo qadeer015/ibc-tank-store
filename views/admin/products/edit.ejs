@@ -1,5 +1,4 @@
 <!-- views/admin/products/edit.ejs -->
-<%- include('../partials/_header') %>
 <h1 class="mb-4">Edit Product</h1>
 
 <form action="/admin/products/<%= product.id %>/update" method="POST" enctype="multipart/form-data" class="row g-3">
@@ -43,7 +42,9 @@
                 </div>
                 <div class="col-md-12">
                     <label for="description" class="form-label fw-semibold">Description</label>
-                    <textarea name="description" class="form-control" rows="3" required><%= product.description.trim() %></textarea>
+                    <input id="description" type="hidden" name="description" value="<%= product.description.trim() %>">
+                    <trix-editor id="trixEditor" input="description"
+                            class="h-96 bg-white shadow p-3 rounded-lg overflow-y-auto"></trix-editor>
                 </div>
             </div>
         </div>
@@ -172,5 +173,3 @@
         transition: all 0.3s;
     }
 </style>
-
-<%- include('../partials/_footer') %>
