@@ -9,7 +9,7 @@ const renderTemplate = require("../utils/templateRenderer");
 
 // Login routes
 router.get('/signin', (req, res) => {
-  res.render('auth/signin', { user: req.user, title:'Signin'});
+  res.render('public/auth/signin', { user: req.user, title:'Signin'});
 });
 
 router.post('/logout', authController.logoutUser);

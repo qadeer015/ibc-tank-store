@@ -1,15 +1,20 @@
 // server.js
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const path = require('path');
 const passport = require('passport');
 const flash = require('connect-flash');
+const expressLayouts = require("express-ejs-layouts");
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const pool = require('./config/db'); // MySQL connection pool
 const Product = require('./models/Product');
 const Category = require('./models/Category');
+const Setting = require('./models/Setting');
+const { saveSettingsCookie } = require("./utils/settingsCookie");
+const settingMiddleware = require("./middlewares/settings");
 
 // Routes
 const productRoutes = require('./routes/productRoutes');
@@ -29,6 +34,10 @@ require('./config/passport');
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayouts);
+
+app.set("layout", "layouts/public");
+
 app.use(express.static(path.join(__dirname, 'public')));
 // Serve static files from uploads directory in development
 if (process.env.NODE_ENV !== 'production') {
@@ -38,6 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 // server.js
 const sessionStore = new MySQLStore({
@@ -72,13 +82,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(settingMiddleware);
 
-// Global variables middleware (must come after flash)
 app.use((req, res, next) => {
+    res.locals.user = req.user || null;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.path = req.originalUrl;
-    res.locals.user = req.user || null; // Make user available in all views
+    if (req.path.startsWith("/admin")) {
+        res.locals.layout = "layouts/admin";
+    } else {
+        res.locals.layout = "layouts/public";
+    }
     next();
 });
 
@@ -107,7 +122,15 @@ app.get('/', async (req, res) => {
             price: parseFloat(product.price).toFixed(2)
         }));
 
-        res.render('home', {
+        let allSettings = null;
+
+        if (!req.cookies.ibc_tank_store_settings) {
+            // No cookie → fetch from DB and save
+            allSettings = await Setting.all();
+            saveSettingsCookie(res, allSettings);
+        }
+
+        res.render('public/home', {
             title: 'Home',
             featuredProducts,
             latestProducts,
@@ -139,7 +162,7 @@ app.get('/search', async (req, res) => {
         });
         
         const categories = await Category.getAll();
-        res.render('products/search', {
+        res.render('public/search', {
             title: 'Search Results',
             products,
             categories,
