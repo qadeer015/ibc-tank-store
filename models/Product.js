@@ -41,7 +41,7 @@ class Product {
     JOIN categories c ON p.category_id = c.id
     LEFT JOIN ratings r ON r.product_id = p.id
     WHERE p.id = ?
-    GROUP BY p.id
+    GROUP BY c.id
   `, [id]);
 
         return rows[0];

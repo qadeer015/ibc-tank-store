@@ -87,7 +87,6 @@ const productController = {
                 return res.redirect('/products');
             }
             const ratings = await Rating.getProductRatings(req.params.id);
-            
             product = {
                 ...product,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
