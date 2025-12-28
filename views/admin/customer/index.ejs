@@ -43,13 +43,6 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item"
-                                                            href="/admin/customers/<%= customer.id %>/edit">
-                                                            <i class="bi bi-pencil me-2 text-primary"></i>
-                                                            Edit
-                                                        </a>
-                                                    </li>
-                                                    <li>
                                                         <form action="/admin/customers/<%= customer.id %>/delete"
                                                             method="POST"
                                                             onsubmit="return confirm('Are you sure you want to delete this customer?');">
@@ -84,4 +77,4 @@
                 </div>
             </div>
         </div>
-        <% } %>
+    <% } %>

@@ -1,40 +1,28 @@
 <!-- views/shared/_alerts.ejs -->
-<% if (error.length>0) { %>
-        <div class="alert alert-danger px-4 py-3 rounded notification-alert">
-            <%= error %>
-        </div>
-    <% } %>
-    <% if (success.length>0) { %>
-        <div class="alert alert-success  px-4 py-3 rounded notification-alert">
-            <%= success %>
-        </div>
-    <% } %>
-
-
-    <style>
-        .notification-alert {
-            position: fixed;
-            top: 10%;
-            right: 5%;
-            z-index: 9999;
-            min-width: 250px;
-            max-width: 350px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeInOut 5s forwards;
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateX(400px); }
-            10% { opacity: 1; transform: translateX(0); }
-            90% { opacity: 1; transform: translateX(0); }
-            100% { opacity: 0; transform: translateX(400px); }
-        }
-    </style>
-
-    <script>
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.notification-alert');
-            alerts.forEach(alert => alert.remove());
-        }, 5000);
+<% if (error && error.length> 0) { %>
+    <script type="application/json" id="error-flash">
+        <%- JSON.stringify(error) %>
     </script>
+<% } %>
 
+<% if (success && success.length> 0) { %>
+    <script type="application/json" id="success-flash">
+        <%- JSON.stringify(success) %>
+  </script>
+<% } %>
 
+<script>
+    const showFlash = (id, type) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        console.log('showFlash');
+        const data = JSON.parse(el.textContent);
+        if (Array.isArray(data)) {
+            data.forEach(msg => new Notification(msg, type));
+        } else {
+            new Notification(data, type);
+        }
+    };
+    showFlash('error-flash', 'danger');
+    showFlash('success-flash', 'success');
+</script>

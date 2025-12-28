@@ -18,17 +18,6 @@ body {
         transform: scale(1.05);
 }
 
-.alertContainer {
-        top: 2%;
-        right: 2%;
-}
-
-.messageContainer {
-        padding: 5px;
-        z-index: 1000;
-        width: fit-content;
-}
-
 .click-able {
         cursor: pointer;
 }

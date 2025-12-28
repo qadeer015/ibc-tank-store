@@ -7,19 +7,20 @@
 
                 <!-- Product Card -->
                 <div class="col-xxl-4 col-md-6">
+                    
                     <div class="card info-card sales-card">
-
                         <div class="card-body">
-                            <h5 class="card-title">Products</h5>
-
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-box-seam"></i>
+                            <a href="/admin/products" class="text-decoration-none">
+                                <h5 class="card-title">Products</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6><%= totalProducts %></h6>
+                                    </div>
                                 </div>
-                                <div class="ps-3">
-                                    <h6><%= totalProducts %></h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
 
                     </div>
@@ -29,20 +30,19 @@
                 <!-- Contacts Card -->
                 <div class="col-xxl-4 col-md-6">
                     <div class="card info-card revenue-card">
-
                         <div class="card-body">
-                            <h5 class="card-title">Contacts</h5>
-
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-envelope"></i>
+                            <a href="/admin/contacts" class="text-decoration-none">
+                                <h5 class="card-title">Contacts</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-envelope"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6><%= totalContacts %></h6>
+                                    </div>
                                 </div>
-                                <div class="ps-3">
-                                    <h6><%= totalContacts %></h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
-
                     </div>
                 </div>
                 <!-- End Revenue Card -->
@@ -51,19 +51,18 @@
                 <div class="col-xxl-4 col-xl-12">
 
                     <div class="card info-card customers-card">
-
                         <div class="card-body">
-                            <h5 class="card-title">Customers</h5>
-
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-people"></i>
+                            <a href="/admin/customers" class="text-decoration-none">
+                                <h5 class="card-title">Customers</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6><%= totalCustomers %></h6>
+                                    </div>
                                 </div>
-                                <div class="ps-3">
-                                    <h6><%= totalCustomers %></h6>
-                                </div>
-                            </div>
-
+                            </a>
                         </div>
                     </div>
 

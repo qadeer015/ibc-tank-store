@@ -1,9 +1,6 @@
 <!-- views/admin/category/index.ejs -->
 <div class="row">
-    <div class="col-md-8">
-        <h1>Categories</h1>
-    </div>
-    <div class="col-md-4 text-end">
+    <div class="col-12 text-end">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCategoryModal">
             <i class="bi bi-plus-lg me-1"></i> New Category
         </button>
@@ -145,7 +142,7 @@
             const categoryName = document.getElementById('editCategoryName').value.trim();
 
             if (!categoryName) {
-                showAlert('Category name cannot be empty', 'danger');
+                new Notification('Category name cannot be empty', 'danger');
                 return;
             }
 
@@ -176,14 +173,14 @@
                             if (editButton) editButton.setAttribute('data-name', categoryName);
                         }
 
-                        showAlert('Category updated successfully!', 'success');
+                        new Notification('Category updated successfully!', 'success');
                     } else {
-                        showAlert(data.error || 'Failed to update category', 'danger');
+                        new Notification(data.error || 'Failed to update category', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showAlert('An error occurred. Please try again.', 'danger');
+                    new Notification('An error occurred. Please try again.', 'danger');
                 });
         });
 
@@ -213,7 +210,7 @@
             const categoryName = formData.get('name').trim();
 
             if (!categoryName) {
-                showAlert('Category name cannot be empty', 'danger');
+                new Notification('Category name cannot be empty', 'danger');
                 return;
             }
 
@@ -240,46 +237,14 @@
                         // Refresh page to show new category
                         window.location.reload();
                     } else {
-                        showAlert(data.error || 'Failed to create category', 'danger');
+                        new Notification(data.error || 'Failed to create category', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showAlert('An error occurred. Please try again.', 'danger');
+                    new Notification('An error occurred. Please try again.', 'danger');
                 });
         });
-
-        // Helper function to show alerts
-        function showAlert(message, type) {
-            // Remove existing alerts
-            const existingAlert = document.querySelector('.alert');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-
-            // Create alert
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show mt-3`;
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-
-            // Insert after page title
-            const title = document.querySelector('h1');
-            if (title) {
-                title.parentNode.insertBefore(alertDiv, title.nextSibling);
-            } else {
-                document.querySelector('.container').prepend(alertDiv);
-            }
-
-            // Auto dismiss after 3 seconds
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 3000);
-        }
 
         // Auto-dismiss modal alerts
         const modals = ['newCategoryModal', 'editCategoryModal'];
@@ -294,46 +259,3 @@
         });
     });
 </script>
-
-<style>
-    /* Category table specific styling */
-    #categoriesTable.datatable-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    #categoriesTable.datatable-table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        color: #495057;
-        border-bottom: 2px solid #dee2e6;
-        padding: 0.75rem;
-    }
-
-    #categoriesTable.datatable-table td {
-        padding: 0.75rem;
-        vertical-align: middle;
-        border-top: 1px solid #dee2e6;
-    }
-
-    #categoriesTable.datatable-table tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        #categoriesTable.datatable-table {
-            font-size: 0.875rem;
-        }
-
-        #categoriesTable.datatable-table td,
-        #categoriesTable.datatable-table th {
-            padding: 0.5rem;
-        }
-
-        .btn-group .btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-    }
-</style>

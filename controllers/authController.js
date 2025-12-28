@@ -11,6 +11,6 @@ exports.logoutUser = (req, res, next) => {
 
       res.clearCookie('connect.sid'); // clear session cookie
       res.redirect('/');
-    });
+    }); 
   });
 };

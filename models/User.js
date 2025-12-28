@@ -38,6 +38,11 @@ class User {
     return rows;
   }
 
+  static async isNewUser(userId) {
+    const [rows] = await db.execute('UPDATE users SET is_new = FALSE WHERE id = ?', [userId]);
+    return rows.length === 0;
+  }
+
   static async count(role='customer') {
     const [rows] = await db.execute('SELECT COUNT(*) AS count FROM users WHERE role = ?', [role]);
     return rows[0].count;

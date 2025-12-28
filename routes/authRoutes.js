@@ -5,7 +5,7 @@ const authController = require('../controllers/authController');
 const router = express.Router();
 const {sendEmail} = require("../api/emailService");
 const renderTemplate = require("../utils/templateRenderer");
-
+const User = require("../models/User");
 
 // Login routes
 router.get('/signin', (req, res) => {
@@ -25,13 +25,26 @@ router.get('/google/callback',
   async (req, res) => {
     req.session.save(async () => {
       const user = req.user;
-
-      // Render email template
-      const html = renderTemplate("welcome.html", {
-        user_name: user.name,
-        year: new Date().getFullYear(),
-        app_name: "IBC Tank Store"
-      });
+      let html = "";
+      if(user.is_new) {
+        // Render email template
+        html = renderTemplate("welcome.html", {
+          user_name: user.name,
+          year: new Date().getFullYear(),
+          app_name: "IBC Tank Store"
+        });
+        await User.isNewUser(user.id); // Set is_new to false
+      }else{
+        html = renderTemplate("signin.html", {
+          user_name: user.name,
+          year: new Date().getFullYear(),
+          app_name: "IBC Tank Store",
+          email: user.email,
+          username: user.name,
+          date: new Date().toDateString()
+        });
+      }
+      
 
       // ✔ Fire-and-forget email — does not slow down login
       sendEmail({
