@@ -189,8 +189,17 @@ app.use("/auth", authRoutes);
 app.use("/ratings", ratingRoutes);
 app.use("/admin", adminRoutes);
 
-// Error handling middleware
+// ========== ADD 404 HANDLER HERE ==========
+app.use((req, res) => {
+    res.status(404).render('404', {
+        title: 'Page Not Found',
+        viewPage: "404",
+        user: req.user || null
+    });
+});
+// ==========================================
 
+// Error handling middleware (keep this after 404 handler)
 app.use((err, req, res, next) => {
     console.error(err.stack);
     if (req.flash) {
@@ -199,7 +208,7 @@ app.use((err, req, res, next) => {
     }
 
     // Flash not available → send plain error
-    res.status(500).send("Something went wrong!");
+    res.render('error', { error: err });
 });
 
 app.listen(process.env.PORT , () => console.log(`Server running on http://localhost:${process.env.PORT }`));

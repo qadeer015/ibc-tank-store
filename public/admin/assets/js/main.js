@@ -180,86 +180,6 @@
         });
     }
 
-    /**
-     * Initiate TinyMCE Editor
-     */
-
-    const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
-
-    tinymce.init({
-        selector: 'textarea.tinymce-editor',
-        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
-        editimage_cors_hosts: ['picsum.photos'],
-        menubar: 'file edit view insert format tools table help',
-        toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
-        autosave_ask_before_unload: true,
-        autosave_interval: '30s',
-        autosave_prefix: '{path}{query}-{id}-',
-        autosave_restore_when_empty: false,
-        autosave_retention: '2m',
-        image_advtab: true,
-        link_list: [{
-                title: 'My page 1',
-                value: 'https://www.tiny.cloud'
-            },
-            {
-                title: 'My page 2',
-                value: 'http://www.moxiecode.com'
-            }
-        ],
-        image_list: [{
-                title: 'My page 1',
-                value: 'https://www.tiny.cloud'
-            },
-            {
-                title: 'My page 2',
-                value: 'http://www.moxiecode.com'
-            }
-        ],
-        image_class_list: [{
-                title: 'None',
-                value: ''
-            },
-            {
-                title: 'Some class',
-                value: 'class-name'
-            }
-        ],
-        importcss_append: true,
-        file_picker_callback: (callback, value, meta) => {
-            /* Provide file and text for the link dialog */
-            if (meta.filetype === 'file') {
-                callback('https://www.google.com/logos/google.jpg', {
-                    text: 'My text'
-                });
-            }
-
-            /* Provide image and alt text for the image dialog */
-            if (meta.filetype === 'image') {
-                callback('https://www.google.com/logos/google.jpg', {
-                    alt: 'My alt text'
-                });
-            }
-
-            /* Provide alternative source and posted for the media dialog */
-            if (meta.filetype === 'media') {
-                callback('movie.mp4', {
-                    source2: 'alt.ogg',
-                    poster: 'https://www.google.com/logos/google.jpg'
-                });
-            }
-        },
-        height: 600,
-        image_caption: true,
-        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-        noneditable_class: 'mceNonEditable',
-        toolbar_mode: 'sliding',
-        contextmenu: 'link image table',
-        skin: useDarkMode ? 'oxide-dark' : 'oxide',
-        content_css: useDarkMode ? 'dark' : 'default',
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-    });
 
     /**
      * Initiate Bootstrap validation check
@@ -281,26 +201,138 @@
     /**
      * Initiate Datatables
      */
-    const datatables = select('.datatable', true)
-    datatables.forEach(datatable => {
-        new simpleDatatables.DataTable(datatable, {
-            perPageSelect: [5, 10, 15, ["All", -1]],
-            columns: [{
-                    select: 2,
-                    sortSequence: ["desc", "asc"]
-                },
-                {
-                    select: 3,
-                    sortSequence: ["desc"]
-                },
-                {
-                    select: 4,
-                    cellClass: "green",
-                    headerClass: "red"
+    // datatables-config.js or add to your main.js
+    $(document).ready(function () {
+        // Configuration for different table types
+        const tableConfigs = {
+            'productsTable': {
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                order: [[1, 'asc']], // Sort by Name column by default
+                columnDefs: [
+                    { orderable: false, targets: [0, 6] }, // Image and Actions columns not sortable
+                    { className: "dt-center", targets: [1, 2, 3, 4, 5] }, // Center align these columns
+                    { width: "60px", targets: [0] }, // Image column width
+                    { width: "100px", targets: [6] } // Actions column width
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search products",
+                    lengthMenu: "Show _MENU_",
+                    info: "Showing _START_ to _END_ of _TOTAL_ products",
+                    infoEmpty: "No products available",
+                    infoFiltered: "(filtered from _MAX_ total products)"
                 }
-            ]
+            },
+            'categoriesTable': {
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                order: [[0, 'asc']], // Sort by Name
+                columnDefs: [
+                    { orderable: false, targets: [1] }, // Actions column not sortable
+                    { width: "200px", targets: [1] } // Actions column width
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search categories",
+                    lengthMenu: "Show _MENU_",
+                    info: "Showing _START_ to _END_ of _TOTAL_ categories",
+                    infoEmpty: "No categories available"
+                }
+            },
+            'customersTable': {
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                order: [[0, 'asc']], // Sort by Name
+                columnDefs: [
+                    { orderable: false, targets: [3] }, // Actions column not sortable
+                    { className: "dt-center", targets: [2, 3] }, // Center align date and actions
+                    { width: "100px", targets: [3] } // Actions column width
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search customers",
+                    lengthMenu: "Show _MENU_",
+                    info: "Showing _START_ to _END_ of _TOTAL_ customers",
+                    infoEmpty: "No customers available"
+                }
+            },
+            'contactsTable': {
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                order: [[3, 'desc']], // Sort by Date (newest first)
+                columnDefs: [
+                    { orderable: false, targets: [5] }, // Actions column not sortable
+                    { className: "dt-center", targets: [1, 2, 3, 4, 5] }, // Center align these columns
+                    { width: "120px", targets: [5] } // Actions column width
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search contacts",
+                    lengthMenu: "Show _MENU_",
+                    info: "Showing _START_ to _END_ of _TOTAL_ contacts",
+                    infoEmpty: "No contacts available"
+                },
+                // Custom rendering for status column
+                createdRow: function (row, data, dataIndex) {
+                    // Highlight unread messages
+                    if (data[4].includes('New') || data[4].includes('new')) {
+                        $(row).addClass('table-warning');
+                    }
+                }
+            }
+        };
+
+        // Initialize all DataTables
+        $('.datatable').each(function () {
+            const tableId = $(this).attr('id');
+            const config = tableConfigs[tableId] || getDefaultConfig();
+
+            const dataTable = $(this).DataTable(config);
+
+            // Store reference for later use
+            $(this).data('dataTable', dataTable);
         });
-    })
+
+        // Row click functionality for all clickable rows
+        $('.datatable tbody').on('click', 'tr td.click-able', function (e) {
+            // Don't trigger if clicking on a link, button, or within dropdown
+            if ($(e.target).is('a, button, .dropdown, .dropdown *') ||
+                $(e.target).closest('.dropdown, .btn-group').length) {
+                return;
+            }
+
+            const id = $(this).data('id');
+            const type = $(this).data('of');
+
+            if (id && type) {
+                const urls = {
+                    'products': `/admin/products/${id}`,
+                    'customers': `/admin/customers/${id}`,
+                    'contacts': `/admin/contacts/${id}`
+                };
+
+                if (urls[type]) {
+                    window.location.href = urls[type];
+                }
+            }
+        });
+
+        // Default configuration for tables without specific config
+        function getDefaultConfig() {
+            return {
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "No entries available"
+                },
+                dom: '<"top"lf>rt<"bottom"ip><"clear">'
+            };
+        }
+    });
 
     /**
      * Autoresize echart charts

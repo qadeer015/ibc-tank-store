@@ -66,13 +66,13 @@ class Product {
       FROM products p
       JOIN categories c ON p.category_id = c.id
       LEFT JOIN ratings r ON r.product_id = p.id
-      GROUP BY p.id
-      HAVING rating >= ?
+      GROUP BY p.id, c.name  -- Add c.name to GROUP BY
+      HAVING rating >= ${minRating}
       ORDER BY rating DESC, rating_count DESC
       LIMIT ${limit}
     `;
 
-            const [rows] = await db.execute(sql, [minRating]);
+            const [rows] = await db.execute(sql);
             return rows;
 
         } catch (error) {

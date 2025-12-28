@@ -177,9 +177,50 @@
 <script src="https://cdn.tiny.cloud/1/f4pyogqxs5bgdb3qb41ycnlez42gj1s0k9m83yn2pkig50dx/tinymce/8/tinymce.min.js"
     referrerpolicy="origin" crossorigin="anonymous"></script>
 
-<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
 <script>
-    tinymce.init({
+    const GEMINI_API_KEY = "AIzaSyDijXFlEuJSGiS4Z-TUtoHMFVxfDMvZxWE";
+
+    const ai_request = (request, respondWith) => {
+        const geminiOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: request.prompt }
+                        ]
+                    }
+                ],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 800,
+                }
+            })
+        };
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+        respondWith.string((signal) =>
+            window.fetch(url, { signal, ...geminiOptions })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error?.message || "Gemini API error");
+                    }
+
+                    const data = await response.json();
+
+                    // Gemini response extraction
+                    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                })
+        );
+    };
+
+   tinymce.init({
         selector: 'textarea',
         plugins: [
             // Core editing features
@@ -188,14 +229,14 @@
             // Try the most popular premium features until Jan 11, 2026:
             'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
         ],
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | aidialog aishortcuts',
         tinycomments_mode: 'embedded',
         tinycomments_author: 'Author name',
         mergetags_list: [
             { value: 'First.Name', title: 'First Name' },
             { value: 'Email', title: 'Email' },
         ],
-        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        ai_request,
         uploadcare_public_key: '8ae7bb47e4c81e246870',
     });
 </script>
