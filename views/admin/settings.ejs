@@ -1,72 +1,452 @@
-<!--  views/admin/settings.ejs -->
-<div class="row">
-  <div class="col-12">
-    <h1>Settings</h1>
-  </div>
-</div>
-
+<!-- views/admin/settings.ejs -->
 <div class="row">
   <div class="col-12">
     <div class="template-demo">
-      <form action="/admin/settings" method="POST" class="needs-validation" novalidate>
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Contact Number Settings</h5>
+      <form action="/admin/settings" method="POST" id="settingsForm" class="needs-validation" novalidate>
+        <!-- General Settings -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-gear-wide-connected me-2"></i>General Settings
+            </h5>
           </div>
           <div class="card-body">
-            <div class="mb-3">
-              <label for="contact_number" class="form-label">Contact Number</label>
-              <input type="tel" class="form-control" id="contact_number" name="contact_number" value="<%= settings.contact_number || '' %>" placeholder="0300-1122334" >
+            <div class="row">
+              <div class="col-md-6 my-3">
+                <label for="contact_number" class="form-label fw-semibold">
+                  <i class="bi bi-telephone me-1"></i>Contact Number
+                </label>
+                <input type="tel" class="form-control" id="contact_number" name="contact_number"
+                  value="<%= settings.contact_number || '' %>" placeholder="0300-1122334" pattern="[0-9\-]+"
+                  maxlength="15">
+                <div class="form-text">Primary contact number displayed on the website.</div>
+              </div>
+
+              <div class="col-md-6 my-3">
+                <label for="support_email" class="form-label fw-semibold">
+                  <i class="bi bi-envelope me-1"></i>Support Email
+                </label>
+                <input type="email" class="form-control" id="support_email" name="support_email"
+                  value="<%= settings.support_email || '' %>" placeholder="support@example.com">
+                <div class="form-text">Email address for customer support inquiries.</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Mailer / Notification Settings</h5>
+        <!-- Notification Settings -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-bell-fill me-2"></i>Notification Settings
+            </h5>
           </div>
           <div class="card-body">
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" id="notify_contact_submission"
-                name="notify_contact_submission" <%=settings.notify_contact_submission ? 'checked' : '' %>>
-              <label class="form-check-label" for="notify_contact_submission">Notify When New “Contact Us” Submission
-                Arrives</label>
+            <!-- Contact Form Notifications -->
+            <div class="my-4 p-3 border rounded">
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="notify_contact_submission"
+                  name="notify_contact_submission" <%=settings.notify_contact_submission ? 'checked' : '' %>>
+                <label class="form-check-label fw-semibold" for="notify_contact_submission">
+                  <i class="bi bi-envelope-paper me-1"></i>Notify When New "Contact Us" Submission Arrives
+                </label>
+              </div>
+              <div class="form-text ms-4">Receive notifications when customers submit contact forms.</div>
             </div>
-    
-            <div class="mb-3">
-              <label for="notification_method" class="form-label">Notification Method</label>
-              <select id="notification_method" name="notification_method" class="form-select mb-2">
-                <option value="email" <%=settings.notification_method==='email' ? 'selected' : '' %>>Email</option>
-                <option value="discord" <%=settings.notification_method==='discord' ? 'selected' : '' %>>Discord</option>
-              </select>
-              <div class="alert alert-danger">
-                <p>
-                  <small>
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <b>NOTE:</b> Notification settings are currently set to
-                    <code><%= settings.notification_method %></code>.
-                    <ul>
-                      <li>Email: <code><%= settings.notification_email || 'ibctank.team@gmail.com' %></code></li>
-                      <li>Discord: <code><%= settings.notification_endpoint || 'Not Set' %></code></li>
-                    </ul>
-                  </small>
-                </p>
+
+            <!-- Notification Method -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="notification_method" class="form-label fw-semibold">
+                  <i class="bi bi-send-fill me-1"></i>Notification Method
+                </label>
+                <select id="notification_method" name="notification_method" class="form-select">
+                  <option value="email" <%=settings.notification_method==='email' ? 'selected' : '' %>>Email</option>
+                  <option value="discord" <%=settings.notification_method==='discord' ? 'selected' : '' %>>Discord
+                    Webhook</option>
+                  <option value="both" <%=settings.notification_method==='both' ? 'selected' : '' %>>Both Email &
+                    Discord</option>
+                </select>
+                <div class="form-text">Choose how you want to receive notifications.</div>
               </div>
             </div>
-            <%if(!settings.notification_endpoint){%>
-            <div class="mb-3">
-              <label for="notification_endpoint" class="form-label">Webhook</label>
-              <input type="text" class="form-control" id="notification_endpoint" name="notification_endpoint"
-                placeholder="Discord Webhook URL or Admin Email" value="<%= settings.notification_endpoint || '' %>">
+
+            <!-- Email Settings -->
+            <div class="mb-4 p-3 border rounded" id="emailSettings">
+              <h6 class="fw-semibold mb-3">
+                <i class="bi bi-envelope-at-fill me-1 text-primary"></i>Email Configuration
+              </h6>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="notification_email" class="form-label">Notification Email</label>
+                  <input type="email" class="form-control" id="notification_email" name="notification_email"
+                    value="<%= settings.notification_email || 'ibctank.team@gmail.com' %>"
+                    placeholder="admin@example.com">
+                  <div class="form-text">Email address to receive notifications.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="smtp_host" class="form-label">SMTP Host</label>
+                  <input type="text" class="form-control" id="smtp_host" name="smtp_host"
+                    value="<%= settings.smtp_host || '' %>" placeholder="smtp.gmail.com">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="smtp_port" class="form-label">SMTP Port</label>
+                  <input type="number" class="form-control" id="smtp_port" name="smtp_port"
+                    value="<%= settings.smtp_port || '587' %>" placeholder="587">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="smtp_secure" class="form-label">Connection Security</label>
+                  <select class="form-select" id="smtp_secure" name="smtp_secure">
+                    <option value="false" <%=settings.smtp_secure==='false' ? 'selected' : '' %>>None</option>
+                    <option value="true" <%=settings.smtp_secure==='true' ? 'selected' : '' %>>SSL/TLS</option>
+                    <option value="starttls" <%=settings.smtp_secure==='starttls' ? 'selected' : '' %>>STARTTLS</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <%}%>
+
+            <!-- Discord Settings -->
+            <div class="p-3 border rounded" id="discordSettings">
+              <h6 class="fw-semibold mb-3">
+                <i class="bi bi-discord me-1 text-primary"></i>Discord Webhook Configuration
+              </h6>
+              <div class="mb-3">
+                <label for="notification_endpoint" class="form-label">Webhook URL</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-link-45deg"></i>
+                  </span>
+                  <input type="url" class="form-control" id="notification_endpoint" name="notification_endpoint"
+                    placeholder="https://discord.com/api/webhooks/..."
+                    value="<%= settings.notification_endpoint || '' %>" disabled>
+                </div>
+                <div class="form-text">
+                  <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks" target="_blank"
+                    class="text-decoration-none">
+                    <i class="bi bi-info-circle me-1"></i>How to create a Discord webhook
+                  </a>
+                </div>
+              </div>
+
+              <div class="alert alert-info">
+                <div class="d-flex">
+                  <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                  <div>
+                    <h6 class="alert-heading mb-2">Current Configuration</h6>
+                    <p class="mb-1">Notification method: <span class="badge bg-primary">
+                        <%= settings.notification_method %>
+                      </span></p>
+                    <% if (settings.notification_email) { %>
+                      <p class="mb-1">Email: <code><%= settings.notification_email %></code></p>
+                      <% } %>
+                        <% if (settings.notification_endpoint) { %>
+                          <p class="mb-0">Discord Webhook: <code class="text-truncate d-inline-block"
+                              style="max-width: 300px;"><%= settings.notification_endpoint %></code></p>
+                          <% } %>
+                  </div>
+                </div>
+              </div>
+
+              <% if (settings.notification_endpoint) { %>
+                <div class="mt-3">
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="testWebhookBtn">
+                    <i class="bi bi-play-circle me-1"></i>Test Webhook
+                  </button>
+                  <div id="testResult" class="mt-2"></div>
+                </div>
+                <% } %>
+            </div>
           </div>
         </div>
-    
-        <div class="text-end">
-          <button type="submit" class="btn btn-lg btn-primary">Save Settings</button>
+
+        <!-- Form Actions -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <button type="button" class="btn btn-outline-secondary" id="resetFormBtn">
+                  <i class="bi bi-arrow-clockwise me-1"></i>Reset Changes
+                </button>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-lg btn-primary">
+                  <i class="bi bi-check-circle me-1"></i>Save All Settings
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<!-- Settings Management JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('settingsForm');
+    const notificationMethod = document.getElementById('notification_method');
+    const emailSettings = document.getElementById('emailSettings');
+    const discordSettings = document.getElementById('discordSettings');
+    const metaDescription = document.getElementById('meta_description');
+    const metaDescriptionCount = document.getElementById('metaDescriptionCount');
+    const resetFormBtn = document.getElementById('resetFormBtn');
+    const testWebhookBtn = document.getElementById('testWebhookBtn');
+
+    // Initialize character counter for meta description
+    function updateCharCount() {
+      const length = metaDescription.value.length;
+      metaDescriptionCount.textContent = `${length}/160`;
+
+      if (length > 160) {
+        metaDescriptionCount.classList.remove('text-muted');
+        metaDescriptionCount.classList.add('text-danger');
+      } else {
+        metaDescriptionCount.classList.remove('text-danger');
+        metaDescriptionCount.classList.add('text-muted');
+      }
+    }
+
+    if (metaDescription) {
+      metaDescription.addEventListener('input', updateCharCount);
+      updateCharCount(); // Initial count
+    }
+
+    // Toggle email/discord settings based on notification method
+    function toggleNotificationSettings() {
+      const method = notificationMethod.value;
+
+      switch (method) {
+        case 'email':
+          emailSettings.style.display = 'block';
+          discordSettings.style.display = 'none';
+          break;
+        case 'discord':
+          emailSettings.style.display = 'none';
+          discordSettings.style.display = 'block';
+          break;
+        case 'both':
+          emailSettings.style.display = 'block';
+          discordSettings.style.display = 'block';
+          break;
+        default:
+          emailSettings.style.display = 'none';
+          discordSettings.style.display = 'none';
+      }
+    }
+
+    if (notificationMethod) {
+      notificationMethod.addEventListener('change', toggleNotificationSettings);
+      toggleNotificationSettings(); // Initial state
+    }
+
+    // Test Discord webhook functionality
+    if (testWebhookBtn) {
+      testWebhookBtn.addEventListener('click', function () {
+        const webhookUrl = document.getElementById('notification_endpoint').value;
+
+        if (!webhookUrl) {
+          showTestResult('Please enter a webhook URL first.', 'danger');
+          return;
+        }
+
+        // Disable button and show loading
+        const originalText = testWebhookBtn.innerHTML;
+        testWebhookBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Testing...';
+        testWebhookBtn.disabled = true;
+
+        // Send test request
+        fetch('/admin/settings/test-webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webhookUrl: webhookUrl
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showTestResult(data.message || 'Webhook test successful!', 'success');
+            } else {
+              showTestResult(data.error || 'Webhook test failed.', 'danger');
+            }
+          })
+          .catch(error => {
+            console.error('Error testing webhook:', error);
+            showTestResult('An error occurred while testing the webhook.', 'danger');
+          })
+          .finally(() => {
+            // Restore button
+            testWebhookBtn.innerHTML = originalText;
+            testWebhookBtn.disabled = false;
+          });
+      });
+    }
+
+    function showTestResult(message, type) {
+      const testResult = document.getElementById('testResult');
+      if (testResult) {
+        testResult.innerHTML = `
+          <div class="alert alert-${type} alert-dismissible fade show">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+          const alert = testResult.querySelector('.alert');
+          if (alert) alert.remove();
+        }, 5000);
+      }
+    }
+
+    // Reset form to original values
+    if (resetFormBtn) {
+      resetFormBtn.addEventListener('click', function () {
+        if (confirm('Are you sure you want to reset all changes? Unsaved changes will be lost.')) {
+          form.reset();
+          toggleNotificationSettings(); // Re-apply visibility
+          updateCharCount(); // Update character count
+          showAlert('Form has been reset to original values.', 'info');
+        }
+      });
+    }
+
+    // Form validation
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      form.classList.add('was-validated');
+
+      // Additional custom validation
+      const notificationMethod = document.getElementById('notification_method').value;
+      const email = document.getElementById('notification_email').value;
+      const webhook = document.getElementById('notification_endpoint').value;
+
+      if ((notificationMethod === 'email' || notificationMethod === 'both') && !email) {
+        showAlert('Please provide a notification email address.', 'warning');
+        event.preventDefault();
+        return;
+      }
+
+      if ((notificationMethod === 'discord' || notificationMethod === 'both') && !webhook) {
+        showAlert('Please provide a Discord webhook URL.', 'warning');
+        event.preventDefault();
+        return;
+      }
+    });
+
+    // Show alert function
+    function showAlert(message, type) {
+      // Remove existing alerts
+      const existingAlert = document.querySelector('.alert-dismissible:not(#testResult .alert)');
+      if (existingAlert) {
+        existingAlert.remove();
+      }
+
+      // Create alert
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+      alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+
+      // Insert after page title
+      const title = document.querySelector('h1');
+      if (title) {
+        title.parentNode.insertBefore(alertDiv, title.nextSibling);
+      } else {
+        document.querySelector('.container').prepend(alertDiv);
+      }
+
+      // Auto dismiss after 5 seconds
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.remove();
+        }
+      }, 5000);
+    }
+
+    // Add Bootstrap validation styling to custom controls
+    const formControls = form.querySelectorAll('.form-control, .form-select, .form-check-input');
+    formControls.forEach(control => {
+      control.addEventListener('blur', function () {
+        if (this.checkValidity) {
+          this.classList.toggle('is-invalid', !this.checkValidity());
+        }
+      });
+    });
+
+    // Auto-save draft functionality
+    let saveTimeout;
+    form.addEventListener('input', function () {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(function () {
+        // You could implement auto-save here
+        console.log('Auto-save would trigger here');
+      }, 3000); // Save after 3 seconds of inactivity
+    });
+  });
+</script>
+
+<style>
+  /* Settings page specific styles */
+  .card-header {
+    border-bottom: none;
+  }
+
+  .form-label.fw-semibold {
+    color: #495057;
+  }
+
+  .form-text {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+
+  .border-rounded {
+    border-radius: 0.5rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .btn-lg {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .row>[class*="col-"] {
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Highlight required fields */
+  .form-control:required,
+  .form-select:required {
+    border-left: 3px solid #0d6efd;
+  }
+
+  .form-control:invalid:not(:focus):not(:placeholder-shown),
+  .form-select:invalid:not(:focus) {
+    border-color: #dc3545;
+  }
+
+  /* Animation for section toggles */
+  #emailSettings,
+  #discordSettings {
+    transition: all 0.3s ease;
+  }
+</style>

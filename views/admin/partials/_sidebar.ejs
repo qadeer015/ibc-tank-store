@@ -1,44 +1,60 @@
 <!-- views/admin/partials/_sidebar.ejs -->
-<aside id="sidebar" class="px-0 bg-primary-subtle rounded">
-    <div class="d-flex justify-content-between align-items-center p-2">
-        <span id="sidebarTitle" style="font-size: 1.5rem;" class="fw-bold">Menu</span>
-        <!-- Collapse button (large screens) -->
-        <button class="sidebar-toggle" id="desktopSidebarToggle">
-            <i class="bi bi-layout-sidebar-inset"></i>
-        </button>
-    </div>
-    <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'dashboard') { %>fw-bold<% } %>" href="/admin/dashboard">
-                <i class="bi bi-speedometer2"></i> <span class="ms-2">Dashboard</span>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'dashboard') { %>collapsed<% } %>" href="/admin/dashboard">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'products' || viewPage === 'products-show' || viewPage === 'products-new' || viewPage === 'products-edit') { %>fw-bold<% } %>"
-                href="/admin/products">
-                <i class="bi bi-box-seam"></i> <span class="ms-2">Products</span>
+        <!-- End Dashboard Nav -->
+
+        <li class="nav-heading">Pages</li>
+
+    <li class="nav-item">
+        <a class="nav-link <% if (viewPage != 'products' && viewPage != 'products-show' && viewPage != 'products-new' && viewPage != 'products-edit') { %>collapsed<% } %>"
+            href="/admin/products">
+            <i class="bi bi-box-seam"></i>
+            <span>Products</span>
+        </a>
+    </li>
+        <!-- End Products Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'categories') { %>collapsed<% } %>" href="/admin/categories">
+                <i class="bi bi-tags"></i>
+                <span>Categories</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'categories') { %>fw-bold<% } %>" href="/admin/categories">
-                <i class="bi bi-tags"></i> <span class="ms-2">Categories</span>
+        <!-- End Categories Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'contacts') { %>collapsed<% } %>" href="/admin/contacts">
+                <i class="bi bi-envelope"></i>
+                <span>Contact</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'customers') { %>fw-bold<% } %>" href="/admin/customers">
-                <i class="bi bi-people"></i> <span class="ms-2">Customers</span>
+        <!-- End Contact Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'customers') { %>collapsed<% } %>" href="/admin/customers">
+                <i class="bi bi-people"></i>
+                <span>Customers</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'contacts' || viewPage === 'contacts-show') { %>fw-bold<% } %>"
-                href="/admin/contacts">
-                <i class="bi bi-envelope"></i> <span class="ms-2">Contacts</span>
+        <!-- End Customers Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'settings') { %>collapsed<% } %>" href="/admin/settings">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'settings') { %>fw-bold<% } %>" href="/admin/settings">
-                <i class="bi bi-gear"></i> <span class="ms-2">Settings</span>
-            </a>
-        </li>
+
     </ul>
+
 </aside>
+<!-- End Sidebar-->

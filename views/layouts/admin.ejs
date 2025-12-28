@@ -2,135 +2,91 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="author" content="Abdul Qadeer, Zaheer Ahmed, Kafil Anwer">
-    <meta name="description" content="IBC Tank Store's Admin Panel">
-    <title>
-        <%= title %> | IBC Tank Store
-    </title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard - NiceAdmin Bootstrap Template</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta content="This is a dashboard for IBC Tank Store" name="description">
+    <meta content="ibctank ibctankstore ibc tank store ibc totes" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/assets/img/favicon.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/admin/vendors/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
-    <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
-    <style>
-        /* Sidebar base styles */
-        #sidebar {
-            transition: width 0.3s ease;
-            max-height: 60vh;
-            width: 240px;
-            background: #f8f9fa;
-            position: sticky;
-            top: calc(64px + 1rem);
-            /* below navbar with some spacing */
-            border-radius: 0.25rem;
-            overflow-y: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Shrinked sidebar (large screens) */
-        #sidebar.shrink {
-            width: 70px;
-        }
-
-        #sidebar .nav-link {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-        }
-
-        #sidebar.shrink .nav-link span {
-            display: none;
-            /* hide text when shrinked */
-        }
-
-        #sidebar .nav-link i {
-            font-size: 1.2rem;
-        }
-
-        /* Mobile offcanvas */
-        @media (max-width: 991.98px) {
-            #sidebar {
-                position: fixed;
-                top: calc(64px + 1rem);
-                /* below navbar */
-                left: -240px;
-                z-index: 1045;
-            }
-
-            #sidebar.show {
-                left: 0;
-            }
-        }
-
-        /* Sidebar toggle button */
-        .sidebar-toggle {
-            border: none;
-            background: transparent;
-            font-size: 1.5rem;
-            color: white;
-        }
-    </style>
+    <link href="/admin/vendors/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/admin/vendors/quill/quill.snow.css" rel="stylesheet">
+    <link href="/admin/vendors/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/admin/vendors/remixicon/remixicon.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link href="/admin/assets/css/style.css" rel="stylesheet">
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-L32FERKX51');
+</script>
 
 <body>
-    <div class="container">
-        <%- include('../admin/partials/_header') %>
-        <div class="container-fluid">
-            <div class="d-lg-flex">
-                <!-- Sidebar -->
-                <%- include('../admin/partials/_sidebar') %>
-                <!-- Main content -->
-                <div id="mainContent" class="flex-grow-1 pe-0">
-                    <%- include('../shared/_alerts') %>
-                    <main class="p-4 min-vh-100">
-                        <%- include('../admin/partials/_breadcrumb') %>
+    <%- include('../admin/partials/_header') %>
+        <%- include('../admin/partials/_sidebar') %>
+            <main id="main" class="main">
+
+                <%- include('../admin/partials/_breadcrumb') %>
+                    <!-- End Page Title -->
+
+                    <section class="section min-vh-100">
                         <%- body %>
-                    </main>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </section>
 
-    <%- include('../admin/partials/_footer') %>
+            </main>
+            <!-- End #main -->
 
-    <script>
-        const sidebar = document.getElementById("sidebar");
-        const linkElements = sidebar?.querySelectorAll(".nav-link");
-        const mobileSidebarToggle = document.getElementById("mobileSidebarToggle");
-        const desktopSidebarToggle = document.getElementById("desktopSidebarToggle");
-        const sidebarTitle = document.getElementById("sidebarTitle");
-        // Mobile toggle
-        mobileSidebarToggle?.addEventListener("click", () => {
-            sidebar.classList.toggle("show");
-        });
-        // Desktop toggle
-        desktopSidebarToggle?.addEventListener("click", () => {
-            sidebar.classList.toggle("shrink");
-            linkElements.forEach(link => {
-                link.classList.toggle("text-center");
-            });
-            sidebarTitle.classList.toggle("d-none");
-        });
-        const clickableRows = document.querySelectorAll(".click-able");
-        if (clickableRows) {
-            clickableRows.forEach(row => {
-                row.addEventListener("click", () => {
-                    const resourceBaseUrl = row.getAttribute("data-of");
-                    const resourceId = row.getAttribute("data-id");
-                    window.location.href = `/admin/${resourceBaseUrl}/${resourceId}`;
-                });
-            });
-        }
-    </script>
-    <script src="/js/notification.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <!-- Swiper JS -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+            <%- include('../admin/partials/_footer') %>
+
+                <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+                        class="bi bi-arrow-up-short"></i></a>
+
+                <!-- Vendor JS Files -->
+                <script src="/admin/vendors/apexcharts/apexcharts.min.js"></script>
+                <script src="/admin/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+                <script src="/admin/vendors/chart.js/chart.umd.js"></script>
+                <script src="/admin/vendors/echarts/echarts.min.js"></script>
+                <script src="/admin/vendors/quill/quill.js"></script>
+                <script src="/admin/vendors/php-email-form/validate.js"></script>
+                <!-- Add this to your layout.ejs head section -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.css">
+
+                <!-- Add this before closing body tag in layout.ejs -->
+                <script
+                    src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.js"></script>
+                <!-- Template Main JS File -->
+                <script src="/admin/assets/js/main.js"></script>
+                <script>
+                    const clickableRows = document.querySelectorAll(".click-able");
+                    if (clickableRows) {
+                        clickableRows.forEach(row => {
+                            row.addEventListener("click", () => {
+                                const resourceBaseUrl = row.getAttribute("data-of");
+                                const resourceId = row.getAttribute("data-id");
+                                window.location.href = `/admin/${resourceBaseUrl}/${resourceId}`;
+                            });
+                        });
+                    }
+                </script>
 </body>
 
 </html>

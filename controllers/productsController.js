@@ -97,7 +97,8 @@ const productController = {
                 res.render('admin/products/show', {
                     title: product.name,
                     viewPage: 'products-show',
-                    product
+                    product,
+                    ratings
                 });
             } else {
                 res.render('public/products/show', {
