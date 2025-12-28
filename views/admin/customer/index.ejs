@@ -1,36 +1,21 @@
 <!-- views/admin/customer/index.ejs -->
-<%- include('../partials/_header') %>
+<% if(customers.length> 0) { %>
     <div class="row">
         <div class="col-12">
-            <h1>customers</h1>
-        </div>
-    </div>
-    <% if(customers.length> 0) {%>
-
-        <div class="row">
-            <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
-                <!-- Search -->
-                <input type="text" id="searchInput" class="form-control w-25" placeholder="Search customers...">
-
-                <!-- Pagination -->
-                <nav>
-                    <ul class="pagination mb-0" id="pagination"></ul>
-                </nav>
-            </div>
-
-            <div class="col-12">
-                <div class="table-responsive" style="min-height: 50vh;">
-                    <table class="table table-bordered table-hover align-middle" id="customersTable">
-                        <thead class="table-light">
-                            <tr class="text-center">
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-start" id="customersBody">
-                            <% if (customers.length> 0) { %>
+            <div class="card">
+                <div class="card-body">
+                    <!-- Simple DataTables Table -->
+                    <div class="table-responsive">
+                        <table class="table datatable" id="customersTable">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true">Name</th>
+                                    <th data-sortable="true">Email</th>
+                                    <th data-sortable="true" class="text-center">Date</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <% customers.forEach(customer=> { %>
                                     <tr>
                                         <td class="click-able" data-of="customers" data-id="<%= customer.id %>">
@@ -39,7 +24,8 @@
                                         <td class="click-able" data-of="customers" data-id="<%= customer.id %>">
                                             <%= customer.email %>
                                         </td>
-                                        <td class="click-able text-center" data-of="customers" data-id="<%= customer.id %>">
+                                        <td class="click-able text-center" data-of="customers"
+                                            data-id="<%= customer.id %>">
                                             <%= new Date(customer.created_at).toLocaleDateString() %>
                                         </td>
                                         <td class="text-center">
@@ -57,15 +43,16 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="/admin/customers/<>= customer.id %>/edit">
-                                                            <i class="bi bi-pencil me-2 text-primary"></i> 
+                                                        <a class="dropdown-item"
+                                                            href="/admin/customers/<%= customer.id %>/edit">
+                                                            <i class="bi bi-pencil me-2 text-primary"></i>
                                                             Edit
                                                         </a>
                                                     </li>
                                                     <li>
                                                         <form action="/admin/customers/<%= customer.id %>/delete"
                                                             method="POST"
-                                                            onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                                            onsubmit="return confirm('Are you sure you want to delete this customer?');">
                                                             <button type="submit" class="dropdown-item text-danger">
                                                                 <i class="bi bi-trash me-2"></i>
                                                                 Delete
@@ -77,93 +64,24 @@
                                         </td>
                                     </tr>
                                     <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">
-                                            <i class="bi bi-people display-6 d-block mb-2"></i>
-                                            No customers yet.
-                                        </td>
-                                    </tr>
-                                <% } %>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End Simple DataTables Table -->
                 </div>
             </div>
         </div>
-
-        <!-- JS for Search + Pagination -->
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const rows = document.querySelectorAll("#customersBody tr");
-                const rowsPerPage = 5; // adjust per page count
-                let currentPage = 1;
-
-                function renderTable() {
-                    const visibleRows = Array.from(rows).filter(r => r.style.display !== "none" || !r.hasAttribute("data-hidden"));
-                    let start = (currentPage - 1) * rowsPerPage;
-                    let end = start + rowsPerPage;
-
-                    visibleRows.forEach((row, i) => {
-                        row.style.display = (i >= start && i < end) ? "" : "none";
-                    });
-
-                    renderPagination(visibleRows.length);
-                }
-
-                function renderPagination(totalRows) {
-                    const totalPages = Math.ceil(totalRows / rowsPerPage);
-                    const pagination = document.getElementById("pagination");
-                    pagination.innerHTML = "";
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        pagination.innerHTML += `
-          <li class="page-item ${i === currentPage ? "active" : ""}">
-            <a class="page-link" href="#">${i}</a>
-          </li>
-        `;
-                    }
-
-                    document.querySelectorAll("#pagination a").forEach((link, i) => {
-                        link.addEventListener("click", e => {
-                            e.preventDefault();
-                            currentPage = i + 1;
-                            renderTable();
-                        });
-                    });
-                }
-
-                // Search filter with pagination
-                document.getElementById("searchInput").addEventListener("keyup", function () {
-                    const term = this.value.toLowerCase();
-                    rows.forEach(row => {
-                        if (row.innerText.toLowerCase().includes(term)) {
-                            row.removeAttribute("data-hidden");
-                            row.style.display = "";
-                        } else {
-                            row.setAttribute("data-hidden", "true");
-                            row.style.display = "none";
-                        }
-                    });
-                    currentPage = 1;
-                    renderTable();
-                });
-
-                renderTable();
-            });
-        </script>
-
-
-        <% } else { %>
-            <div class="row justify-content-center mt-3">
-                <div class="col-lg-6 col-md-8">
-                    <div class="card shadow-sm border-0 text-center p-4 fade-in">
-                        <div class="card-body">
-                            <i class="bi bi-people display-4 text-muted mb-3"></i>
-                            <h5 class="card-title fw-bold">No customers Found</h5>
-                            <p class="card-text text-muted">There are no customers to display at the moment.</p>
-                        </div>
+    </div>
+    <% } else { %>
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-6 col-md-8">
+                <div class="card shadow-sm border-0 text-center p-4 fade-in">
+                    <div class="card-body">
+                        <i class="bi bi-people display-4 text-muted mb-3"></i>
+                        <h5 class="card-title fw-bold">No Customers Found</h5>
+                        <p class="card-text text-muted">There are no customers to display at the moment.</p>
                     </div>
                 </div>
             </div>
-            <% } %>
-<%- include('../partials/_footer') %>
+        </div>
+        <% } %>

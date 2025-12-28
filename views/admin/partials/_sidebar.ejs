@@ -1,0 +1,60 @@
+<!-- views/admin/partials/_sidebar.ejs -->
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'dashboard') { %>collapsed<% } %>" href="/admin/dashboard">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <!-- End Dashboard Nav -->
+
+        <li class="nav-heading">Pages</li>
+
+    <li class="nav-item">
+        <a class="nav-link <% if (viewPage != 'products' && viewPage != 'products-show' && viewPage != 'products-new' && viewPage != 'products-edit') { %>collapsed<% } %>"
+            href="/admin/products">
+            <i class="bi bi-box-seam"></i>
+            <span>Products</span>
+        </a>
+    </li>
+        <!-- End Products Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'categories') { %>collapsed<% } %>" href="/admin/categories">
+                <i class="bi bi-tags"></i>
+                <span>Categories</span>
+            </a>
+        </li>
+        <!-- End Categories Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'contacts') { %>collapsed<% } %>" href="/admin/contacts">
+                <i class="bi bi-envelope"></i>
+                <span>Contact</span>
+            </a>
+        </li>
+        <!-- End Contact Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'customers') { %>collapsed<% } %>" href="/admin/customers">
+                <i class="bi bi-people"></i>
+                <span>Customers</span>
+            </a>
+        </li>
+        <!-- End Customers Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link <% if (viewPage != 'settings') { %>collapsed<% } %>" href="/admin/settings">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+<!-- End Sidebar-->

@@ -1,174 +1,101 @@
 <!-- views/admin/partials/_header.ejs -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="author" content="Subhan Traders">
-  <meta name="description" content="IBC Tank Store's Admin Panel">
-  <title><%= title %> | IBC Tank Store</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-  <style>
-    /* Sidebar base styles */
-    #sidebar {
-      transition: width 0.3s ease;
-      max-height: 60vh;
-      width: 240px;
-      background: #f8f9fa;
-      position: sticky;
-      top: calc(64px + 1rem); /* below navbar with some spacing */
-      border-radius: 0.25rem;
-      overflow-y: auto;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
 
-    /* Shrinked sidebar (large screens) */
-    #sidebar.shrink {
-      width: 70px;
-    }
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="/admin/dashboard" class="logo d-flex align-items-center">
+      <!-- <img src="assets/img/logo.png" alt=""> -->
+      <span class="d-none d-lg-block">IBC Tank Store</span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
+  </div>
+  <!-- End Logo -->
 
-    #sidebar .nav-link {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
-    }
+  <div class="search-bar">
+    <form class="search-form d-flex align-items-center" method="POST" action="#">
+      <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+      <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+    </form>
+  </div>
+  <!-- End Search Bar -->
 
-    #sidebar.shrink .nav-link span {
-      display: none; /* hide text when shrinked */
-    }
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
 
-    #sidebar .nav-link i {
-      font-size: 1.2rem;
-    }
+      <li class="nav-item d-block d-lg-none">
+        <a class="nav-link nav-icon search-bar-toggle " href="#">
+          <i class="bi bi-search"></i>
+        </a>
+      </li>
+      <!-- End Search Icon-->
 
-    /* Mobile offcanvas */
-    @media (max-width: 991.98px) {
-      #sidebar {
-        position: fixed;
-        top: calc(64px + 1rem); /* below navbar */
-        left: -240px;
-        z-index: 1045;
-      }
+      <!-- End Messages Nav -->
+      <%if(user) {%>
+      <li class="nav-item dropdown pe-3">
 
-      #sidebar.show {
-        left: 0;
-      }
-    }
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <img src="<%= user.profile_photo %>" alt="<%= user.name %>'s profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2"><%= user.name %></span>
+        </a>
+        <!-- End Profile Iamge Icon -->
 
-    /* Sidebar toggle button */
-    .sidebar-toggle {
-      border: none;
-      background: transparent;
-      font-size: 1.5rem;
-      color: white;
-    }
-  </style>
-</head>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li class="dropdown-header">
+            <h6><%= user.name %></h6>
+            <span><%= user.role %></span>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
 
-<body>
-  <div class="container">
-      <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 position-sticky top-0 rounded" style="height:64px;z-index: 1000;">
-    <a class="navbar-brand" href="/">IBC TANK STORE</a>
-
-    <!-- Sidebar toggle button (mobile) -->
-    <button class="sidebar-toggle d-lg-none ms-2" id="mobileSidebarToggle">
-      <i class="bi bi-list"></i>
-    </button>
-
-    <div class="ms-auto">
-      <ul class="navbar m-0">
-        <li class="nav-item">
-          <% if (user) { %>
-          <div class="user-profile dropdown">
-            <button class="bg-transparent border-0 outline-0 d-flex align-items-center" type="button">
-              <% if (user.profile_photo) { %>
-              <img src="<%= user.profile_photo %>" alt="<%= user.name %>'s profile photo"
-                class="rounded-circle" width="40" height="40">
-              <% } else { %>
-              <span class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
-                style="width:40px; height:40px;">
-                <%= user.name.charAt(0).toUpperCase() %>
-              </span>
-              <% } %>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-              <li>
-                <div class="dropdown-item fw-semibold"><%= user.name %></div>
-              </li>
-              <li>
-                <form action="/auth/logout" method="POST">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="dropdown-item">Sign out</button>
-                </form>
-              </li>
-            </ul>
-          </div>
-          <% } else { %>
-          <a class="nav-link text-white" href="/auth/signin">Signin</a>
-          <% } %>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <div class="container-fluid">
-    <div class="d-lg-flex">
-      <!-- Sidebar -->
-      <div id="sidebar" class="px-0 bg-primary-subtle rounded">
-        <div class="d-flex justify-content-between align-items-center p-2">
-          <span id="sidebarTitle" style="font-size: 1.5rem;" class="fw-bold">Menu</span>
-          <!-- Collapse button (large screens) -->
-          <button class="sidebar-toggle" id="desktopSidebarToggle">
-            <i class="bi bi-layout-sidebar-inset"></i>
-          </button>
-        </div>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'dashboard') { %>fw-bold<% } %>"
-              href="/admin/dashboard">
-              <i class="bi bi-speedometer2"></i> <span class="ms-2">Dashboard</span>
+          <!-- <li>
+            <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
             </a>
           </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'products' || viewPage === 'products-show' || viewPage === 'products-new' || viewPage === 'products-edit') { %>fw-bold<% } %>"
-              href="/admin/products">
-              <i class="bi bi-box-seam"></i> <span class="ms-2">Products</span>
+          <li>
+            <hr class="dropdown-divider">
+          </li> -->
+
+          <!-- <li>
+            <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <i class="bi bi-gear"></i>
+              <span>Account Settings</span>
             </a>
           </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'categories') { %>fw-bold<% } %>"
-              href="/admin/categories">
-              <i class="bi bi-tags"></i> <span class="ms-2">Categories</span>
+          <li>
+            <hr class="dropdown-divider">
+          </li> -->
+
+          <!-- <li>
+            <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+              <i class="bi bi-question-circle"></i>
+              <span>Need Help?</span>
             </a>
           </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'customers') { %>fw-bold<% } %>"
-              href="/admin/customers">
-              <i class="bi bi-people"></i> <span class="ms-2">Customers</span>
-            </a>
+          <li>
+            <hr class="dropdown-divider">
+          </li> -->
+
+          <li>
+            <form action="/auth/logout" method="POST">
+              <button type="submit" class="dropdown-item d-flex align-items-center">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </button>
+            </form>
           </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'contacts' || viewPage === 'contacts-show') { %>fw-bold<% } %>"
-              href="/admin/contacts">
-              <i class="bi bi-envelope"></i> <span class="ms-2">Contacts</span>
-            </a>
-          </li>
-           <li class="nav-item mb-2">
-            <a class="nav-link text-dark <% if (viewPage === 'settings') { %>fw-bold<% } %>"
-              href="/admin/settings">
-              <i class="bi bi-gear"></i> <span class="ms-2">Settings</span>
-            </a>
-          </li>
+
         </ul>
-      </div>
+        <!-- End Profile Dropdown Items -->
+      </li>
+      <%}%>
+      <!-- End Profile Nav -->
 
-      <!-- Main content -->
-      <div id="mainContent" class="flex-grow-1 pe-0">
-        <%- include('../../shared/_alerts') %>
-        <main class="p-4 min-vh-100">
-          <%- include('_breadcrumb')%>
+    </ul>
+  </nav>
+  <!-- End Icons Navigation -->
+
+</header>
+<!-- End Header -->

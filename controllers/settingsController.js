@@ -1,5 +1,6 @@
 // controllers/settingsController.js
 const Setting = require("../models/Setting");
+const { saveSettingsCookie, clearSettingsCookie } = require("../utils/settingsCookie");
 
 exports.getSettingsPage = async (req, res) => {
   try {
@@ -51,6 +52,9 @@ exports.saveSettings = async (req, res) => {
     for (const [key, value] of Object.entries(allSettings)) {
       await Setting.upsert(key, value);
     }
+
+    clearSettingsCookie(res);
+    saveSettingsCookie(res, allSettings);
 
     res.redirect("/admin/settings");
   } catch (err) {

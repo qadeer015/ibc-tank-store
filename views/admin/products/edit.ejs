@@ -1,7 +1,5 @@
 <!-- views/admin/products/edit.ejs -->
-<%- include('../partials/_header') %>
-<h1 class="mb-4">Edit Product</h1>
-
+<section class="mt-5">
 <form action="/admin/products/<%= product.id %>/update" method="POST" enctype="multipart/form-data" class="row g-3">
     <div class="row">
         <div class="col-lg-8">
@@ -41,9 +39,11 @@
                         <% }) %>
                     </select>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12 mb-3">
                     <label for="description" class="form-label fw-semibold">Description</label>
-                    <textarea name="description" class="form-control" rows="3" required><%= product.description.trim() %></textarea>
+                    <textarea class="form-control tinymce-editor" id="description" name="description" rows="10">
+                        <%= product && product.description ? product.description : '' %>
+                    </textarea>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
         <a href="/admin/products" class="btn btn-outline-secondary mx-2">Cancel</a>
     </div>
 </form>
-
+</section>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.getElementById('imageInput');
@@ -173,4 +173,29 @@
     }
 </style>
 
-<%- include('../partials/_footer') %>
+<!-- Place the first <script> tag in your HTML's <head> -->
+<script src="https://cdn.tiny.cloud/1/f4pyogqxs5bgdb3qb41ycnlez42gj1s0k9m83yn2pkig50dx/tinymce/8/tinymce.min.js"
+    referrerpolicy="origin" crossorigin="anonymous"></script>
+
+<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Jan 11, 2026:
+            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        uploadcare_public_key: '8ae7bb47e4c81e246870',
+    });
+</script>

@@ -1,55 +1,11 @@
 <!-- views/admin/partials/_footer.ejs -->
-</main>
-</div>
-</div>
-</div>
-</div>
-
-<footer class="bg-dark text-white py-2 mt-auto">
-    <div class="text-center">
-        <small>&copy; 2025 IBC Store. All rights reserved.</small>
+<!-- ======= Footer ======= -->
+<footer id="footer" class="footer">
+    <div class="copyright">
+        &copy; Copyright <strong><span>IBC TANK STORE</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+        Designed by <a href="https://github.com/ZaheerAhmedkhan65/">Zaheer Ahmed</a>
     </div>
 </footer>
-
-
-<script>
-    const sidebar = document.getElementById("sidebar");
-    const linkElements = sidebar?.querySelectorAll(".nav-link");
-    const mobileSidebarToggle = document.getElementById("mobileSidebarToggle");
-    const desktopSidebarToggle = document.getElementById("desktopSidebarToggle");
-    const sidebarTitle = document.getElementById("sidebarTitle");
-
-    // Mobile toggle
-    mobileSidebarToggle?.addEventListener("click", () => {
-        sidebar.classList.toggle("show");
-    });
-
-    // Desktop toggle
-    desktopSidebarToggle?.addEventListener("click", () => {
-        sidebar.classList.toggle("shrink");
-        linkElements.forEach(link => {
-            link.classList.toggle("text-center");
-        });
-        sidebarTitle.classList.toggle("d-none");
-    });
-
-    const clickableRows = document.querySelectorAll(".click-able");
-    if(clickableRows){
-        clickableRows.forEach(row => {
-            row.addEventListener("click", () => {
-                const resourceBaseUrl = row.getAttribute("data-of");
-                const resourceId = row.getAttribute("data-id");
-                window.location.href = `/admin/${resourceBaseUrl}/${resourceId}`;
-            });
-        });
-    }
-</script>
-
-
-<script src="/js/notification.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<!-- Swiper JS -->
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-</body>
-
-</html>
+<!-- End Footer -->

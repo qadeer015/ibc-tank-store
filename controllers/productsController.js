@@ -1,6 +1,7 @@
 // controllers/productsController.js
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Rating = require('../models/Rating');
 const { getFileUrl } = require('../middlewares/upload');
 
 const productController = {
@@ -26,7 +27,7 @@ const productController = {
                     error: req.flash('error')
                 });
             } else {
-                res.render('products/index', {
+                res.render('public/products/index', {
                     title: 'Products',
                     products,
                     categories,
@@ -85,6 +86,8 @@ const productController = {
                 req.flash('error', 'Product not found');
                 return res.redirect('/products');
             }
+            const ratings = await Rating.getProductRatings(req.params.id);
+            
             product = {
                 ...product,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
@@ -94,11 +97,13 @@ const productController = {
                 res.render('admin/products/show', {
                     title: product.name,
                     viewPage: 'products-show',
-                    product
+                    product,
+                    ratings
                 });
             } else {
-                res.render('products/show', {
+                res.render('public/products/show', {
                     title: product.name,
+                    ratings,
                     product
                 });
             }
@@ -141,7 +146,7 @@ const productController = {
             // If a new image is uploaded, use it; otherwise, keep the existing image
             let productImage = existingImage;
              if (req.file) {
-                // Delete old avatar if it exists and is from Cloudinary
+                // Delete old image if it exists and is from Cloudinary
                 if (product.image && product.image.includes('res.cloudinary.com')) {
                     try {
                         const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
@@ -152,7 +157,7 @@ const productController = {
                         console.error('Error deleting old avatar:', err);
                     }
                 }
-                productImage = req.file.path;
+                productImage = getFileUrl(req.file);
             }
             await Product.updateProduct(id, name, description, price, productImage, category_id, product_condition, stock);
             req.flash('success', 'Product updated successfully');
@@ -200,7 +205,7 @@ const productController = {
             const products = await Product.getByCategory(categoryId);
             const category = await Category.getById(categoryId);
 
-            res.render('products/list', {
+            res.render('public/products/list', {
                 title: `Products in ${category.name}`,
                 products,
                 currentCategory: categoryId

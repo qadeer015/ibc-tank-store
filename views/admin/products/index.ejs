@@ -1,178 +1,114 @@
 <!-- views/admin/products/index.ejs -->
-<%- include('../partials/_header') %>
 <div class="row">
-    <div class="col-6">
-        <h1 class="m-0">Products</h1>
-    </div>
-    <div class="col-6 my-auto text-end">
-        <a href="/admin/products/new" class="btn btn-sm btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> New Product
-        </a>
-    </div>
-</div>
-
-<% if(products.length > 0) {%>
-
-<div class="row">
-  <div class="col-12 my-3 d-flex justify-content-between align-items-center">
-    <!-- Search -->
-    <input type="text" id="searchInput" class="form-control w-50" placeholder="Search products...">
-    <!-- Pagination controls -->
-    <nav>
-      <ul class="pagination mb-0" id="pagination"></ul>
-    </nav>
-  </div>
-
-  <div class="col-12">
-    <div class="table-responsive min-vh-100">
-      <table class="table table-hover align-middle" id="productsTable">
-        <thead class="table-light">
-          <tr class="text-center">
-            <th>Image</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Stock</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Condition</th>
-            <th>Rating</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody class="text-start" id="productsBody">
-          <% products.forEach(product => { %>
-          <tr>
-            <td class="click-able" data-of="products" data-id="<%= product.id %>">
-              <img src="<%= product.image %>" alt="<%= product.name %>"
-                   style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
-            </td>
-            <td class="click-able" data-of="products" data-id="<%= product.id %>"><%= product.name %></td>
-            <td class="click-able" data-of="products" data-id="<%= product.id %>">
-              <span class="d-inline-block text-truncate" style="max-width: 200px;"
-                    title="<%= product.description %>">
-                <%= product.description %>
-              </span>
-            </td>
-            <td class="click-able text-center" data-of="products" data-id="<%= product.id %>">
-              <% if (product.stock > 0) { %>
-                <span class="badge bg-success"><%= product.stock %></span>
-              <% } else { %>
-                <span class="badge bg-danger">Out of stock</span>
-              <% } %>
-            </td>
-            <td class="click-able text-end" data-of="products" data-id="<%= product.id %>">Rs.<%= product.price.toLocaleString() %></td>
-            <td><%= product.category_name ? product.category_name : 'Uncategorized' %></td>
-            <td><%= product.product_condition %></td>
-            <td class="click-able text-center" data-of="products" data-id="<%= product.id %>">
-              <%= product.rating %>
-            </td>
-            <td class="text-center">
-              <div class="dropdown">
-                <button class="btn btn-sm btn-outline-primary rounded-circle"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item fw-semibold" href="/admin/products/<%= product.id %>">
-                      <i class="bi bi-eye me-2 text-info"></i>View
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item fw-semibold" href="/admin/products/<%= product.id %>/edit">
-                      <i class="bi bi-pencil me-2 text-primary"></i>Edit
-                    </a>
-                  </li>
-                  <li>
-                    <form action="/admin/products/<%= product.id %>/delete" method="POST"
-                          onsubmit="return confirm('Are you sure you want to delete this product?');">
-                      <button type="submit" class="dropdown-item text-danger fw-semibold">
-                        <i class="bi bi-trash me-2"></i>Delete
-                      </button>
-                    </form>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+  <div class="col-12 mt-1 mb-3 text-end">
+    <a href="/admin/products/new" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus-lg me-1"></i> New Product
+    </a>
   </div>
 </div>
 
-<!-- JS for Search + Pagination -->
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const rows = document.querySelectorAll("#productsBody tr");
-    const rowsPerPage = 5; // Change this for more/less per page
-    let currentPage = 1;
+<% if(products.length> 0) { %>
 
-    function renderTable() {
-      let start = (currentPage - 1) * rowsPerPage;
-      let end = start + rowsPerPage;
-
-      rows.forEach((row, i) => {
-        row.style.display = (i >= start && i < end) ? "" : "none";
-      });
-
-      renderPagination();
-    }
-
-    function renderPagination() {
-      const totalPages = Math.ceil(rows.length / rowsPerPage);
-      const pagination = document.getElementById("pagination");
-      pagination.innerHTML = "";
-
-      for (let i = 1; i <= totalPages; i++) {
-        pagination.innerHTML += `
-          <li class="page-item ${i === currentPage ? "active" : ""}">
-            <a class="page-link" href="#">${i}</a>
-          </li>
-        `;
-      }
-
-      document.querySelectorAll("#pagination a").forEach((link, i) => {
-        link.addEventListener("click", e => {
-          e.preventDefault();
-          currentPage = i + 1;
-          renderTable();
-        });
-      });
-    }
-
-    // Search filter
-    document.getElementById("searchInput").addEventListener("keyup", function () {
-      const term = this.value.toLowerCase();
-      rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(term) ? "" : "none";
-      });
-    });
-
-    renderTable();
-  });
-</script>
-<% } else { %>
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-      <div class="card shadow-sm border-0 text-center p-4 fade-in">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
         <div class="card-body">
-          <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
-          <h5 class="card-title fw-bold">No Products Found</h5>
-          <p class="card-text text-muted">
-            It looks like you haven’t added any products yet.
-          </p>
-          <a href="/admin/products/new" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> Add New Product
-          </a>
+          <!-- Simple DataTables Table -->
+          <div class="table-responsive">
+            <table class="table datatable" id="productsTable">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th data-sortable="true">Name</th>
+                  <th data-sortable="true" class="text-center">Category</th>
+                  <th data-sortable="true" class="text-center">Condition</th>
+                  <th data-sortable="true" class="text-center">Stock</th>
+                  <th data-sortable="true" class="text-end">Price</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% products.forEach(product=> { %>
+                  <tr>
+                    <td class="click-able" data-of="products" data-id="<%= product.id %>">
+                      <img src="<%= product.image %>" alt="<%= product.name %>"
+                        style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                    </td>
+                    <td class="click-able" data-of="products" data-id="<%= product.id %>">
+                      <%= product.name %>
+                    </td>
+                    <td class="click-able text-center" data-of="products" data-id="<%= product.id %>">
+                      <%= product.category_name %>
+                    </td>
+                    <td class="click-able text-center" data-of="products" data-id="<%= product.id %>">
+                      <%= product.product_condition %>
+                    </td>
+                    <td class="click-able text-center" data-of="products" data-id="<%= product.id %>">
+                      <% if (product.stock> 0) { %>
+                        <span class="badge bg-success">
+                          <%= product.stock %>
+                        </span>
+                        <% } else { %>
+                          <span class="badge bg-danger">Out of stock</span>
+                          <% } %>
+                    </td>
+                    <td class="click-able text-end" data-of="products" data-id="<%= product.id %>">
+                      Rs.<%= product.price.toLocaleString() %>
+                    </td>
+                    <td class="text-center">
+                      <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-primary rounded-circle" type="button"
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <a class="dropdown-item fw-semibold" href="/admin/products/<%= product.id %>">
+                              <i class="bi bi-eye me-2 text-info"></i>View
+                            </a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item fw-semibold" href="/admin/products/<%= product.id %>/edit">
+                              <i class="bi bi-pencil me-2 text-primary"></i>Edit
+                            </a>
+                          </li>
+                          <li>
+                            <form action="/admin/products/<%= product.id %>/delete" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this product?');">
+                              <button type="submit" class="dropdown-item text-danger fw-semibold">
+                                <i class="bi bi-trash me-2"></i>Delete
+                              </button>
+                            </form>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <!-- End Simple DataTables Table -->
         </div>
       </div>
     </div>
   </div>
-<% } %>
 
-
-
-
-<%- include('../partials/_footer') %>
+  <% } else { %>
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card shadow-sm border-0 text-center p-4 fade-in">
+          <div class="card-body">
+            <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
+            <h5 class="card-title fw-bold">No Products Found</h5>
+            <p class="card-text text-muted">
+              It looks like you haven't added any products yet.
+            </p>
+            <a href="/admin/products/new" class="btn btn-primary">
+              <i class="bi bi-plus-lg me-1"></i> Add New Product
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>

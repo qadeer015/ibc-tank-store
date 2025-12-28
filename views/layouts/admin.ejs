@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard - NiceAdmin Bootstrap Template</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta content="This is a dashboard for IBC Tank Store" name="description">
+    <meta content="ibctank ibctankstore ibc tank store ibc totes" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/assets/img/favicon.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/admin/vendors/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/admin/vendors/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/admin/vendors/quill/quill.snow.css" rel="stylesheet">
+    <link href="/admin/vendors/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/admin/vendors/remixicon/remixicon.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link href="/admin/assets/css/style.css" rel="stylesheet">
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-L32FERKX51');
+</script>
+
+<body>
+    <%- include('../admin/partials/_header') %>
+        <%- include('../admin/partials/_sidebar') %>
+            <main id="main" class="main">
+
+                <%- include('../admin/partials/_breadcrumb') %>
+                    <!-- End Page Title -->
+
+                    <section class="section min-vh-100">
+                        <%- body %>
+                    </section>
+
+            </main>
+            <!-- End #main -->
+
+            <%- include('../admin/partials/_footer') %>
+
+                <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+                        class="bi bi-arrow-up-short"></i></a>
+
+                <!-- Vendor JS Files -->
+                <script src="/admin/vendors/apexcharts/apexcharts.min.js"></script>
+                <script src="/admin/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+                <script src="/admin/vendors/chart.js/chart.umd.js"></script>
+                <script src="/admin/vendors/echarts/echarts.min.js"></script>
+                <script src="/admin/vendors/quill/quill.js"></script>
+                <script src="/admin/vendors/php-email-form/validate.js"></script>
+                <!-- Add this to your layout.ejs head section -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.css">
+
+                <!-- Add this before closing body tag in layout.ejs -->
+                <script
+                    src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.js"></script>
+                <!-- Template Main JS File -->
+                <script src="/admin/assets/js/main.js"></script>
+                <script>
+                    const clickableRows = document.querySelectorAll(".click-able");
+                    if (clickableRows) {
+                        clickableRows.forEach(row => {
+                            row.addEventListener("click", () => {
+                                const resourceBaseUrl = row.getAttribute("data-of");
+                                const resourceId = row.getAttribute("data-id");
+                                window.location.href = `/admin/${resourceBaseUrl}/${resourceId}`;
+                            });
+                        });
+                    }
+                </script>
+</body>
+
+</html>

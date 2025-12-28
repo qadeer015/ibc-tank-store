@@ -1,48 +1,199 @@
 <!-- views/admin/products/show.ejs -->
-<%- include('../partials/_header') %>
-  <div class="px-lg-5 row">
-    <div class="col-lg-4">
-        <div class="card bg-secondary-subtle align-items-center">
-            <div class="card-body">
-                <img src="<%= product.image %>" class="card-img-top product-img" alt="<%= product.name %>">
-            </div>
+<div class="row">
+    <!-- Product Image -->
+    <div class="col-lg-5">
+        <div class="card bg-transparent border-0">
+            <img src="<%= product.image %>" class="card-img-top p-4 product-img" width="500px" height="500px"
+                alt="<%= product.name %>">
         </div>
     </div>
-    <div class="col-lg-8">
-        <div class="card">
+
+    <!-- Product Info -->
+    <div class="col-lg-7">
+        <div class="card bg-transparent border-0">
             <div class="card-body">
-                <h2 class="card-title"><%= product.name %></h2>
-                <p class="card-text">
-                    <span class="fw-bold">Price: </span>
-                    <%= product.price %>
-                </p>
-                <p class="card-text">
-                    <span class="fw-bold">Stock: </span>
-                    <%- product.stock > 0 ? '<span class="badge bg-success">' +'In Stock' + '</span>' : '<span class="badge bg-danger">' + 'Out of Stock' + '</span>' %>                
-                </p>
-                <p class="card-text">
-                    <span class="fw-bold">Condition: </span>
-                    <%= product.product_condition %>
-                </p>
-                <div class="rating mb-2">
-                    <% for(let i=1; i<=5; i++) { %>
-                        <% if(i <= Math.floor(product.rating)) { %>
-                            <i class="bi bi-star-fill text-warning"></i>
-                        <% } else if(i === Math.ceil(product.rating) && product.rating % 1 > 0) { %>
-                            <i class="bi bi-star-half text-warning"></i>
-                        <% } else { %>
-                            <i class="bi bi-star text-warning"></i>
-                        <% } %>
-                    <% } %>
-                    <%if(product.rating > 0.5) { %>
-                    <span class="ms-1"><%= product.rating %></span>
-                    <%}%>
+                <!-- Price -->
+                <div class="mt-3 mb-2">
+                    <strong class="fw-semibold">
+                        Price : 
+                    </strong>
+                    <span class="lead">
+                        <%= product.price %>
+                    </span>
                 </div>
-                <p class="card-text">
-                    <%= product.description %>
+               
+                <!-- Stock -->
+                <div class="my-2">
+                    <strong class="fw-semibold">
+                        Stock quantity :
+                    </strong>
+                    <span class="lead">
+                        <%= product.stock %>
+                    </span>
+                </div>
+
+                <!-- Stock -->
+                <div class="my-2">
+                    <strong class="fw-semibold">
+                        Condition :
+                    </strong>
+                    <span class="lead">
+                        <%= product.product_condition  %>
+                    </span>
+                </div>
+
+                <!-- Rating Display -->
+                <div class="d-flex align-items-center gap-2">
+                    <strong class="fw-semibold">
+                        Ratting :
+                    </strong>
+                    <div class="me-2">
+                        <% for(let i=1; i<=5; i++) { %>
+                            <% if(i <=Math.floor(product.rating)) { %>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <% } else if(i===Math.ceil(product.rating) && product.rating % 1> 0) { %>
+                                    <i class="bi bi-star-half text-warning"></i>
+                                    <% } else { %>
+                                        <i class="bi bi-star text-warning"></i>
+                                        <% } %>
+                                            <% } %>
+                    </div>
+                    <span class="text-muted">
+                        (<%= product.rating_count %>)
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-3">
+                    <a href="/admin/products/<%= product.id %>/edit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil"></i>
+                        Edit
+                    </a>
+                    <form action="/admin/products/<%= product.id %>/delete" onclick="return confirm('Are you sure to delete ?')" method="POST">
+                        <button class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="tabs">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#description">Description</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#additional-info">Additional Info</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#reviews">Reviews</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row tab-pane py-3" id="description">
+    <div class="col-lg-12">
+        <div class="card bg-transparent border-0">
+            <div class="card-body">
+                <h4 class="text-primary fw-semibold mb-3">
+                    Description
+                </h4>
+                <p class="text-muted">
+                    <%- product.description || 'No description available.' %>
                 </p>
             </div>
         </div>
     </div>
-  </div>
-<%- include('../partials/_footer') %>
+</div>
+
+<div class="row tab-pane py-3" id="additional-info" style="display: none;">
+    <div class="col-lg-12">
+        <div class="card bg-transparent border-0">
+            <div class="card-body">
+                <h4 class="text-primary fw-semibold mb-3">
+                    Additional Info
+                </h4>
+                <p class="text-muted">
+                    <%= product.additional_info || 'No additional info available.' %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row tab-pane py-3" id="reviews" style="display: none;">
+    <div class="col-lg-12">
+        <div class="card bg-transparent border-0">
+            <div class="card-body">
+                <h4 class="text-primary fw-semibold mb-3">
+                    Reviews
+                </h4>
+                <% if (ratings.length===0) { %>
+                    <p class="text-muted">No reviews yet.</p>
+                    <% } %>
+                        <% for (let rating of ratings) { %>
+                            <div class="card shadow-sm border-0 mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between w-100">
+                                        <div class="d-flex">
+                                            <img src="<%= rating.user_profile_photo || 'https://dummyimage.com/50x50/ced4da/6c757d.jpg' %>"
+                                                class="rounded-circle me-2" width="50" height="50">
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0">
+                                                    <%= rating.user_name %>
+                                                </h6>
+                                                <div class="mt-1">
+                                                    <% for(let i=1; i<=5; i++) { %>
+                                                        <% if(i <=Math.floor(rating.rating)) { %>
+                                                            <i class="bi bi-star-fill text-warning"></i>
+                                                            <% } else if(i===Math.ceil(rating.rating) && rating.rating %
+                                                                1> 0) { %>
+                                                                <i class="bi bi-star-half text-warning"></i>
+                                                                <% } else { %>
+                                                                    <i class="bi bi-star text-warning"></i>
+                                                                    <% } %>
+                                                                        <% } %>
+                                                </div>
+                                                <%if(rating.comment) {%>
+                                                    <p class="text-muted">
+                                                        <%= rating.comment %>
+                                                    </p>
+                                                    <%}%>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-muted">
+                                            <%= new Date(rating.created_at).toLocaleDateString() %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /* Tabs */
+    const tabs = document.querySelectorAll('.nav-tabs a');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const targetTab = tab.getAttribute('href');
+            document.querySelectorAll('.tab-pane')
+                .forEach(p => p.style.display = 'none');
+
+            document.querySelector(targetTab).style.display = 'block';
+        });
+    });
+</script>
