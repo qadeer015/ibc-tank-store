@@ -39,6 +39,7 @@
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.14.3",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.11",
     "normalize-path": "^3.0.0",
     "passport": "^0.7.0",

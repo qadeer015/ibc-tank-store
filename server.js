@@ -24,6 +24,7 @@ const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const ratingRoutes = require("./routes/ratingsRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 require('dotenv').config({
   quiet: true
@@ -188,6 +189,8 @@ app.use('/contact', contactRoutes);
 app.use("/auth", authRoutes);
 app.use("/ratings", ratingRoutes);
 app.use("/admin", adminRoutes);
+app.use("/api/ai",  aiRoutes);
+
 
 // ========== ADD 404 HANDLER HERE ==========
 app.use((req, res) => {
