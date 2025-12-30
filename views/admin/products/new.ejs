@@ -174,50 +174,32 @@
     .image-upload-container {
         transition: all 0.3s;
     }
-</style>
-<!-- Place the first <script> tag in your HTML's <head> -->
+</style><!-- Place the first <script> tag in your HTML's <head> -->
 <script src="https://cdn.tiny.cloud/1/f4pyogqxs5bgdb3qb41ycnlez42gj1s0k9m83yn2pkig50dx/tinymce/8/tinymce.min.js"
     referrerpolicy="origin" crossorigin="anonymous"></script>
 
 <script>
-    const GEMINI_API_KEY = "AIzaSyDijXFlEuJSGiS4Z-TUtoHMFVxfDMvZxWE";
 
     const ai_request = (request, respondWith) => {
-        const geminiOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            { text: request.prompt }
-                        ]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 800,
-                }
-            })
-        };
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
         respondWith.string((signal) =>
-            window.fetch(url, { signal, ...geminiOptions })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.error?.message || "Gemini API error");
+            fetch("/api/ai/gemini", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: request.prompt
+                }),
+                signal
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.error || "AI Error");
                     }
 
-                    const data = await response.json();
-
-                    // Gemini response extraction
-                    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    const data = await res.json();
+                    return data.text;
                 })
         );
     };
@@ -238,7 +220,6 @@
             { value: 'First.Name', title: 'First Name' },
             { value: 'Email', title: 'Email' },
         ],
-        ai_request,
-        uploadcare_public_key: '8ae7bb47e4c81e246870',
+        ai_request
     });
 </script>

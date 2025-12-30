@@ -22,7 +22,7 @@ const productController = {
                     title: 'Products',
                     products,
                     categories,
-                    viewPage: 'products', 
+                    viewPage: 'products',
                     success: req.flash('success'),
                     error: req.flash('error')
                 });
@@ -54,7 +54,7 @@ const productController = {
     async create(req, res) {
         try {
             const { name, description, price, category_id, product_condition, stock } = req.body;
-            const image =  getFileUrl(req.file);
+            const image = getFileUrl(req.file);
 
             if (!image) {
                 throw new Error('Product image is required');
@@ -92,7 +92,7 @@ const productController = {
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
                 price: parseFloat(product.price).toFixed(2)
             };
-            if (req.user && req.user.role === 'admin') {
+            if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 res.render('admin/products/show', {
                     title: product.name,
                     viewPage: 'products-show',
@@ -144,12 +144,12 @@ const productController = {
             }
             // If a new image is uploaded, use it; otherwise, keep the existing image
             let productImage = existingImage;
-             if (req.file) {
+            if (req.file) {
                 // Delete old image if it exists and is from Cloudinary
                 if (product.image && product.image.includes('res.cloudinary.com')) {
                     try {
                         const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                        if(publicId){
+                        if (publicId) {
                             await cloudinary.uploader.destroy(publicId);
                         }
                     } catch (err) {
@@ -176,7 +176,7 @@ const productController = {
             if (product && product.image && product.image.includes('res.cloudinary.com')) {
                 try {
                     const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                    if(publicId){
+                    if (publicId) {
                         await cloudinary.uploader.destroy(publicId);
                     }
                 } catch (err) {

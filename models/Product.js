@@ -32,18 +32,23 @@ class Product {
 
     static async getById(id) {
         const [rows] = await db.execute(`
-    SELECT 
-      p.*,
-      c.name AS category_name,
-      ROUND(AVG(r.rating), 1) AS rating,
-      COUNT(r.id) AS rating_count
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    LEFT JOIN ratings r ON r.product_id = p.id
-    WHERE p.id = ?
-    GROUP BY c.id
-  `, [id]);
-
+            SELECT 
+                p.*,
+                c.name AS category_name,
+                COALESCE(r.rating, 0) AS rating,
+                COALESCE(r.rating_count, 0) AS rating_count
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+            LEFT JOIN (
+                SELECT 
+                    product_id,
+                    ROUND(AVG(rating), 1) AS rating,
+                    COUNT(*) AS rating_count
+                FROM ratings
+                GROUP BY product_id
+            ) r ON r.product_id = p.id
+            WHERE p.id = ?;`, 
+            [id]);
         return rows[0];
     }
 
