@@ -5,7 +5,7 @@
     <ul class="navbar-nav ms-auto flex-row gap-2">
       <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
       <li class="nav-item">
-        <% if (user) { %>
+        <% if (typeof user !=='undefined' && user) { %>
           <div class="user-profile dropdown">
             <button class="bg-transparent border-0 outline-0 d-flex align-items-center" type="button">
               <% if (user.profile_photo) { %>

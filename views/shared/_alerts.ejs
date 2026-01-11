@@ -1,11 +1,11 @@
 <!-- views/shared/_alerts.ejs -->
-<% if (error && error.length> 0) { %>
+<% if (typeof error !=='undefined' && error.length> 0) { %>
     <script type="application/json" id="error-flash">
         <%- JSON.stringify(error) %>
     </script>
 <% } %>
 
-<% if (success && success.length> 0) { %>
+<% if (typeof success !=='undefined' && success.length> 0) { %>
     <script type="application/json" id="success-flash">
         <%- JSON.stringify(success) %>
   </script>

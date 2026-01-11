@@ -90,6 +90,7 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.path = req.originalUrl;
+    res.locals.title = "IBC Tank Store";
     if (req.path.startsWith("/admin")) {
         res.locals.layout = "layouts/admin";
     } else {
@@ -190,7 +191,6 @@ app.use("/auth", authRoutes);
 app.use("/ratings", ratingRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api/ai",  aiRoutes);
-
 
 // ========== ADD 404 HANDLER HERE ==========
 app.use((req, res) => {
