@@ -90,7 +90,7 @@ const deleteFile = async (filePath) => {
       // Delete local file
       const fullPath = path.join(__dirname, '..', filePath);
       if (fs.existsSync(fullPath)) {
-        fs.unlinkSync(fullPath);2
+        fs.unlinkSync(fullPath);
       }
     }
   } catch (error) {

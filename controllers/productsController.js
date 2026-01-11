@@ -2,7 +2,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Rating = require('../models/Rating');
-const { getFileUrl } = require('../middlewares/upload');
+const { getFileUrl, deleteFile } = require('../middlewares/upload');
 
 const productController = {
     // productController.js
@@ -11,11 +11,27 @@ const productController = {
             let products = await Product.getAll();
             const categories = await Category.getAll();
 
-            products = products.map(product => ({
-                ...product,
-                rating: parseFloat(product.rating).toFixed(1),
-                price: parseFloat(product.price).toFixed(2)
-            }));
+            products = products.map(product => {
+                // Normalize image field: if stored as JSON array, use first image for listing
+                let images = [];
+                if (product.image) {
+                    try {
+                        const parsed = JSON.parse(product.image);
+                        if (Array.isArray(parsed)) images = parsed;
+                        else if (typeof parsed === 'string') images = [parsed];
+                    } catch (err) {
+                        images = [product.image];
+                    }
+                }
+
+                return {
+                    ...product,
+                    images,
+                    image: images.length ? images[0] : null,
+                    rating: parseFloat(product.rating).toFixed(1),
+                    price: parseFloat(product.price).toFixed(2)
+                };
+            });
 
             if (req.user && req.user.role === 'admin') {
                 return res.render('admin/products/index', {
@@ -54,17 +70,20 @@ const productController = {
     async create(req, res) {
         try {
             const { name, description, price, category_id, product_condition, stock } = req.body;
-            const image = getFileUrl(req.file);
+            // Support multiple files (field name 'image')
+            const uploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
-            if (!image) {
-                throw new Error('Product image is required');
+            if (!uploaded.length) {
+                throw new Error('At least one product image is required');
             }
+
+            const imageField = JSON.stringify(uploaded);
 
             const newProduct = await Product.create(
                 name,
                 description,
                 price,
-                image,
+                imageField,
                 category_id,
                 product_condition,
                 stock
@@ -87,8 +106,22 @@ const productController = {
                 return res.redirect('/products');
             }
             const ratings = await Rating.getProductRatings(req.params.id);
+            // Normalize images
+            let productImages = [];
+            if (product.image) {
+                try {
+                    const parsed = JSON.parse(product.image);
+                    if (Array.isArray(parsed)) productImages = parsed;
+                    else if (typeof parsed === 'string') productImages = [parsed];
+                } catch (err) {
+                    productImages = [product.image];
+                }
+            }
+
             product = {
                 ...product,
+                images: productImages,
+                image: productImages.length ? productImages[0] : null,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
                 price: parseFloat(product.price).toFixed(2)
             };
@@ -121,9 +154,32 @@ const productController = {
                 return res.redirect('/products');
             }
 
+            // Normalize product images to an array for the view
+            let productImages = [];
+            if (product.image) {
+                // Check if it's a JSON array
+                if (product.image.trim().startsWith('[')) {
+                    try {
+                        const parsed = JSON.parse(product.image);
+                        if (Array.isArray(parsed)) {
+                            productImages = parsed;
+                        } else if (typeof parsed === 'string') {
+                            productImages = [parsed];
+                        }
+                    } catch (err) {
+                        // If JSON parse fails, treat as single string
+                        productImages = [product.image];
+                    }
+                } else {
+                    // Plain string (old format), treat as single image
+                    productImages = [product.image];
+                }
+            }
+            console.log('Product images:', productImages);
             res.render('admin/products/edit', {
                 title: `Edit ${product.name}`,
                 product,
+                productImages,
                 viewPage: 'products-edit',
                 categories
             });
@@ -136,29 +192,54 @@ const productController = {
     async update(req, res) {
         try {
             const { id } = req.params;
-            const { name, description, price, category_id, product_condition, stock, existingImage } = req.body;
+            const { name, description, price, category_id, product_condition, stock } = req.body;
+            // existingImages can be a single value or an array
+            let { existingImages } = req.body;
+
             const product = await Product.getById(id);
             if (!product) {
                 req.flash('error', 'Product not found');
                 return res.redirect('/products');
             }
-            // If a new image is uploaded, use it; otherwise, keep the existing image
-            let productImage = existingImage;
-            if (req.file) {
-                // Delete old image if it exists and is from Cloudinary
-                if (product.image && product.image.includes('res.cloudinary.com')) {
-                    try {
-                        const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                        if (publicId) {
-                            await cloudinary.uploader.destroy(publicId);
-                        }
-                    } catch (err) {
-                        console.error('Error deleting old avatar:', err);
-                    }
+            // Normalize existingImages to array
+            if (!existingImages) existingImages = [];
+            else if (typeof existingImages === 'string') existingImages = [existingImages];
+
+            // Parse original product images
+            let originalImages = [];
+            if (product.image) {
+                try {
+                    const parsed = JSON.parse(product.image);
+                    if (Array.isArray(parsed)) originalImages = parsed;
+                    else if (typeof parsed === 'string') originalImages = [parsed];
+                } catch (err) {
+                    originalImages = [product.image];
                 }
-                productImage = getFileUrl(req.file);
             }
-            await Product.updateProduct(id, name, description, price, productImage, category_id, product_condition, stock);
+
+            // Determine removed images (present originally but not kept)
+            const removed = originalImages.filter(img => !existingImages.includes(img));
+            for (const rem of removed) {
+                try {
+                    await deleteFile(rem);
+                } catch (err) {
+                    console.error('Error deleting removed image:', err);
+                }
+            }
+
+            // New uploaded files
+            const newUploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
+
+            // Final images to save
+            const imagesToSave = [...existingImages, ...newUploaded];
+
+            if (!imagesToSave.length) {
+                throw new Error('At least one product image is required');
+            }
+
+            const imageField = JSON.stringify(imagesToSave);
+
+            await Product.updateProduct(id, name, description, price, imageField, category_id, product_condition, stock);
             req.flash('success', 'Product updated successfully');
             res.redirect(`/admin/products/${id}`);
         } catch (error) {
@@ -173,14 +254,22 @@ const productController = {
 
             // Delete the product image if it exists and is from Cloudinary
             const product = await Product.getById(id);
-            if (product && product.image && product.image.includes('res.cloudinary.com')) {
+            if (product && product.image) {
+                let imgs = [];
                 try {
-                    const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                    if (publicId) {
-                        await cloudinary.uploader.destroy(publicId);
-                    }
+                    const parsed = JSON.parse(product.image);
+                    if (Array.isArray(parsed)) imgs = parsed;
+                    else if (typeof parsed === 'string') imgs = [parsed];
                 } catch (err) {
-                    console.error('Error deleting product image:', err);
+                    imgs = [product.image];
+                }
+
+                for (const img of imgs) {
+                    try {
+                        await deleteFile(img);
+                    } catch (err) {
+                        console.error('Error deleting product image:', err);
+                    }
                 }
             }
 
