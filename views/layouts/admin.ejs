@@ -16,8 +16,7 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
         rel="stylesheet">
 
     <!-- Vendor CSS Files -->
@@ -27,88 +26,70 @@
     <link href="/admin/vendors/remixicon/remixicon.css" rel="stylesheet">
     <!-- Template Main CSS File -->
     <link href="/admin/assets/css/style.css" rel="stylesheet">
-    <script src="/js/notification.js"></script>
+    <%- include('../shared/_styles') %>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-L32FERKX51');
-</script>
 
 <body>
     <%- include('../admin/partials/_header') %>
     <%- include('../shared/_alerts') %>
-        <%- include('../admin/partials/_sidebar') %>
-            <main id="main" class="main">
-
-                <%- include('../admin/partials/_breadcrumb') %>
-                    <!-- End Page Title -->
-
-                    <section class="section min-vh-100">
-                        <%- body %>
-                    </section>
-
-            </main>
-            <!-- End #main -->
-
-            <%- include('../admin/partials/_footer') %>
-
-                <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-                        class="bi bi-arrow-up-short"></i></a>
-
-                <!-- Vendor JS Files -->
-                <script src="/admin/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
-                <script src="/admin/vendors/chart.js/chart.umd.js"></script>
-                <script src="/admin/vendors/echarts/echarts.min.js"></script>
-                <script src="/admin/vendors/jQuery/jquery-3.7.1.min.js"></script>
-                <script src="/admin/vendors/datatables/dataTables.js"></script>
-                <script src="/admin/vendors/php-email-form/validate.js"></script>
-                <!-- Add this to your layout.ejs head section -->
-                <link rel="stylesheet" href="/admin/vendors/datatables/dataTables.css">
-
-                <!-- Template Main JS File -->
-                <script src="/admin/assets/js/main.js"></script>
-                <!-- Add this script in your admin layout or at the end of index.ejs -->
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // Make table rows clickable
-                        const rows = document.querySelectorAll('.click-able');
-
-                        rows.forEach(cell => {
-                            // Prevent nested clicks from bubbling up
-                            cell.addEventListener('click', function (e) {
-                                // Don't trigger if clicking on dropdown or within dropdown
-                                if (e.target.closest('.dropdown') ||
-                                    e.target.closest('form') ||
-                                    e.target.tagName === 'A' ||
-                                    e.target.tagName === 'BUTTON') {
-                                    return;
-                                }
-
-                                const id = this.getAttribute('data-id');
-                                const type = this.getAttribute('data-of');
-                                if (id && type === 'products') {
-                                    window.location.href = `/admin/products/${id}`;
-                                }
-                            });
-                        });
-
-                        // Add hover effect
-                        rows.forEach(cell => {
-                            cell.style.cursor = 'pointer';
-                            cell.closest('tr').addEventListener('mouseenter', function () {
-                                this.style.backgroundColor = '#f8f9fa';
-                            });
-                            cell.closest('tr').addEventListener('mouseleave', function () {
-                                this.style.backgroundColor = '';
-                            });
-                        });
-                    });
-                </script>
+    <%- include('../admin/partials/_sidebar') %>
+    <main id="main" class="main">
+        <%- include('../admin/partials/_breadcrumb') %>
+        <section class="section min-vh-100">
+            <%- body %>
+        </section>
+    </main>
+    <%- include('../admin/partials/_footer') %>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+    <!-- Vendor JS Files -->
+    <script src="/admin/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin/vendors/chart.js/chart.umd.js"></script>
+    <script src="/admin/vendors/echarts/echarts.min.js"></script>
+    <script src="/admin/vendors/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="/admin/vendors/datatables/dataTables.js"></script>
+    <script src="/admin/vendors/php-email-form/validate.js"></script>
+    <!-- Add this to your layout.ejs head section -->
+    <link rel="stylesheet" href="/admin/vendors/datatables/dataTables.css">
+    <!-- Template Main JS File -->
+    <script src="/admin/assets/js/main.js"></script>
+    <!-- Add this script in your admin layout or at the end of index.ejs -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Make table rows clickable
+            const rows = document.querySelectorAll('.click-able');
+            rows.forEach(cell => {
+                // Prevent nested clicks from bubbling up
+                cell.addEventListener('click', function (e) {
+                    // Don't trigger if clicking on dropdown or within dropdown
+                    if (e.target.closest('.dropdown') ||
+                        e.target.closest('form') ||
+                        e.target.tagName === 'A' ||
+                        e.target.tagName === 'BUTTON') {
+                        return;
+                    }
+                    const id = this.getAttribute('data-id');
+                    const type = this.getAttribute('data-of');
+                    if (id && type === 'products') {
+                        window.location.href = `/admin/products/${id}`;
+                    }
+                });
+            });
+            // Add hover effect
+            rows.forEach(cell => {
+                cell.style.cursor = 'pointer';
+                cell.closest('tr').addEventListener('mouseenter', function () {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                cell.closest('tr').addEventListener('mouseleave', function () {
+                    this.style.backgroundColor = '';
+                });
+            });
+        });
+    </script>
+    <%- include('../shared/_scripts') %>
+    <%- include('../shared/_fancybox') %>
 </body>
 
 </html>

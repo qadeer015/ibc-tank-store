@@ -1,19 +1,43 @@
 <!-- views/public/products/show.ejs -->
 <div class="row mb-3">
     <div class="col-12">
-        <h1 class="fw-bold text-center py-3 bg-primary text-white">
+        <h1 class="fw-bold text-center py-3 border-bottom">
             <%= product.name %>
         </h1>
     </div>
 </div>
 
-<div class="row">
+<div class="row mb-4">
     <!-- Product Image -->
     <div class="col-lg-5">
-        <div class="card bg-transparent border-0">
-            <img src="<%= product.image %>" class="card-img-top p-4 product-img" width="500px" height="500px"
-                alt="<%= product.name %>">
-        </div>
+        <% if (productImages && productImages.length> 0) { %>
+            <div class="position-relative text-center">
+                <button class="gallery-nav prev" type="button">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+        
+                <!-- MAIN IMAGE (NOT an anchor) -->
+                <img id="mainProductImage" src="<%= productImages[0] %>" class="img-fluid product-main-img" data-index="0"
+                    alt="<%= product.name %>" />
+        
+                <button class="gallery-nav next" type="button">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+        
+            </div>
+        
+            <!-- THUMBNAILS -->
+            <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <% productImages.forEach((image, index)=> { %>
+                    <img src="<%= image %>" class="product-thumb <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>"
+                        alt="Thumbnail" />
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="text-muted">No image</span>
+            </div>
+        <% } %>
     </div>
 
     <!-- Product Info -->
