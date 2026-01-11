@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Rating = require('../models/Rating');
 const { getFileUrl, deleteFile } = require('../middlewares/upload');
+const { getproductImages } = require('../utils/extractProductImages');
 
 const productController = {
     // productController.js
@@ -11,33 +12,24 @@ const productController = {
             let products = await Product.getAll();
             const categories = await Category.getAll();
 
-            products = products.map(product => {
-                // Normalize image field: if stored as JSON array, use first image for listing
-                let images = [];
-                if (product.image) {
-                    try {
-                        const parsed = JSON.parse(product.image);
-                        if (Array.isArray(parsed)) images = parsed;
-                        else if (typeof parsed === 'string') images = [parsed];
-                    } catch (err) {
-                        images = [product.image];
-                    }
-                }
+            let productImages = [];
 
+            products = products.map(product => {
+                productImages = getproductImages(product);
                 return {
                     ...product,
-                    images,
-                    image: images.length ? images[0] : null,
+                    image: productImages && productImages.length ? productImages[0] : null,
                     rating: parseFloat(product.rating).toFixed(1),
                     price: parseFloat(product.price).toFixed(2)
                 };
             });
 
-            if (req.user && req.user.role === 'admin') {
+            if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 return res.render('admin/products/index', {
                     title: 'Products',
                     products,
                     categories,
+                    productImages,
                     viewPage: 'products',
                     success: req.flash('success'),
                     error: req.flash('error')
@@ -47,6 +39,7 @@ const productController = {
                     title: 'Products',
                     products,
                     categories,
+                    productImages,
                     success: req.flash('success'),
                     error: req.flash('error')
                 });
@@ -107,20 +100,10 @@ const productController = {
             }
             const ratings = await Rating.getProductRatings(req.params.id);
             // Normalize images
-            let productImages = [];
-            if (product.image) {
-                try {
-                    const parsed = JSON.parse(product.image);
-                    if (Array.isArray(parsed)) productImages = parsed;
-                    else if (typeof parsed === 'string') productImages = [parsed];
-                } catch (err) {
-                    productImages = [product.image];
-                }
-            }
+            let productImages = getproductImages(product);
 
             product = {
                 ...product,
-                images: productImages,
                 image: productImages.length ? productImages[0] : null,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
                 price: parseFloat(product.price).toFixed(2)
@@ -130,12 +113,14 @@ const productController = {
                     title: product.name,
                     viewPage: 'products-show',
                     product,
+                    productImages,
                     ratings
                 });
             } else {
                 res.render('public/products/show', {
                     title: product.name,
                     ratings,
+                    productImages,
                     product
                 });
             }
@@ -155,26 +140,8 @@ const productController = {
             }
 
             // Normalize product images to an array for the view
-            let productImages = [];
-            if (product.image) {
-                // Check if it's a JSON array
-                if (product.image.trim().startsWith('[')) {
-                    try {
-                        const parsed = JSON.parse(product.image);
-                        if (Array.isArray(parsed)) {
-                            productImages = parsed;
-                        } else if (typeof parsed === 'string') {
-                            productImages = [parsed];
-                        }
-                    } catch (err) {
-                        // If JSON parse fails, treat as single string
-                        productImages = [product.image];
-                    }
-                } else {
-                    // Plain string (old format), treat as single image
-                    productImages = [product.image];
-                }
-            }
+            let productImages = getproductImages(product);
+
             console.log('Product images:', productImages);
             res.render('admin/products/edit', {
                 title: `Edit ${product.name}`,

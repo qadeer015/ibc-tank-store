@@ -15,6 +15,7 @@ const Category = require('./models/Category');
 const Setting = require('./models/Setting');
 const { saveSettingsCookie } = require("./utils/settingsCookie");
 const settingMiddleware = require("./middlewares/settings");
+const { getproductImages } = require('./utils/extractProductImages');
 
 // Routes
 const productRoutes = require('./routes/productRoutes');
@@ -91,6 +92,7 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     res.locals.path = req.originalUrl;
     res.locals.title = "IBC Tank Store";
+    res.locals.productImages = [];
     if (req.path.startsWith("/admin")) {
         res.locals.layout = "layouts/admin";
     } else {
@@ -112,17 +114,20 @@ app.get('/', async (req, res) => {
         const maxPrice = parseFloat(req.query.maxPrice) || 1000;
         const condition = req.query.condition || '';
         
-        featuredProducts = featuredProducts.map(product => ({
+        latestProducts = latestProducts.map(product => ({
             ...product,
+            image: getproductImages(product)[0],
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
         
-        latestProducts = latestProducts.map(product => ({
+        featuredProducts = featuredProducts.map(product => ({
             ...product,
+            image: getproductImages(product)[0],
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
+
 
         let allSettings = null;
 
@@ -162,6 +167,13 @@ app.get('/search', async (req, res) => {
             maxPrice: parseFloat(maxPrice),
             condition
         });
+
+        products = products.map(product => ({
+            ...product,
+            image: getproductImages(product)[0],
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseFloat(product.price).toFixed(2)
+        }));
         
         const categories = await Category.getAll();
         res.render('public/search', {
