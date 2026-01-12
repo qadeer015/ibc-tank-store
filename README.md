@@ -1,6 +1,4 @@
 # ibc-tank-store
-# IbcTank.store
-
 
 ## 📌 Authors
 
