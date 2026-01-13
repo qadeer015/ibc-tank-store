@@ -15,7 +15,6 @@ const Category = require('./models/Category');
 const Setting = require('./models/Setting');
 const { saveSettingsCookie } = require("./utils/settingsCookie");
 const settingMiddleware = require("./middlewares/settings");
-const { getproductImages } = require('./utils/extractProductImages');
 
 // Routes
 const productRoutes = require('./routes/productRoutes');
@@ -116,14 +115,12 @@ app.get('/', async (req, res) => {
         
         latestProducts = latestProducts.map(product => ({
             ...product,
-            image: getproductImages(product)[0],
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
         
         featuredProducts = featuredProducts.map(product => ({
             ...product,
-            image: getproductImages(product)[0],
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
@@ -170,7 +167,6 @@ app.get('/search', async (req, res) => {
 
         products = products.map(product => ({
             ...product,
-            image: getproductImages(product)[0],
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
