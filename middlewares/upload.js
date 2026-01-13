@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production') {
   const uploadsDir = path.join(__dirname, '../uploads');
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-  } 
+  }
 }
 
 // Configure Cloudinary for production
@@ -29,18 +29,19 @@ if (process.env.NODE_ENV === 'production') {
   // Cloudinary storage for production
   storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-      folder: 'ibc-tank-store/products',
-      allowed_formats: ['jpg', 'jpeg', 'png'],
-      transformation: [{
-        width: 500,
-        height: 500,
-        crop: 'limit',
-        quality: 'auto',
-        fetch_format: 'auto'
-      }]
-
-    },
+    params: async (req, file) => {
+      return {
+        folder: 'ibc-tank-store/products',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{
+          width: 500,
+          height: 500,
+          crop: 'limit',
+          quality: 'auto',
+          fetch_format: 'auto'
+        }]
+      };
+    }
   });
 } else {
   // Local file storage for development

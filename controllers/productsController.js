@@ -3,7 +3,6 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Rating = require('../models/Rating');
 const { getFileUrl, deleteFile } = require('../middlewares/upload');
-const { getproductImages } = require('../utils/extractProductImages');
 
 const productController = {
     // productController.js
@@ -12,24 +11,17 @@ const productController = {
             let products = await Product.getAll();
             const categories = await Category.getAll();
 
-            let productImages = [];
-
-            products = products.map(product => {
-                productImages = getproductImages(product);
-                return {
-                    ...product,
-                    image: productImages && productImages.length ? productImages[0] : null,
-                    rating: parseFloat(product.rating).toFixed(1),
-                    price: parseFloat(product.price).toFixed(2)
-                };
-            });
+            products = products.map(product => ({
+                ...product,
+                rating: parseFloat(product.rating).toFixed(1),
+                price: parseFloat(product.price).toFixed(2)
+            }));
 
             if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 return res.render('admin/products/index', {
                     title: 'Products',
                     products,
                     categories,
-                    productImages,
                     viewPage: 'products',
                     success: req.flash('success'),
                     error: req.flash('error')
@@ -39,13 +31,12 @@ const productController = {
                     title: 'Products',
                     products,
                     categories,
-                    productImages,
                     success: req.flash('success'),
                     error: req.flash('error')
                 });
             }
         } catch (error) {
-            console.error('Product list error:', error);  // Detailed error log
+            console.error('Product list error:', error);
             req.flash('error', 'Failed to fetch products');
             res.redirect('/');
         }
@@ -64,12 +55,14 @@ const productController = {
         try {
             const { name, description, price, category_id, product_condition, stock } = req.body;
             // Support multiple files (field name 'image')
+            console.log('Create - req.files:', req.files);
             const uploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
             if (!uploaded.length) {
                 throw new Error('At least one product image is required');
             }
 
+            console.log('Uploaded images:', uploaded);
             const imageField = JSON.stringify(uploaded);
 
             const newProduct = await Product.create(
@@ -99,12 +92,10 @@ const productController = {
                 return res.redirect('/products');
             }
             const ratings = await Rating.getProductRatings(req.params.id);
-            // Normalize images
-            let productImages = getproductImages(product);
+            const productImages = product.images || [];
 
             product = {
                 ...product,
-                image: productImages.length ? productImages[0] : null,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
                 price: parseFloat(product.price).toFixed(2)
             };
@@ -139,10 +130,8 @@ const productController = {
                 return res.redirect('/products');
             }
 
-            // Normalize product images to an array for the view
-            let productImages = getproductImages(product);
+            const productImages = product.images || [];
 
-            console.log('Product images:', productImages);
             res.render('admin/products/edit', {
                 title: `Edit ${product.name}`,
                 product,
@@ -163,7 +152,11 @@ const productController = {
             // existingImages can be a single value or an array
             let { existingImages } = req.body;
 
+            console.log('Update - req.files:', req.files);
+            console.log('Update - existingImages:', existingImages);
+
             const product = await Product.getById(id);
+
             if (!product) {
                 req.flash('error', 'Product not found');
                 return res.redirect('/products');
@@ -199,18 +192,19 @@ const productController = {
 
             // Final images to save
             const imagesToSave = [...existingImages, ...newUploaded];
-
+            console.log('Images to save:', imagesToSave);
             if (!imagesToSave.length) {
                 throw new Error('At least one product image is required');
             }
 
             const imageField = JSON.stringify(imagesToSave);
-
+            console.log('Image field:', imageField);
             await Product.updateProduct(id, name, description, price, imageField, category_id, product_condition, stock);
             req.flash('success', 'Product updated successfully');
             res.redirect(`/admin/products/${id}`);
         } catch (error) {
-            req.flash('error', 'Failed to update product');
+            console.error('Update error:', error);
+            req.flash('error', error.message || 'Failed to update product');
             res.redirect(`/admin/products/${req.params.id}/edit`);
         }
     },
