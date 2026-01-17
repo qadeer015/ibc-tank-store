@@ -144,6 +144,7 @@ app.get('/', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
+            productImages: [],
             user: req.user // Pass user to view
         });
     } catch (error) {
@@ -181,6 +182,7 @@ app.get('/search', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
+            productImages: [],
             user: req.user // Pass user to view
         });
     } catch (error) {

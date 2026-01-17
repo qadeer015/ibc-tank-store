@@ -21,7 +21,11 @@
     });
 </script>
 <script type="application/json" id="product-images-data">
-    <%- JSON.stringify(productImages || []) %>
+    <% if(typeof productImages === 'undefined') { %>
+        var productImages = [];
+    <% }else{ %>
+        <%- JSON.stringify(productImages) %>
+    <% } %>
 </script>
 <script src="/js/fancybox.js"></script>
 <style>
