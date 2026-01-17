@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { isAuthenticated } = require("../middlewares/authenticate");
+
+// All rating routes require authentication
+router.use(isAuthenticated);
 
 router.post("/:productId/create", async (req, res) => {
     const { rating } = req.body;
@@ -25,7 +29,11 @@ router.post("/:productId/create", async (req, res) => {
         );
     }
 
-    res.redirect(`/products/${productId}`);
+    // Return JSON response for AJAX request
+    res.json({
+        success: true,
+        message: 'Rating submitted successfully!'
+    });
 });
 
 module.exports = router;
