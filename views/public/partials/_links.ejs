@@ -13,10 +13,10 @@
 </a>
 
 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
-    <a href="https://web.whatsapp.com/" class="fs-4" style="color: #25D366">
+    <a href="https://wa.me/<%= settings.contact_number %>?text=<%= encodeURIComponent('') %>" class="fs-4" style="color: #25D366">
         <i class="bi bi-whatsapp"></i>
     </a>
-    <a href="tel:03080944425" class="fs-4" style="color: #515d77">
+    <a href="tel:<%= settings.contact_number %>" class="fs-4" style="color: #515d77">
             <i class="bi bi-telephone"></i>
     </a>
     <!-- <a href="https://www.facebook.com/" class="fs-4" target="_blank" style="color: #3b5998">

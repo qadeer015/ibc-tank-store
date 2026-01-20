@@ -29,11 +29,19 @@ if (process.env.NODE_ENV === 'production') {
   // Cloudinary storage for production
   storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-      folder: 'ibc-tank-store/products',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
-      transformation: [{ width: 500, height: 500, crop: 'limit' }]
-    },
+    params: async (req, file) => {
+      return {
+        folder: 'ibc-tank-store/products',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{
+          width: 500,
+          height: 500,
+          crop: 'limit',
+          quality: 'auto',
+          fetch_format: 'auto'
+        }]
+      };
+    }
   });
 } else {
   // Local file storage for development
@@ -90,7 +98,7 @@ const deleteFile = async (filePath) => {
       // Delete local file
       const fullPath = path.join(__dirname, '..', filePath);
       if (fs.existsSync(fullPath)) {
-        fs.unlinkSync(fullPath);2
+        fs.unlinkSync(fullPath);
       }
     }
   } catch (error) {

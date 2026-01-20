@@ -1,0 +1,148 @@
+<!-- views/shared/_authHelper.ejs -->
+<script>
+    /**
+     * Authentication Modal Helper
+     * Use this to show the auth modal instead of redirecting for protected actions
+     * 
+     * Examples:
+     * 1. On form submission for protected routes:
+     *    <form onsubmit="return handleProtectedForm(event, '/cart/add')">
+     *      <input type="hidden" name="product_id" value="123">
+     *      <button type="submit">Add to Cart</button>
+     *    </form>
+     * 
+     * 2. On button click with fetch:
+     *    <button onclick="handleProtectedAction(event, '/ratings/123/create', {rating: 5})">Rate Product</button>
+     * 
+     * 3. Manual trigger:
+     *    <button onclick="showAuthModal()">Sign In</button>
+     */
+
+    /**
+     * Show the authentication modal
+     */
+    function showAuthModal() {
+        if (typeof window.authModal !== 'undefined') {
+            window.authModal.show();
+        } else {
+            console.warn('Auth modal not initialized');
+        }
+    }
+
+    /**
+     * Handle form submission for protected routes
+     * Shows auth modal instead of submitting if user is not authenticated
+     * 
+     * @param {Event} event - The form submit event
+     * @param {string} formAction - The form action URL (optional, uses form's action if not provided)
+     * @returns {boolean} - False to prevent default form submission, true to continue
+     */
+    function handleProtectedForm(event, formAction) {
+        // Check if user is authenticated (req.user is rendered by EJS as a global)
+        if (typeof user !== 'undefined' && user) {
+            // User is authenticated, allow form submission
+            return true;
+        }
+
+        // User is not authenticated, show modal and prevent submission
+        event.preventDefault();
+        showAuthModal();
+        return false;
+    }
+
+    /**
+     * Handle protected API calls with fetch
+     * Automatically shows auth modal on 401 responses
+     * 
+     * @param {Event} event - The click/submit event
+     * @param {string} url - The API endpoint
+     * @param {Object} data - The data to send (optional)
+     * @param {string} method - HTTP method (default: 'POST')
+     */
+    async function handleProtectedAction(event, url, data = {}, method = 'POST') {
+        if (event) {
+            event.preventDefault();
+        }
+
+        // Check if user is authenticated
+        if (typeof user === 'undefined' || !user) {
+            showAuthModal();
+            return;
+        }
+
+        try {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            };
+
+            if (method !== 'GET' && Object.keys(data).length > 0) {
+                options.body = JSON.stringify(data);
+            }
+
+            const response = await fetch(url, options);
+
+            if (response.status === 401) {
+                showAuthModal();
+                return;
+            }
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('Action successful:', result);
+                // Handle success - you can emit custom events or update UI
+                window.dispatchEvent(new CustomEvent('protectedActionSuccess', { detail: result }));
+            } else {
+                console.error('Action failed:', result);
+                // Handle error
+                window.dispatchEvent(new CustomEvent('protectedActionError', { detail: result }));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    /**
+     * Handle protected link clicks
+     * Shows auth modal for unauthenticated users instead of navigating
+     * 
+     * @param {Event} event - The click event
+     * @param {string} url - The URL to navigate to
+     */
+    function handleProtectedLink(event, url) {
+        if (typeof user === 'undefined' || !user) {
+            event.preventDefault();
+            showAuthModal();
+            return false;
+        }
+        // User is authenticated, allow navigation
+        return true;
+    }
+
+    /**
+     * Conditionally add onclick handler based on authentication status
+     * Useful for buttons that perform different actions if authenticated
+     * 
+     * @param {Event} event - The click event
+     * @param {string} authenticatedAction - What to do if authenticated (url or function name)
+     * @param {boolean} isLink - If true, treat as link navigation
+     */
+    function handleConditionalAction(event, authenticatedAction, isLink = false) {
+        if (typeof user === 'undefined' || !user) {
+            event.preventDefault();
+            showAuthModal();
+            return false;
+        }
+
+        if (isLink) {
+            window.location.href = authenticatedAction;
+        } else if (typeof window[authenticatedAction] === 'function') {
+            window[authenticatedAction](event);
+        }
+        return true;
+    }
+</script>

@@ -39,9 +39,23 @@ class Product {
             'INSERT INTO products (name, description, price, image, category_id, product_condition, stock, additional_info, specs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson)]
         );
+
+        const productId = insertResult.insertId;
+
+        // Insert product_images rows if any
+        if (imgs.length) {
+            for (let i = 0; i < imgs.length; i++) {
+                const url = imgs[i];
+                await db.execute(
+                    'INSERT INTO product_images (product_id, url, sort_order) VALUES (?, ?, ?)',
+                    [productId, url, i]
+                );
+            }
+        }
+
         const [rows] = await db.execute(
             'SELECT * FROM products WHERE id = ?',
-            [insertResult.insertId]
+            [productId]
         );
         return rows[0];
     }
@@ -59,27 +73,72 @@ class Product {
             ORDER BY p.created_at DESC
         `;
         const [rows] = await db.execute(sqlQuery);
-        return rows;
+        return await this.attachImages(rows);
     }
 
     static async getById(id) {
         const [rows] = await db.execute(`
-    SELECT 
-      p.*,
-      c.name AS category_name,
-      ROUND(AVG(r.rating), 1) AS rating,
-      COUNT(r.id) AS rating_count
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    LEFT JOIN ratings r ON r.product_id = p.id
-    WHERE p.id = ?
-    GROUP BY p.id
-  `, [id]);
+            SELECT 
+                p.*,
+                c.name AS category_name,
+                COALESCE(r.rating, 0) AS rating,
+                COALESCE(r.rating_count, 0) AS rating_count
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+            LEFT JOIN (
+                SELECT 
+                    product_id,
+                    ROUND(AVG(rating), 1) AS rating,
+                    COUNT(*) AS rating_count
+                FROM ratings
+                GROUP BY product_id
+            ) r ON r.product_id = p.id
+            WHERE p.id = ?;`,
+            [id]);
+        const product = rows[0];
+        if (!product) return null;
 
-        return rows[0];
+        // Fetch images from product_images
+        try {
+            const [imgRows] = await db.execute('SELECT url FROM product_images WHERE product_id = ? ORDER BY sort_order ASC', [id]);
+            product.images = imgRows.map(r => r.url);
+            // ensure image (primary) is set
+            if (!product.image && product.images.length) product.image = product.images[0];
+        } catch (err) {
+            product.images = product.image ? [product.image] : [];
+        }
+
+        return product;
+    }
+
+    // Helper: Attach images array to products from product_images table
+    static async attachImages(products) {
+        if (!products || !Array.isArray(products)) return products;
+
+        try {
+            for (const product of products) {
+                const [imgRows] = await db.execute(
+                    'SELECT url FROM product_images WHERE product_id = ? ORDER BY sort_order ASC',
+                    [product.id]
+                );
+                product.images = imgRows.map(r => r.url);
+                if (!product.image && product.images.length) {
+                    product.image = product.images[0];
+                }
+            }
+        } catch (err) {
+            console.error('Error attaching images:', err);
+        }
+        return products;
     }
 
     static async delete(id) {
+        // delete image rows first
+        try {
+            await db.execute('DELETE FROM product_images WHERE product_id = ?', [id]);
+        } catch (err) {
+            // ignore
+        }
         const result = await db.execute('DELETE FROM products WHERE id = ?', [id]);
         return result;
     }
@@ -98,14 +157,14 @@ class Product {
       FROM products p
       JOIN categories c ON p.category_id = c.id
       LEFT JOIN ratings r ON r.product_id = p.id
-      GROUP BY p.id, c.name  -- Add c.name to GROUP BY
+      GROUP BY p.id, c.name
       HAVING rating >= ${minRating}
       ORDER BY rating DESC, rating_count DESC
       LIMIT ${limit}
     `;
 
             const [rows] = await db.execute(sql);
-            return rows;
+            return await this.attachImages(rows);
 
         } catch (error) {
             console.error('Error in getTopRated:', error);
@@ -113,12 +172,11 @@ class Product {
         }
     }
 
-    
+
     static async getLatest(limit = 8) {
         try {
             limit = Number(limit) || 8;
-            
-            // For TiDB, interpolate the LIMIT value directly
+
             const [rows] = await db.execute(
                 `SELECT p.*, c.name AS category_name 
                  FROM products p
@@ -126,7 +184,7 @@ class Product {
                  ORDER BY p.created_at DESC
                  LIMIT ${limit}`
             );
-            return rows;
+            return await this.attachImages(rows);
         } catch (error) {
             console.error('Error in getLatest:', error);
             throw error;
@@ -185,7 +243,7 @@ class Product {
 
         return result;
     }
-    
+
     static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
         try {
             // Build query safely for TiDB
@@ -194,22 +252,22 @@ class Product {
                        JOIN categories c ON p.category_id = c.id
                        WHERE 1=1`;
             const params = [];
-            
+
             if (query) {
                 sql += ` AND (p.name LIKE ? OR p.description LIKE ?)`;
                 params.push(`%${query}%`, `%${query}%`);
             }
-            
+
             if (categoryId) {
                 sql += ` AND p.category_id = ?`;
                 params.push(parseInt(categoryId, 10));
             }
-            
+
             if (minPrice) {
                 sql += ` AND p.price >= ?`;
                 params.push(parseFloat(minPrice));
             }
-            
+
             if (maxPrice) {
                 sql += ` AND p.price <= ?`;
                 params.push(parseFloat(maxPrice));
@@ -219,53 +277,53 @@ class Product {
                 sql += ` AND LOWER(p.product_condition) = ?`;
                 params.push(product_condition.toLowerCase());
             }
-            
+
             sql += ` ORDER BY p.created_at DESC`;
-            
+
             const [rows] = await db.execute(sql, params);
-            return rows;
-        } catch (error) {   
+            return await this.attachImages(rows);
+        } catch (error) {
             console.error('Error in search:', error);
             throw error;
         }
     }
-// static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
-//     let sql = `SELECT p.*, c.name AS category_name 
-//                FROM products p
-//                JOIN categories c ON p.category_id = c.id
-//                WHERE 1=1`;
-//     const params = [];
-    
-//     if (query) {
-//         sql += ` AND (p.name LIKE ? OR p.description LIKE ?)`;
-//         params.push(`%${query}%`, `%${query}%`);
-//     }
-    
-//     if (categoryId) {
-//         sql += ` AND p.category_id = ?`;
-//         params.push(categoryId);
-//     }
-    
-//     if (minPrice) {
-//         sql += ` AND p.price >= ?`;
-//         params.push(minPrice);
-//     }
-    
-//     if (maxPrice) {
-//         sql += ` AND p.price <= ?`;
-//         params.push(maxPrice);
-//     }
-    
-//     if (product_condition) {
-//         sql += ` AND p.product_condition = ?`;
-//         params.push(product_condition);
-//     }
-    
-//     sql += ` ORDER BY p.created_at DESC`;
-    
-//     const [rows] = await db.execute(sql, params);
-//     return rows;
-// }
+    // static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
+    //     let sql = `SELECT p.*, c.name AS category_name 
+    //                FROM products p
+    //                JOIN categories c ON p.category_id = c.id
+    //                WHERE 1=1`;
+    //     const params = [];
+
+    //     if (query) {
+    //         sql += ` AND (p.name LIKE ? OR p.description LIKE ?)`;
+    //         params.push(`%${query}%`, `%${query}%`);
+    //     }
+
+    //     if (categoryId) {
+    //         sql += ` AND p.category_id = ?`;
+    //         params.push(categoryId);
+    //     }
+
+    //     if (minPrice) {
+    //         sql += ` AND p.price >= ?`;
+    //         params.push(minPrice);
+    //     }
+
+    //     if (maxPrice) {
+    //         sql += ` AND p.price <= ?`;
+    //         params.push(maxPrice);
+    //     }
+
+    //     if (product_condition) {
+    //         sql += ` AND p.product_condition = ?`;
+    //         params.push(product_condition);
+    //     }
+
+    //     sql += ` ORDER BY p.created_at DESC`;
+
+    //     const [rows] = await db.execute(sql, params);
+    //     return rows;
+    // }
 }
 
 module.exports = Product;

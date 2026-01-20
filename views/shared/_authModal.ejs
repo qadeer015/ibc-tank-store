@@ -1,0 +1,105 @@
+<!-- views/shared/_authModal.ejs -->
+<!-- Authentication Modal -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title" id="authModalLabel">IBC TANK STORE</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="text-center text-muted mb-4">
+                    You need to sign in to access this feature
+                </p>
+                <div class="text-center">
+                    <a href="/auth/google"
+                        class="btn btn-outline-dark bg-white text-dark fw-semibold py-2 px-4 rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center"
+                        style="width: 240px;">
+                        <img src="/img/google.svg" alt="google" class="me-2" style="width:20px; height:20px;">
+                        Sign in with Google
+                    </a>
+                </div>
+                <div class="mt-3 text-center text-muted small">
+                    <p>By signing in, you agree to our <a href="/terms"
+                            class="text-primary text-decoration-none">Terms</a> and <a href="/privacy"
+                            class="text-primary text-decoration-none">Privacy Policy</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to show auth modal on unauthorized requests
+    function showAuthModal() {
+        const modalElement = document.getElementById('authModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    }
+
+    // Store modal instance for global access (initialize on DOMContentLoaded)
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalElement = document.getElementById('authModal');
+        window.authModal = new bootstrap.Modal(modalElement);
+
+        // Handle modal hide event - cleanup backdrop
+        modalElement.addEventListener('hide.bs.modal', function () {
+            setTimeout(() => {
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+            }, 100);
+        });
+
+        // Handle close button click
+        const closeBtn = modalElement.querySelector('.btn-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                window.location.reload();
+            });
+        }
+        
+        <% if (locals.showAuthModal) { %>
+            showAuthModal();
+        <% } %>
+    });
+
+    // Intercept fetch requests and handle 401 responses
+    const originalFetch = window.fetch;
+    window.fetch = function (...args) {
+        return originalFetch.apply(this, args)
+            .then(response => {
+                // If 401 Unauthorized, show modal instead of redirecting
+                if (response.status === 401) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        response.json().then(data => {
+                            if (data.requiresAuth) {
+                                showAuthModal();
+                            }
+                        });
+                    } else {
+                        showAuthModal();
+                    }
+                }
+                return response;
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                throw error;
+            });
+    };
+
+    // Helper function for manual trigger from action buttons
+    function requireAuth(event) {
+        event.preventDefault();
+        showAuthModal();
+        return false;
+    }
+</script>

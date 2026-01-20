@@ -93,18 +93,14 @@
             <div class="col-lg-4">
                 <label class="form-label fw-semibold">Product Image</label>
                 <div class="image-upload-container border rounded py-4 px-3 text-center">
-                    <!-- Image Preview -->
-                    <div id="imagePreviewContainer" class="mb-3 d-none position-relative">
-                        <img id="imagePreview" src="" alt="Product preview" class="img-fluid rounded"
-                            style="max-height: 200px;">
-                        <button type="button" id="removeImageBtn"
-                            class="btn btn-sm btn-outline-danger rounded-circle position-absolute top-0 end-0">
-                            <i class="bi bi-x"></i>
-                        </button>
+                    <!-- Image Preview (multiple thumbnails) -->
+                    <div id="imagePreviewContainer" class="mb-3 d-none">
+                        <div id="thumbnails" class="d-flex gap-2 flex-wrap justify-content-center"></div>
                     </div>
                     <!-- Upload Area -->
                     <div id="uploadArea" class="p-4 border-dashed rounded">
-                        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" required>
+                        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" multiple
+                            required>
                         <div class="upload-placeholder" onclick="document.getElementById('imageInput').click();">
                             <i class="bi bi-cloud-upload display-4 text-muted"></i>
                             <p class="mt-2 text-muted">Click to upload or drag and drop</p>
@@ -131,37 +127,65 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const imageInput = document.getElementById('imageInput');
-        const imagePreview = document.getElementById('imagePreview');
+        const thumbnails = document.getElementById('thumbnails');
         const imagePreviewContainer = document.getElementById('imagePreviewContainer');
         const uploadArea = document.getElementById('uploadArea');
         const uploadLoading = document.getElementById('uploadLoading');
-        const removeImageBtn = document.getElementById('removeImageBtn');
 
-        // Handle file selection
+        function renderPreviews(files) {
+            thumbnails.innerHTML = '';
+            if (!files || !files.length) {
+                imagePreviewContainer.classList.add('d-none');
+                uploadArea.classList.remove('d-none');
+                return;
+            }
+            imagePreviewContainer.classList.remove('d-none');
+            uploadArea.classList.add('d-none');
+
+            Array.from(files).forEach((file, idx) => {
+                const reader = new FileReader();
+                const wrap = document.createElement('div');
+                wrap.className = 'position-relative';
+                wrap.style.maxWidth = '120px';
+
+                const img = document.createElement('img');
+                img.className = 'img-fluid rounded';
+                img.style.maxHeight = '120px';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm btn-outline-danger rounded-circle position-absolute top-0 end-0';
+                btn.innerHTML = '<i class="bi bi-x"></i>';
+                btn.addEventListener('click', () => removeFileAtIndex(idx));
+
+                reader.onload = (e) => { img.src = e.target.result; };
+                reader.readAsDataURL(file);
+
+                wrap.appendChild(img);
+                wrap.appendChild(btn);
+                thumbnails.appendChild(wrap);
+            });
+        }
+
+        function removeFileAtIndex(index) {
+            const dt = new DataTransfer();
+            const files = Array.from(imageInput.files);
+            files.forEach((f, i) => { if (i !== index) dt.items.add(f); });
+            imageInput.files = dt.files;
+            renderPreviews(imageInput.files);
+        }
+
         imageInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
+            if (this.files && this.files.length) {
                 // Show loading indicator
                 uploadLoading.classList.remove('d-none');
-                uploadArea.classList.add('d-none');
-
-                // Simulate processing delay for better UX
                 setTimeout(() => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreviewContainer.classList.remove('d-none');
-                        uploadLoading.classList.add('d-none');
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                }, 800);
+                    uploadLoading.classList.add('d-none');
+                    renderPreviews(this.files);
+                }, 400);
+            } else {
+                renderPreviews([]);
             }
-        });
-
-        // Remove image functionality
-        removeImageBtn.addEventListener('click', function () {
-            imageInput.value = '';
-            imagePreviewContainer.classList.add('d-none');
-            uploadArea.classList.remove('d-none');
         });
 
         // Drag and drop functionality
@@ -196,7 +220,7 @@
         form.addEventListener('submit', function (e) {
             if (!imageInput.files.length) {
                 e.preventDefault();
-                alert('Please select a product image');
+                alert('Please select at least one product image');
                 uploadArea.classList.add('border-danger');
             }
         });
@@ -298,44 +322,27 @@
     referrerpolicy="origin" crossorigin="anonymous"></script>
 
 <script>
-    const GEMINI_API_KEY = "AIzaSyDijXFlEuJSGiS4Z-TUtoHMFVxfDMvZxWE";
 
     const ai_request = (request, respondWith) => {
-        const geminiOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            { text: request.prompt }
-                        ]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 800,
-                }
-            })
-        };
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
         respondWith.string((signal) =>
-            window.fetch(url, { signal, ...geminiOptions })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.error?.message || "Gemini API error");
+            fetch("/api/ai/gemini", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: request.prompt
+                }),
+                signal
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.error || "AI Error");
                     }
 
-                    const data = await response.json();
-
-                    // Gemini response extraction
-                    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    const data = await res.json();
+                    return data.text;
                 })
         );
     };
@@ -356,7 +363,6 @@
             { value: 'First.Name', title: 'First Name' },
             { value: 'Email', title: 'Email' },
         ],
-        ai_request,
-        uploadcare_public_key: '8ae7bb47e4c81e246870',
+        ai_request
     });
 </script>

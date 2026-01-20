@@ -24,6 +24,7 @@ const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const ratingRoutes = require("./routes/ratingsRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 require('dotenv').config({
   quiet: true
@@ -89,6 +90,8 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.path = req.originalUrl;
+    res.locals.title = "IBC Tank Store";
+    res.locals.productImages = [];
     if (req.path.startsWith("/admin")) {
         res.locals.layout = "layouts/admin";
     } else {
@@ -122,11 +125,12 @@ app.get('/', async (req, res) => {
             price: parseInt(product.price)
         }));
         
-        latestProducts = latestProducts.map(product => ({
+        featuredProducts = featuredProducts.map(product => ({
             ...product,
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
+
 
         let allSettings = null;
 
@@ -146,6 +150,7 @@ app.get('/', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
+            productImages: [],
             user: req.user // Pass user to view
         });
     } catch (error) {
@@ -201,6 +206,7 @@ app.use('/contact', contactRoutes);
 app.use("/auth", authRoutes);
 app.use("/ratings", ratingRoutes);
 app.use("/admin", adminRoutes);
+app.use("/api/ai",  aiRoutes);
 
 // ========== ADD 404 HANDLER HERE ==========
 app.use((req, res) => {

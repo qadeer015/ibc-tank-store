@@ -1,13 +1,13 @@
 <!-- views/public/products/show.ejs -->
 <div class="row mb-3">
     <div class="col-12">
-        <h1 class="fw-bold text-center py-3 bg-primary text-white">
+        <h1 class="fw-bold text-center py-3 border-bottom">
             <%= product.name %>
         </h1>
     </div>
 </div>
 
-<div class="row">
+<div class="row mb-4">
     <!-- Product Image -->
     <div class="col-lg-5">
         <% if (productImages && productImages.length> 0) { %>
@@ -106,14 +106,12 @@
                 <hr>
 
                 <!-- Rating Form -->
-                <% if (user) { %>
-                    <form action="/ratings/<%= product.id %>/create" method="POST" class="mt-3">
-
-                        <label class="fw-semibold mb-2 d-block">
-                            Rate this product
-                        </label>
-
-                        <div class="rating-input mb-3">
+                <div class="card border-0 bg-light p-4 mt-3">
+                    <label class="fw-semibold mb-3 d-block text-secondary">
+                        <i class="bi bi-star me-2"></i>Rate this product
+                    </label>
+                    <form id="ratingForm">
+                        <div class="rating-input mb-4">
                             <% for(let i=5; i>=1; i--) { %>
                                 <input type="radio" name="rating" value="<%= i %>" id="star<%= i %>">
                                 <label for="star<%= i %>">
@@ -121,19 +119,12 @@
                                 </label>
                             <% } %>
                         </div>
-
-                        <button class="btn btn-primary">
-                            <i class="bi bi-check-circle me-1"></i> Submit Rating
+                        <button type="submit" id="submitRatingBtn" class="btn btn-primary d-none"
+                            style="min-width: 150px;">
+                            <i class="bi bi-check-circle me-2"></i>Submit Rating
                         </button>
-
                     </form>
-                    <% } else { %>
-                        <p class="text-muted mt-3">
-                            <i class="bi bi-lock me-1"></i>
-                            Login to rate this product
-                        </p>
-                        <% } %>
-
+                </div>
             </div>
         </div>
     </div>
@@ -212,7 +203,6 @@
                 </h4>
                 <% if (ratings.length===0) { %>
                     <p class="text-muted">No reviews yet.</p>
-<<<<<<< HEAD
                     <% } %>
                         <% for (let rating of ratings) { %>
                             <div class="card shadow-sm border-0 mb-3">
@@ -229,7 +219,8 @@
                                                     <% for(let i=1; i<=5; i++) { %>
                                                         <% if(i <=Math.floor(rating.rating)) { %>
                                                             <i class="bi bi-star-fill text-warning"></i>
-                                                            <% } else if(i===Math.ceil(rating.rating) && rating.rating % 1> 0) { %>
+                                                            <% } else if(i===Math.ceil(rating.rating) && rating.rating %
+                                                                1> 0) { %>
                                                                 <i class="bi bi-star-half text-warning"></i>
                                                                 <% } else { %>
                                                                     <i class="bi bi-star text-warning"></i>
@@ -246,30 +237,6 @@
 
                                         <div class="text-muted">
                                             <%= new Date(rating.created_at).toLocaleDateString() %>
-=======
-                <% } %>
-                <% for (let rating of ratings) { %>
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between w-100">
-                                <div class="d-flex">
-                                    <img src="<%= rating.user_profile_photo || 'https://dummyimage.com/50x50/ced4da/6c757d.jpg' %>"
-                                        class="rounded-circle me-2" width="50" height="50">
-                                    <div class="d-flex flex-column">
-                                        <h6 class="mb-0">
-                                            <%= rating.user_name %>
-                                        </h6>
-                                        <div class="mt-1">
-                                            <% for(let i=1; i<=5; i++) { %>
-                                                <% if(i <=Math.floor(rating.rating)) { %>
-                                                    <i class="bi bi-star-fill text-warning"></i>
-                                                <% } else if(i===Math.ceil(rating.rating) && rating.rating % 1 > 0) { %>
-                                                    <i class="bi bi-star-half text-warning"></i>
-                                                <% } else { %>
-                                                    <i class="bi bi-star text-warning"></i>
-                                                <% } %>
-                                            <% } %>
->>>>>>> 07ab1e3 (add additional info and specs for products)
                                         </div>
                                         <%if(rating.comment) {%>
                                             <p class="text-muted">
@@ -290,12 +257,63 @@
     </div>
 </div>
 <script>
+    /* Rating Form Submission */
+    document.getElementById('ratingForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const rating = document.querySelector('input[name="rating"]:checked')?.value;
+        if (!rating) {
+            alert('Please select a rating');
+            return;
+        }
+
+        const productId = '<%= product.id %>';
+
+        try {
+            const response = await fetch(`/ratings/${productId}/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ rating: parseInt(rating) })
+            });
+
+            if (response.ok) {
+                alert('Rating submitted successfully!');
+                window.location.reload();
+            } else if (response.status === 401) {
+                // Show auth modal
+                const modalElement = document.getElementById('authModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    window.location.href = '/auth/signin';
+                }
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to submit rating');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while submitting your rating');
+        }
+    });
+
     /* Rating stars highlight */
     document.querySelectorAll('.rating-input input').forEach(input => {
         input.addEventListener('change', () => {
             document.querySelectorAll('.rating-input label')
                 .forEach(l => l.classList.remove('active'));
             input.nextElementSibling.classList.add('active');
+
+            // Show submit button when rating is selected
+            const submitBtn = document.getElementById('submitRatingBtn');
+            if (submitBtn) {
+                submitBtn.classList.remove('d-none');
+                submitBtn.classList.add('animate__animated', 'animate__fadeIn');
+            }
         });
     });
 

@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
+const { isAuthenticated } = require('../middlewares/authenticate');
+
+// All order routes require authentication
+router.use(isAuthenticated);
 
 // Checkout page
 router.get('/', orderController.showCheckout);
