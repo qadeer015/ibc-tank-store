@@ -1,22 +1,10 @@
 <!-- views/admin/products/show.ejs -->
-<div class="row mb-4">
-<!-- Product Image Gallery -->
-<div class="col-lg-5">
-    <% if (productImages && productImages.length> 0) { %>
-        <div class="position-relative text-center">
-
-            <button class="gallery-nav prev" type="button">
-                <i class="bi bi-chevron-left"></i>
-            </button>
-
-            <!-- MAIN IMAGE (NOT an anchor) -->
-            <img id="mainProductImage" src="<%= productImages[0] %>" class="img-fluid product-main-img" data-index="0"
-                alt="<%= product.name %>" />
-
-            <button class="gallery-nav next" type="button">
-                <i class="bi bi-chevron-right"></i>
-            </button>
-
+<div class="row">
+    <!-- Product Image -->
+    <div class="col-lg-5">
+        <div class="card bg-transparent border-0">
+            <img src="<%= product.image %>" class="card-img-top p-4 product-img" width="500px" height="500px"
+                alt="<%= product.name %>">
         </div>
 
         <!-- THUMBNAILS -->
@@ -32,6 +20,7 @@
         </div>
     <% } %>
 </div>
+  
     <!-- Product Info -->
     <div class="col-lg-7">
         <div class="card bg-transparent border-0">
@@ -39,13 +28,13 @@
                 <!-- Price -->
                 <div class="mt-3 mb-2">
                     <strong class="fw-semibold">
-                        Price : 
+                        Price :
                     </strong>
                     <span class="lead">
                         <%= product.price %>
                     </span>
                 </div>
-               
+
                 <!-- Stock -->
                 <div class="my-2">
                     <strong class="fw-semibold">
@@ -62,7 +51,7 @@
                         Condition :
                     </strong>
                     <span class="lead">
-                        <%= product.product_condition  %>
+                        <%= product.product_condition %>
                     </span>
                 </div>
 
@@ -92,7 +81,8 @@
                         <i class="bi bi-pencil"></i>
                         Edit
                     </a>
-                    <form action="/admin/products/<%= product.id %>/delete" onclick="return confirm('Are you sure to delete ?')" method="POST">
+                    <form action="/admin/products/<%= product.id %>/delete"
+                        onclick="return confirm('Are you sure to delete ?')" method="POST">
                         <button class="btn btn-sm btn-danger">
                             <i class="bi bi-trash"></i>
                             Delete
@@ -112,6 +102,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" href="#additional-info">Additional Info</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#specs">Specifications</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" href="#reviews">Reviews</a>
@@ -140,11 +133,60 @@
         <div class="card bg-transparent border-0">
             <div class="card-body">
                 <h4 class="text-primary fw-semibold mb-3">
-                    Additional Info
+                    Additional Information
                 </h4>
-                <p class="text-muted">
-                    <%= product.additional_info || 'No additional info available.' %>
-                </p>
+                <% if (product.additional_info && Object.keys(product.additional_info).length> 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                <% Object.entries(product.additional_info).forEach(([key, value])=> { %>
+                                    <tr>
+                                        <td class="fw-semibold" style="width: 30%;">
+                                            <%= key %>
+                                        </td>
+                                        <td>
+                                            <%= value %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted">No additional information available.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row tab-pane py-3" id="specs" style="display: none;">
+    <div class="col-lg-12">
+        <div class="card bg-transparent border-0">
+            <div class="card-body">
+                <h4 class="text-primary fw-semibold mb-3">
+                    Product Specifications
+                </h4>
+                <% if (product.specs && Object.keys(product.specs).length> 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                <% Object.entries(product.specs).forEach(([key, value])=> { %>
+                                    <tr>
+                                        <td class="fw-semibold" style="width: 30%;">
+                                            <%= key %>
+                                        </td>
+                                        <td>
+                                            <%= value %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <p class="text-muted">No specifications available.</p>
+                        <% } %>
             </div>
         </div>
     </div>

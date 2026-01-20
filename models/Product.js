@@ -2,7 +2,7 @@
 const db = require("../config/db");
 
 class Product {
-    static async create(name, description, price, images, category_id, product_condition, stock) {
+    static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
         // `images` can be a JSON string, array or single url string
         let imgs = [];
         if (images) {
@@ -23,9 +23,21 @@ class Product {
 
         const primaryImage = imgs.length ? imgs[0] : null;
 
+        // Parse JSON fields if they're strings
+        let additionalInfoJson = null;
+        let specsJson = null;
+
+        if (additional_info) {
+            additionalInfoJson = typeof additional_info === 'string' ? JSON.parse(additional_info) : additional_info;
+        }
+
+        if (specs) {
+            specsJson = typeof specs === 'string' ? JSON.parse(specs) : specs;
+        }
+
         const [insertResult] = await db.execute(
-            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, description, price, primaryImage, category_id, product_condition, stock]
+            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock, additional_info, specs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson)]
         );
 
         const productId = insertResult.insertId;
@@ -179,7 +191,7 @@ class Product {
         }
     }
 
-    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock) {
+    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock, additional_info = null, specs = null) {
         // `image` may be a JSON array string, an array, or a single url
         let imgs = [];
         if (image) {
@@ -197,13 +209,23 @@ class Product {
             }
         }
 
-        console.log("imgs", imgs);
-
         const primaryImage = imgs.length ? imgs[0] : null;
 
+        // Parse JSON fields if they're strings
+        let additionalInfoJson = null;
+        let specsJson = null;
+
+        if (additional_info) {
+            additionalInfoJson = typeof additional_info === 'string' ? JSON.parse(additional_info) : additional_info;
+        }
+
+        if (specs) {
+            specsJson = typeof specs === 'string' ? JSON.parse(specs) : specs;
+        }
+
         const [result] = await db.execute(
-            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ? WHERE id = ?',
-            [name, description, price, primaryImage, category_id, product_condition, stock, id]
+            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ?, additional_info = ?, specs = ? WHERE id = ?',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson), id]
         );
 
         // replace images in product_images
@@ -212,7 +234,6 @@ class Product {
             if (imgs.length) {
                 for (let i = 0; i < imgs.length; i++) {
                     const url = imgs[i];
-                    console.log("url", url);
                     await db.execute('INSERT INTO product_images (product_id, url, sort_order) VALUES (?, ?, ?)', [id, url, i]);
                 }
             }

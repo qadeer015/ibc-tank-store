@@ -45,6 +45,128 @@
                         <%= product && product.description ? product.description : '' %>
                     </textarea>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Additional Information</label>
+                        <div id="additional_info_container" class="mb-2">
+                            <% if (product && product.additional_info && Object.keys(product.additional_info).length> 0)
+                                { %>
+                                <% Object.entries(product.additional_info).forEach(([key, value])=> { %>
+                                    <div class="row additional-info-row mb-2">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" placeholder="Key"
+                                                name="additional_info_key[]" value="<%= key %>">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" placeholder="Value"
+                                                name="additional_info_value[]" value="<%= value %>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm w-100 delete-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="row additional-info-row mb-2">
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control" placeholder="Key"
+                                                        name="additional_info_key[]">
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control" placeholder="Value"
+                                                        name="additional_info_value[]">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                                        style="display: none;">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_additional_info_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Product Specifications</label>
+                        <div id="specs_container" class="mb-2">
+                            <% if (product && product.specs && Object.keys(product.specs).length> 0) { %>
+                                <% Object.entries(product.specs).forEach(([key, value])=> { %>
+                                    <div class="row specs-row mb-2">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" placeholder="Key" name="specs_key[]"
+                                                value="<%= key %>">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" placeholder="Value"
+                                                name="specs_value[]" value="<%= value %>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm w-100 delete-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="row specs-row mb-2">
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control" placeholder="Key"
+                                                        name="specs_key[]">
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control" placeholder="Value"
+                                                        name="specs_value[]">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                                        style="display: none;">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_specs_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Image Upload Section -->
+            <div class="col-lg-4">
+                <label class="form-label fw-semibold">Product Image</label>
+                <!-- Hidden container for existingImages inputs (inside form) -->
+                <div id="existingImagesInputs" style="display: none;"></div>
+                <div class="image-upload-container border rounded py-4 px-3 text-center">
+                    <!-- Existing and new images preview -->
+                    <div id="imagePreviewContainer" class="mb-3">
+                        <div id="thumbnails" class="d-flex gap-2 flex-wrap justify-content-center"></div>
+                    </div> <!-- Upload Area -->
+                    <div id="uploadArea" class="p-4 border-dashed rounded">
+                        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" multiple>
+                        <div class="upload-placeholder" onclick="document.getElementById('imageInput').click();">
+                            <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                            <p class="mt-2 text-muted">Click to upload or drag and drop</p>
+                            <small class="text-muted">SVG, PNG, JPG or GIF (max. 5MB)</small>
+                        </div>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="uploadLoading" class="mt-3 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Processing image...</p>
+                    </div>
                 </div>
             </div>
 
@@ -97,11 +219,9 @@
 
     // Existing images passed from server
     const existingImages = JSON.parse(document.getElementById('product-images-data').textContent);
-    console.log('Edit view - existingImages from server:', existingImages);
 
     // Render existing images and attach hidden inputs
     function renderExisting() {
-        console.log('renderExisting called with:', existingImages);
         existingImages.forEach((src, idx) => {
             const wrap = document.createElement('div');
             wrap.className = 'position-relative';
@@ -129,6 +249,23 @@
             wrap.appendChild(img);
             wrap.appendChild(btn);
             thumbnails.appendChild(wrap);
+        });
+        
+        // Remove image functionality
+        removeImageBtn.addEventListener('click', function() {
+            imageInput.value = '';
+            imagePreview.src = '';
+            imagePreviewContainer.classList.add('d-none');
+            uploadArea.classList.remove('d-none');
+        });
+        
+        // Drag and drop functionality
+        const uploadContainer = document.querySelector('.image-upload-container');
+        
+        uploadContainer.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('border-primary');
+            this.querySelector('.upload-placeholder').classList.add('text-primary');
         });
         updateUploadAreaVisibility();
     }
@@ -233,6 +370,75 @@
             alert('Please keep or upload at least one product image');
         }
     });
+
+    // Dynamic Key-Value Rows for Additional Info
+    document.getElementById('add_additional_info_row').addEventListener('click', function (e) {
+        e.preventDefault();
+        const container = document.getElementById('additional_info_container');
+        const newRow = document.createElement('div');
+        newRow.className = 'row additional-info-row mb-2';
+        newRow.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Key" name="additional_info_key[]">
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Value" name="additional_info_value[]">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newRow);
+        updateDeleteButtons();
+    });
+
+    // Dynamic Key-Value Rows for Specs
+    document.getElementById('add_specs_row').addEventListener('click', function (e) {
+        e.preventDefault();
+        const container = document.getElementById('specs_container');
+        const newRow = document.createElement('div');
+        newRow.className = 'row specs-row mb-2';
+        newRow.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Key" name="specs_key[]">
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Value" name="specs_value[]">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newRow);
+        updateDeleteButtons();
+    });
+
+    // Delete Row
+    function updateDeleteButtons() {
+        document.querySelectorAll('.delete-row').forEach((btn, index) => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                this.closest('.row').remove();
+                updateDeleteButtons();
+            });
+
+            // Show delete button only if there's more than one row
+            const container = btn.closest('[id$="_container"]');
+            const rowCount = container.querySelectorAll('.row').length;
+            if (rowCount > 1) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+    }
+
+    // Initialize delete buttons on page load
+    document.addEventListener('DOMContentLoaded', updateDeleteButtons);
 </script>
 
 <style>

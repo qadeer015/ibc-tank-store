@@ -14,7 +14,7 @@ const productController = {
             products = products.map(product => ({
                 ...product,
                 rating: parseFloat(product.rating).toFixed(1),
-                price: parseFloat(product.price).toFixed(2)
+                price: parseInt(product.price)
             }));
 
             if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
@@ -54,16 +54,43 @@ const productController = {
     async create(req, res) {
         try {
             const { name, description, price, category_id, product_condition, stock } = req.body;
-            // Support multiple files (field name 'image')
-            console.log('Create - req.files:', req.files);
+            const { additional_info_key = [], additional_info_value = [], specs_key = [], specs_value = [] } = req.body;
+            
             const uploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
             if (!uploaded.length) {
                 throw new Error('At least one product image is required');
             }
 
-            console.log('Uploaded images:', uploaded);
             const imageField = JSON.stringify(uploaded);
+
+            // Build additional_info object from key-value arrays
+            let additionalInfoJson = null;
+            if (Array.isArray(additional_info_key) && additional_info_key.length > 0) {
+                additionalInfoJson = {};
+                const keys = Array.isArray(additional_info_key) ? additional_info_key : [additional_info_key];
+                const values = Array.isArray(additional_info_value) ? additional_info_value : [additional_info_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        additionalInfoJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(additionalInfoJson).length === 0) additionalInfoJson = null;
+            }
+
+            // Build specs object from key-value arrays
+            let specsJson = null;
+            if (Array.isArray(specs_key) && specs_key.length > 0) {
+                specsJson = {};
+                const keys = Array.isArray(specs_key) ? specs_key : [specs_key];
+                const values = Array.isArray(specs_value) ? specs_value : [specs_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        specsJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(specsJson).length === 0) specsJson = null;
+            }
 
             const newProduct = await Product.create(
                 name,
@@ -72,7 +99,9 @@ const productController = {
                 imageField,
                 category_id,
                 product_condition,
-                stock
+                stock,
+                additionalInfoJson,
+                specsJson
             );
 
             req.flash('success', 'Product created successfully');
@@ -97,8 +126,9 @@ const productController = {
             product = {
                 ...product,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
-                price: parseFloat(product.price).toFixed(2)
+                price: parseInt(product.price)
             };
+
             if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 res.render('admin/products/show', {
                     title: product.name,
@@ -149,11 +179,9 @@ const productController = {
         try {
             const { id } = req.params;
             const { name, description, price, category_id, product_condition, stock } = req.body;
+            const { additional_info_key = [], additional_info_value = [], specs_key = [], specs_value = [] } = req.body;
             // existingImages can be a single value or an array
             let { existingImages } = req.body;
-
-            console.log('Update - req.files:', req.files);
-            console.log('Update - existingImages:', existingImages);
 
             const product = await Product.getById(id);
 
@@ -187,19 +215,56 @@ const productController = {
                 }
             }
 
+            // Determine removed images (present originally but not kept)
+            const removed = originalImages.filter(img => !existingImages.includes(img));
+            for (const rem of removed) {
+                try {
+                    await deleteFile(rem);
+                } catch (err) {
+                    console.error('Error deleting removed image:', err);
+                }
+            }
+
             // New uploaded files
             const newUploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
             // Final images to save
             const imagesToSave = [...existingImages, ...newUploaded];
-            console.log('Images to save:', imagesToSave);
             if (!imagesToSave.length) {
                 throw new Error('At least one product image is required');
             }
 
             const imageField = JSON.stringify(imagesToSave);
-            console.log('Image field:', imageField);
-            await Product.updateProduct(id, name, description, price, imageField, category_id, product_condition, stock);
+
+            // Build additional_info object from key-value arrays
+            let additionalInfoJson = null;
+            if (Array.isArray(additional_info_key) && additional_info_key.length > 0) {
+                additionalInfoJson = {};
+                const keys = Array.isArray(additional_info_key) ? additional_info_key : [additional_info_key];
+                const values = Array.isArray(additional_info_value) ? additional_info_value : [additional_info_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        additionalInfoJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(additionalInfoJson).length === 0) additionalInfoJson = null;
+            }
+
+            // Build specs object from key-value arrays
+            let specsJson = null;
+            if (Array.isArray(specs_key) && specs_key.length > 0) {
+                specsJson = {};
+                const keys = Array.isArray(specs_key) ? specs_key : [specs_key];
+                const values = Array.isArray(specs_value) ? specs_value : [specs_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        specsJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(specsJson).length === 0) specsJson = null;
+            }
+
+            await Product.updateProduct(id, name, description, price, imageField, category_id, product_condition, stock, additionalInfoJson, specsJson);
             req.flash('success', 'Product updated successfully');
             res.redirect(`/admin/products/${id}`);
         } catch (error) {
