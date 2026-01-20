@@ -215,16 +215,6 @@ const productController = {
                 }
             }
 
-            // Determine removed images (present originally but not kept)
-            const removed = originalImages.filter(img => !existingImages.includes(img));
-            for (const rem of removed) {
-                try {
-                    await deleteFile(rem);
-                } catch (err) {
-                    console.error('Error deleting removed image:', err);
-                }
-            }
-
             // New uploaded files
             const newUploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
