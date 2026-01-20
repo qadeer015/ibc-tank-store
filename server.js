@@ -110,10 +110,16 @@ app.get('/', async (req, res) => {
         const maxPrice = parseFloat(req.query.maxPrice) || 1000;
         const condition = req.query.condition || '';
         
+        latestProducts = latestProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+        
         featuredProducts = featuredProducts.map(product => ({
             ...product,
             rating: parseFloat(product.rating).toFixed(1),
-            price: parseFloat(product.price).toFixed(2)
+            price: parseInt(product.price)
         }));
         
         latestProducts = latestProducts.map(product => ({
@@ -153,13 +159,19 @@ app.get('/', async (req, res) => {
 app.get('/search', async (req, res) => {
     try {
         const { q, category, minPrice, maxPrice, condition } = req.query;
-        const products = await Product.search({
+        let products = await Product.search({
             query: q,
             categoryId: category,
-            minPrice: parseFloat(minPrice),
-            maxPrice: parseFloat(maxPrice),
+            minPrice: parseInt(minPrice),
+            maxPrice: parseInt(maxPrice),
             condition
         });
+
+        products = products.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
         
         const categories = await Category.getAll();
         res.render('public/search', {
@@ -171,7 +183,8 @@ app.get('/search', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
-            user: req.user // Pass user to view
+            productImages: [],
+            user: req.user
         });
     } catch (error) {
         console.error('Search error:', error);

@@ -10,48 +10,96 @@
 <div class="row">
     <!-- Product Image -->
     <div class="col-lg-5">
-        <div class="card bg-transparent border-0">
-            <img src="<%= product.image %>" class="card-img-top p-4 product-img" width="500px" height="500px"
-                alt="<%= product.name %>">
-        </div>
+        <% if (productImages && productImages.length> 0) { %>
+            <div class="position-relative text-center">
+                <button class="gallery-nav prev" type="button">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <!-- MAIN IMAGE (NOT an anchor) -->
+                <img id="mainProductImage" src="<%= productImages[0] %>" class="img-fluid product-main-img"
+                    data-index="0" alt="<%= product.name %>" />
+
+                <button class="gallery-nav next" type="button">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+            </div>
+
+            <!-- THUMBNAILS -->
+            <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <% productImages.forEach((image, index)=> { %>
+                    <img src="<%= image %>" class="product-thumb <%= index === 0 ? 'active' : '' %>"
+                        data-index="<%= index %>" alt="Thumbnail" />
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="text-muted">No image</span>
+            </div>
+        <% } %>
     </div>
 
     <!-- Product Info -->
     <div class="col-lg-7">
         <div class="card bg-transparent border-0">
             <div class="card-body">
-                <h4 class="text-primary fw-semibold mb-3">
-                    Rs <%= product.price %>
-                </h4>
+                <!-- Price -->
+                <p class="mb-2 text-primary fw-semibold fs-4">
+                    <%= settings.price_currency %><%= product.price %>
+                </p>
 
                 <!-- Stock -->
                 <p class="mb-2">
-                    <span class="badge <%= product.stock > 0 ? 'bg-success' : 'bg-danger' %>">
-                        <%= product.stock> 0 ? 'In Stock' : 'Out of Stock' %>
+                    <strong class="me-2">Stock : </strong>
+                    <span>
+                        <%= product.stock> 0 ? 'Stock Available' : 'Out of Stock' %>
                     </span>
                 </p>
 
-                <p class="mb-3">
-                    <strong>Condition: </strong>
+                <p class="mb-2">
+                    <strong class="me-2">Condition : </strong>
                     <%= product.product_condition %>
                 </p>
 
+                <a href="https://wa.me/<%= settings.contact_number %>?text=<%= encodeURIComponent('Hi, I am interested in this product: ' + product.name) %>"
+                    class="btn btn-sm btn-primary rounded-0 text-decoration-none fw-semibold my-3" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-whatsapp me-1"></i> Contact
+                </a>
+
+                <% if (product.specs && Object.keys(product.specs).length> 0) { %>
+                    <h5 class="fw-semibold mb-3">
+                        Specifications
+                    </h5>
+                    <div class="col-lg-6 col-md-8">
+                    <% Object.entries(product.specs).forEach(([key, value])=> { %>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong class="fw-semibold">
+                                <%= key %> 
+                            </strong>
+                            <span>
+                                <%= value %>
+                            </span>
+                        </div>
+                    <% }) %>
+                    </div>
+                <% } %>
                 <!-- Rating Display -->
                 <div class="d-flex align-items-center mb-3">
                     <div class="me-2">
                         <% for(let i=1; i<=5; i++) { %>
                             <% if(i <=Math.floor(product.rating)) { %>
                                 <i class="bi bi-star-fill text-warning"></i>
-                                <% } else if(i===Math.ceil(product.rating) && product.rating % 1> 0) { %>
-                                    <i class="bi bi-star-half text-warning"></i>
-                                    <% } else { %>
-                                        <i class="bi bi-star text-warning"></i>
-                                        <% } %>
-                                            <% } %>
+                            <% } else if(i===Math.ceil(product.rating) && product.rating % 1> 0) { %>
+                                <i class="bi bi-star-half text-warning"></i>
+                            <% } else { %>
+                                <i class="bi bi-star text-warning"></i>
+                            <% } %>
+                        <% } %>
                     </div>
                     <span class="text-muted">
                         <%= product.rating_count %>
-                            <%= product.rating_count> 1 ? 'Ratings' : 'Rating' %>
+                        <%= product.rating_count> 1 ? 'Ratings' : 'Rating' %>
                     </span>
                 </div>
 
@@ -71,7 +119,7 @@
                                 <label for="star<%= i %>">
                                     <i class="bi bi-star-fill"></i>
                                 </label>
-                                <% } %>
+                            <% } %>
                         </div>
 
                         <button class="btn btn-primary">
@@ -130,9 +178,26 @@
                 <h4 class="text-primary fw-semibold mb-3">
                     Additional Info
                 </h4>
-                <p class="text-muted">
-                    <%= product.additional_info || 'No additional info available.' %>
-                </p>
+               <% if (product.additional_info && Object.keys(product.additional_info).length> 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                            <% Object.entries(product.additional_info).forEach(([key, value])=> { %>
+                                <tr>
+                                    <td class="fw-semibold" style="width: 50%;">
+                                        <%= key %>
+                                    </td>
+                                    <td>
+                                        <%= value %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } else { %>
+                    <p class="text-muted">No additional information available.</p>
+                <% } %>
             </div>
         </div>
     </div>
@@ -147,6 +212,7 @@
                 </h4>
                 <% if (ratings.length===0) { %>
                     <p class="text-muted">No reviews yet.</p>
+<<<<<<< HEAD
                     <% } %>
                         <% for (let rating of ratings) { %>
                             <div class="card shadow-sm border-0 mb-3">
@@ -180,11 +246,45 @@
 
                                         <div class="text-muted">
                                             <%= new Date(rating.created_at).toLocaleDateString() %>
+=======
+                <% } %>
+                <% for (let rating of ratings) { %>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between w-100">
+                                <div class="d-flex">
+                                    <img src="<%= rating.user_profile_photo || 'https://dummyimage.com/50x50/ced4da/6c757d.jpg' %>"
+                                        class="rounded-circle me-2" width="50" height="50">
+                                    <div class="d-flex flex-column">
+                                        <h6 class="mb-0">
+                                            <%= rating.user_name %>
+                                        </h6>
+                                        <div class="mt-1">
+                                            <% for(let i=1; i<=5; i++) { %>
+                                                <% if(i <=Math.floor(rating.rating)) { %>
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                <% } else if(i===Math.ceil(rating.rating) && rating.rating % 1 > 0) { %>
+                                                    <i class="bi bi-star-half text-warning"></i>
+                                                <% } else { %>
+                                                    <i class="bi bi-star text-warning"></i>
+                                                <% } %>
+                                            <% } %>
+>>>>>>> 07ab1e3 (add additional info and specs for products)
                                         </div>
+                                        <%if(rating.comment) {%>
+                                            <p class="text-muted">
+                                                <%= rating.comment %>
+                                            </p>
+                                        <%}%>
                                     </div>
                                 </div>
+                                <div class="text-muted">
+                                    <%= new Date(rating.created_at).toLocaleDateString() %>
+                                </div>
                             </div>
-                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>

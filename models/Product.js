@@ -2,10 +2,42 @@
 const db = require("../config/db");
 
 class Product {
-    static async create(name, description, price, image, category_id, product_condition, stock) {
+    static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
+        // `images` can be a JSON string, array or single url string
+        let imgs = [];
+        if (images) {
+            if (typeof images === 'string') {
+                try {
+                    imgs = JSON.parse(images);
+                    if (!Array.isArray(imgs)) imgs = [imgs];
+                } catch (err) {
+                    imgs = [images];
+                }
+            } else if (Array.isArray(images)) {
+                imgs = images;
+            } else if (typeof images === 'object' && images !== null) {
+                // fallback
+                imgs = [String(images)];
+            }
+        }
+
+        const primaryImage = imgs.length ? imgs[0] : null;
+
+        // Parse JSON fields if they're strings
+        let additionalInfoJson = null;
+        let specsJson = null;
+
+        if (additional_info) {
+            additionalInfoJson = typeof additional_info === 'string' ? JSON.parse(additional_info) : additional_info;
+        }
+
+        if (specs) {
+            specsJson = typeof specs === 'string' ? JSON.parse(specs) : specs;
+        }
+
         const [insertResult] = await db.execute(
-            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, description, price, image, category_id, product_condition, stock]
+            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock, additional_info, specs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson)]
         );
         const [rows] = await db.execute(
             'SELECT * FROM products WHERE id = ?',
@@ -101,11 +133,56 @@ class Product {
         }
     }
 
-    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock) {
+    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock, additional_info = null, specs = null) {
+        // `image` may be a JSON array string, an array, or a single url
+        let imgs = [];
+        if (image) {
+            if (typeof image === 'string') {
+                try {
+                    imgs = JSON.parse(image);
+                    if (!Array.isArray(imgs)) imgs = [imgs];
+                } catch (err) {
+                    imgs = [image];
+                }
+            } else if (Array.isArray(image)) {
+                imgs = image;
+            } else if (typeof image === 'object' && image !== null) {
+                imgs = [String(image)];
+            }
+        }
+
+        const primaryImage = imgs.length ? imgs[0] : null;
+
+        // Parse JSON fields if they're strings
+        let additionalInfoJson = null;
+        let specsJson = null;
+
+        if (additional_info) {
+            additionalInfoJson = typeof additional_info === 'string' ? JSON.parse(additional_info) : additional_info;
+        }
+
+        if (specs) {
+            specsJson = typeof specs === 'string' ? JSON.parse(specs) : specs;
+        }
+
         const [result] = await db.execute(
-            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ? WHERE id = ?',
-            [name, description, price, image, category_id, product_condition, stock, id]
+            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ?, additional_info = ?, specs = ? WHERE id = ?',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson), id]
         );
+
+        // replace images in product_images
+        try {
+            await db.execute('DELETE FROM product_images WHERE product_id = ?', [id]);
+            if (imgs.length) {
+                for (let i = 0; i < imgs.length; i++) {
+                    const url = imgs[i];
+                    await db.execute('INSERT INTO product_images (product_id, url, sort_order) VALUES (?, ?, ?)', [id, url, i]);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to update product_images for product', id, err);
+        }
+
         return result;
     }
     

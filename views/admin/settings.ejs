@@ -59,6 +59,19 @@
           </div>
         </div>
 
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Price Currency Settings</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="price_currency" class="form-label">Currency</label>
+              <input type="text" class="form-control" id="price_currency" name="price_currency"
+                value="<%= settings.price_currency || '' %>" placeholder="PKR, USD, EUR">
+            </div>
+          </div>
+        </div>
+
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary">Save Settings</button>
         </div>

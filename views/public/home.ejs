@@ -42,7 +42,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <a href="/products/<%= product.id %>" class="text-decoration-none text-dark">
                                     <strong class="card-text fw-bold">
-                                        Rs.<%= product.price %>
+                                        <%= settings.price_currency %><%= product.price %>
                                     </strong>
                                 </a>
                             </div>
@@ -150,7 +150,7 @@
                                 </a>
                                 <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
                                     <strong class="card-text">
-                                        Rs.<%= product.price %>
+                                        <%= settings.price_currency %><%= product.price %>
                                     </strong>
                                 </a>
                                 <div class="pop-up-footer bg-primary p-2 text-center">
@@ -162,11 +162,11 @@
                             </div>
                         </div>
                     </div>
-                    <% }); %>
+                <% }); %>
             </div>
-            <% } else { %>
-                <div class="alert alert-info">No products found. Try adjusting your filters.</div>
-                <% } %>
+        <% } else { %>
+            <div class="alert alert-info">No products found. Try adjusting your filters.</div>
+        <% } %>
     </section>
 </div>
 

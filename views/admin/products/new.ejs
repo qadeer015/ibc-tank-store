@@ -41,6 +41,52 @@
                         <textarea class="form-control tinymce-editor" id="description" name="description" rows="10">
                     </textarea>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Additional Information</label>
+                        <div id="additional_info_container" class="mb-2">
+                            <div class="row additional-info-row mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Key"
+                                        name="additional_info_key[]">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Value"
+                                        name="additional_info_value[]">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                        style="display: none;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_additional_info_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Product Specifications</label>
+                        <div id="specs_container" class="mb-2">
+                            <div class="row specs-row mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Key" name="specs_key[]">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Value" name="specs_value[]">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                        style="display: none;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_specs_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Enhanced Image Upload Section -->
@@ -175,8 +221,80 @@
         transition: all 0.3s;
     }
 </style>
+
+<script>
+    // Dynamic Key-Value Rows for Additional Info
+    document.getElementById('add_additional_info_row').addEventListener('click', function (e) {
+        e.preventDefault();
+        const container = document.getElementById('additional_info_container');
+        const newRow = document.createElement('div');
+        newRow.className = 'row additional-info-row mb-2';
+        newRow.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Key" name="additional_info_key[]">
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Value" name="additional_info_value[]">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newRow);
+        updateDeleteButtons();
+    });
+
+    // Dynamic Key-Value Rows for Specs
+    document.getElementById('add_specs_row').addEventListener('click', function (e) {
+        e.preventDefault();
+        const container = document.getElementById('specs_container');
+        const newRow = document.createElement('div');
+        newRow.className = 'row specs-row mb-2';
+        newRow.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Key" name="specs_key[]">
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Value" name="specs_value[]">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newRow);
+        updateDeleteButtons();
+    });
+
+    // Delete Row
+    function updateDeleteButtons() {
+        document.querySelectorAll('.delete-row').forEach((btn, index) => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                this.closest('.row').remove();
+                updateDeleteButtons();
+            });
+
+            // Show delete button only if there's more than one row
+            const container = btn.closest('[id$="_container"]');
+            const rowCount = container.querySelectorAll('.row').length;
+            if (rowCount > 1) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+    }
+
+    // Initialize delete buttons on page load
+    document.addEventListener('DOMContentLoaded', updateDeleteButtons);
+</script>
+
 <!-- Place the first <script> tag in your HTML's <head> -->
-<script src="https://cdn.tiny.cloud/1/f4pyogqxs5bgdb3qb41ycnlez42gj1s0k9m83yn2pkig50dx/tinymce/8/tinymce.min.js"
+<script src="https://cdn.tiny.cloud/1/6gcbfrf9aa0izw5eu8u60vno25oxthr44mslcumic8b6l7y2/tinymce/8/tinymce.min.js"
     referrerpolicy="origin" crossorigin="anonymous"></script>
 
 <script>
