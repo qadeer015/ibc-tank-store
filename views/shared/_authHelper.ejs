@@ -93,7 +93,6 @@
             const result = await response.json();
 
             if (response.ok) {
-                console.log('Action successful:', result);
                 // Handle success - you can emit custom events or update UI
                 window.dispatchEvent(new CustomEvent('protectedActionSuccess', { detail: result }));
             } else {

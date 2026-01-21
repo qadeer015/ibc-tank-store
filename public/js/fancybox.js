@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const images = JSON.parse(document.getElementById("product-images-data").textContent);
     const mainImg = document.getElementById("mainProductImage");
     const thumbs = document.querySelectorAll(".product-thumb");
+    const nextBtn = document.querySelector(".gallery-nav.next");
+    const prevBtn = document.querySelector(".gallery-nav.prev");
 
     let currentIndex = 0;
 
@@ -19,12 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         thumb.addEventListener("click", () => updateMainImage(index));
     });
 
+    if(!prevBtn || !nextBtn) return;
+    
     // Prev / Next
-    document.querySelector(".gallery-nav.prev").addEventListener("click", () => {
+    prevBtn.addEventListener("click", () => {
         updateMainImage((currentIndex - 1 + images.length) % images.length);
     });
 
-    document.querySelector(".gallery-nav.next").addEventListener("click", () => {
+    nextBtn.addEventListener("click", () => {
         updateMainImage((currentIndex + 1) % images.length);
     });
 
