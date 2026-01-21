@@ -48,7 +48,6 @@ document.getElementById('contact-us-form').addEventListener('submit', async (e) 
         if (response.ok) {
             // Success case
             form.reset();
-            window.location.reload();
         } else {
             // Error case
             alert('Failed to send message. Please try again.', "error")

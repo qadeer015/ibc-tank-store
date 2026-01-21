@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply to Your Inquiry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: #007bff;
+            font-size: 24px;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+
+        .original-message {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 3px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .original-message .label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+
+        .contact-info {
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-top: 15px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>We've Replied to Your Inquiry</h2>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Hi {{customerName}},</p>
+
+            <p>Thank you for contacting us. We've reviewed your inquiry and here's our response:</p>
+
+            <div class="message">
+                {{replyMessage}}
+            </div>
+
+            <p>If you have any further questions or need additional assistance, please don't hesitate to reach out to
+                us.</p>
+        </div>
+
+        <div class="original-message">
+            <div class="label">Your Original Message:</div>
+            <p><strong>
+                    {{originalMessage}}
+                </strong></p>
+        </div>
+
+        <div class="contact-info">
+            <strong>Need further assistance?</strong><br>
+            You can reply to this email directly or visit our website for more information.
+        </div>
+
+        <div class="footer">
+            <p>© {{year}} IBC Tank Store. All rights reserved.</p>
+            <p>This is an automated reply.</p>
+        </div>
+    </div>
+</body>
+
+</html>

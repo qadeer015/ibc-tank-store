@@ -1,14 +1,14 @@
 // public/js/notification.js
-class Notification{
-  constructor( message, type="success", autoclose=true, duration=3000 ){
+class CustomNotification {
+  constructor(message, type = "success", autoclose = true, duration = 3000) {
     this.message = message,
-    this.type = type,
-    this.autoclose = autoclose,
-    this.duration = duration
+      this.type = type,
+      this.autoclose = autoclose,
+      this.duration = duration
     this.show(this.message, this.type, this.duration, this.autoclose);
   }
 
-   show(message, type, duration, autoclose){
+  show(message, type, duration, autoclose) {
     const existingAlert = document.querySelector('.alert.alert-dismissible.fade');
     if (existingAlert) {
       existingAlert.remove();
@@ -30,12 +30,12 @@ class Notification{
     alertEl.appendChild(messageEL);
     document.body.appendChild(alertEl);
 
-    if(autoclose){
+    if (autoclose) {
       setTimeout(() => {
         messageEL.remove();
         alertEl.remove();
       }, duration)
-    } else{
+    } else {
       const hideBtnEl = document.createElement("button");
       hideBtnEl.classList.add("btn-close");
       hideBtnEl.setAttribute("data-bs-dismiss", "alert");
@@ -44,3 +44,6 @@ class Notification{
     }
   }
 }
+
+// Make it available globally
+window.CustomNotification = CustomNotification;

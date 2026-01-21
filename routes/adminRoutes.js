@@ -1,6 +1,6 @@
 // routes/adminRoutes.js
 const express = require("express");
-const { isAuthenticated,isAdmin} = require("../middlewares/authenticate");
+const { isAuthenticated, isAdmin } = require("../middlewares/authenticate");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const productController = require('../controllers/productsController');
@@ -12,14 +12,14 @@ const router = express.Router();
 router.use(isAuthenticated);
 router.use(isAdmin);
 
-router.get("/dashboard", async (req, res)=>{
-      try{
+router.get("/dashboard", async (req, res) => {
+      try {
             let totalProducts = await Product.count();
             let totalCustomers = await User.count('customer');
             let totalContacts = await contactController.getTotal();
-            res.render("admin/dashboard", {totalProducts, totalCustomers, totalContacts, title:'Dashboard', viewPage: 'dashboard'});
-      }catch(error){
-          console.log(error);
+            res.render("admin/dashboard", { totalProducts, totalCustomers, totalContacts, title: 'Dashboard', viewPage: 'dashboard' });
+      } catch (error) {
+            console.log(error);
       }
 })
 
@@ -36,7 +36,11 @@ router.post("/products/:id/delete", productController.delete);
 // Contacts
 router.get('/contacts', contactController.list);
 router.get('/contacts/:id', contactController.show);
+router.get('/contacts/:id/reply', contactController.replyForm);
+router.post('/contacts/:id/send-reply', contactController.sendReply);
 router.post('/contacts/:id/delete', contactController.delete);
+router.post('/contacts/:id/mark-read', contactController.markAsRead);
+router.post('/contacts/:id/mark-replied', contactController.markAsReplied);
 
 // Categories
 router.get('/categories', categoryController.list);
@@ -48,12 +52,12 @@ router.get('/settings', settingsController.getSettingsPage);
 router.post('/settings', settingsController.saveSettings);
 
 // Customers
-router.get('/customers', async (req, res)=>{
-      try{
+router.get('/customers', async (req, res) => {
+      try {
             let customers = await User.getAll('customer');
-            res.render("admin/customer/index", {customers, viewPage: 'customers', title:'Customers'});
-      }catch(error){
-          console.log(error);
+            res.render("admin/customer/index", { customers, viewPage: 'customers', title: 'Customers' });
+      } catch (error) {
+            console.log(error);
       }
 });
 
