@@ -40,7 +40,8 @@ exports.saveSettings = async (req, res) => {
       notification_method,
       notification_endpoint,
       contact_number,
-      price_currency
+      price_currency,
+      tinymce_api_key
     } = req.body;
 
     const allSettings = {
@@ -48,7 +49,8 @@ exports.saveSettings = async (req, res) => {
       notification_method,
       notification_endpoint: notification_endpoint|| oldSettings.notification_endpoint,
       contact_number,
-      price_currency: price_currency || oldSettings.price_currency
+      price_currency: price_currency || oldSettings.price_currency,
+      tinymce_api_key: tinymce_api_key || oldSettings.tinymce_api_key
     };
     
     for (const [key, value] of Object.entries(allSettings)) {
