@@ -72,6 +72,19 @@
           </div>
         </div>
 
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Editor Settings</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="tinymce_api_key" class="form-label">Accss key</label>
+              <input type="text" class="form-control" id="tinymce_api_key" name="tinymce_api_key"
+                value="<%= settings.tinymce_api_key || '' %>" placeholder="Access key">
+            </div>
+          </div>
+        </div>
+
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary">Save Settings</button>
         </div>
