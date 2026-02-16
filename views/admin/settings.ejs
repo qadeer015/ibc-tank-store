@@ -21,6 +21,11 @@
             <h5 class="mb-0">Mailer / Notification Settings</h5>
           </div>
           <div class="card-body">
+            <div class="form-check form-switch my-3">
+              <input class="form-check-input" type="checkbox" id="notify_after_signin" name="notify_after_signin"
+                <%=settings.notify_after_signin ? 'checked' : '' %>>
+              <label class="form-check-label" for="notify_after_signin">Notify after sign in</label>
+            </div>
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" id="notify_contact_submission"
                 name="notify_contact_submission" <%=settings.notify_contact_submission ? 'checked' : '' %>>
