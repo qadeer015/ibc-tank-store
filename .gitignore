@@ -1,7 +1,6 @@
 .env
-.env.example
+.env.test
 node_modules
 notes.txt
 resourceInfo.txt
 uploads
-schema.js
