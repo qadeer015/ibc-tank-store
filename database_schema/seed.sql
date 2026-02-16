@@ -102,6 +102,59 @@ CALL seed_products();
 DROP PROCEDURE seed_products;
 
 -- =========================
+-- PRODUCT IMAGES (Random 1–4 per product)
+-- =========================
+DELIMITER $$
+
+CREATE PROCEDURE seed_product_images()
+BEGIN
+  DECLARE done INT DEFAULT 0;
+  DECLARE p_id INT;
+  DECLARE img_count INT;
+  DECLARE i INT;
+
+  -- Cursor to loop through all products
+  DECLARE product_cursor CURSOR FOR SELECT id FROM products;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+  OPEN product_cursor;
+
+  read_loop: LOOP
+    FETCH product_cursor INTO p_id;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+
+    -- Random 1 to 4 images per product
+    SET img_count = FLOOR(1 + RAND() * 4);
+    SET i = 1;
+
+    WHILE i <= img_count DO
+      INSERT INTO product_images
+      (product_id, url, sort_order)
+      VALUES (
+        p_id,
+        CONCAT(
+          'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868656/subhan-trader/products/mdmnuslhhwirfjcrxnki',
+          '.png'
+        ),
+        i
+      );
+
+      SET i = i + 1;
+    END WHILE;
+
+  END LOOP;
+
+  CLOSE product_cursor;
+END$$
+
+DELIMITER ;
+
+CALL seed_product_images();
+DROP PROCEDURE seed_product_images;
+
+-- =========================
 -- SLIDES (20)
 -- =========================
 DELIMITER $$
