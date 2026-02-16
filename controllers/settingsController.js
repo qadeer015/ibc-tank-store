@@ -36,7 +36,6 @@ exports.saveSettings = async (req, res) => {
     });
 
     const {
-      notify_after_signin,
       notify_contact_submission,
       notification_method,
       notification_endpoint,
@@ -46,7 +45,6 @@ exports.saveSettings = async (req, res) => {
     } = req.body;
 
     const allSettings = {
-      notify_after_signin: !!notify_after_signin,
       notify_contact_submission: !!notify_contact_submission,
       notification_method,
       notification_endpoint: notification_endpoint|| oldSettings.notification_endpoint,
