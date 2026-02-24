@@ -12,6 +12,13 @@ const contactController = {
 
     async submit(req, res) {
         const { name, email, message, contact_no } = req.body;
+        const phoneRegex = /^\+[1-9]\d{7,14}$/;
+
+        if (!phoneRegex.test(contact_no)) {
+            req.flash('error', 'Invalid phone number format.');
+            return res.redirect(req.get("Referer") || "/");
+        }
+
         const messageData = await Contact.create(name, email, message, contact_no);
 
         const settingsArr = await Setting.all();
@@ -47,7 +54,7 @@ const contactController = {
             }
         }
         req.flash('success', 'Your query submitted successfully.');
-        res.json({ success: true });
+        res.redirect(req.get("Referer") || "/");
     },
 
     async list(req, res) {

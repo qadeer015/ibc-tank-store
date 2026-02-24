@@ -1,6 +1,6 @@
 <!-- views/partials/_contact.ejs -->
 <h2>Contact Us</h2>
-<form id="contact-us-form" class="row g-3">
+<form id="contact-form" action="/contact/submit" method="POST" class="row g-3">
     <div class="col-md-6">
         <label for="name" class="form-label">Name</label>
         <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required autocomplete="additional-name">
@@ -9,10 +9,9 @@
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required autocomplete="email">
     </div>
-    <div class="col-12">
-        <label for="contact_no" class="form-label">Contact Number</label>
-        <input type="tel" id="contact_no" name="contact_no" class="form-control" placeholder="Enter your contact number"
-            required>
+    <div class="col-12  text-dark">
+        <label for="contact_no" class="form-label text-white">Contact Number</label>
+        <input type="tel" id="contact_no" name="contact_no" class="form-control" required>
     </div>
     <div class="col-12">
         <label for="message" class="form-label">Message</label>
@@ -24,41 +23,33 @@
 </form>
 
 <script>
-document.getElementById('contact-us-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const form = e.target;
-    const formData = new FormData(form);
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
-    
-    try {
-        const response = await fetch('/contact/submit', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            // Success case
-            form.reset();
-        } else {
-            // Error case
-            alert('Failed to send message. Please try again.', "error")
+    const phoneInputField = document.querySelector("#contact_no");
+
+    const iti = window.intlTelInput(phoneInputField, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            fetch("https://ipapi.co/json")
+                .then(res => res.json())
+                .then(data => success(data.country_code))
+                .catch(() => success("pk"));
+        },
+        separateDialCode: true,
+        preferredCountries: ["pk", "us", "gb"],
+        utilsScript:
+            "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    });
+
+    const contactForm = document.getElementById("contact-form");
+
+    contactForm.addEventListener("submit", function (e) {
+
+        if (!iti.isValidNumber()) {
+            e.preventDefault();
+            alert("Please enter a valid phone number.");
+            return;
         }
-    } catch (error) {
-        // Network error case
-        alert('Network error. Please check your connection and try again.', "error")
-        console.error('Error:', error);
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Submit Message';
-    }
-});
+
+        // 🔥 THIS WILL NOW WORK
+        phoneInputField.value = iti.getNumber();
+    });
 </script>
