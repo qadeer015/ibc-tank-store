@@ -7,6 +7,7 @@ const productController = require('../controllers/productsController');
 const contactController = require('../controllers/contactController');
 const categoryController = require('../controllers/categoryController');
 const settingsController = require('../controllers/settingsController');
+const analyticsController = require('../controllers/analyticsController');
 const { single, array } = require("../middlewares/upload");
 const router = express.Router();
 router.use(isAuthenticated);
@@ -61,4 +62,6 @@ router.get('/customers', async (req, res) => {
       }
 });
 
+router.get("/analytics", analyticsController.getAnalyticsDashboard);
+router.get("/analytics/realtime", analyticsController.getRealtimeData);
 module.exports = router;

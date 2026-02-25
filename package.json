@@ -20,6 +20,7 @@
   "homepage": "https://github.com/qadeer015/ibc-tank-store#readme",
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",
+    "@google-analytics/data": "^5.2.1",
     "@kurkle/color": "^0.4.0",
     "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
