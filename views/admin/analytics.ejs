@@ -1,0 +1,218 @@
+<!-- admin/analytics.ejs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="d-flex gap-2 mb-4">
+    <select id="dateRange" class="form-select w-auto">
+        <option value="7daysAgo" <%=dateRange=='7daysAgo' ? 'selected' : '' %>>Last 7 Days</option>
+        <option value="30daysAgo" <%=dateRange=='30daysAgo' ? 'selected' : '' %>>Last 30 Days</option>
+        <option value="90daysAgo" <%=dateRange=='90daysAgo' ? 'selected' : '' %>>Last 90 Days</option>
+    </select>
+
+    <button class="btn btn-primary" onclick="applyFilter()">
+        Apply
+    </button>
+</div>
+
+<!-- KPI CARDS -->
+<section class="row g-4 mb-4 analytics">
+    <div class="col-xxl-3 col-md-6">
+        <div class="card info-card">
+            <div class="card-body">
+                <h5 class="card-title">Active Users</h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="activeUsers">
+                            <%= summary.activeUsers %>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card info-card">
+            <div class="card-body">
+                <h5 class="card-title">Sessions</h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="sessionsValue">
+                            <%= summary.sessions %>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card info-card">
+           <div class="card-body">
+            <h5 class="card-title">Page Views</h5>
+            <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-eye"></i>
+                </div>
+                <div class="ps-3">
+                    <h6 id="pageViewsValue">
+                        <%= summary.pageViews %>
+                    </h6>
+                </div>
+            </div>
+           </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card info-card bg-info-subtle">
+            <div class="card-body">
+                <h5 class="card-title">Realtime Users</h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="realtimeUsers">
+                            <%= summary.realtimeUsers %>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CHART ROW 1 -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 rounded-4">
+            <h6>Top Countries</h6>
+            <canvas id="countryChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 rounded-4">
+            <h6>Monthly Comparison</h6>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- CHART ROW 2 -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 rounded-4">
+            <h6>Device Breakdown</h6>
+            <canvas id="deviceChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 rounded-4">
+            <h6>Traffic Sources</h6>
+            <canvas id="trafficChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const devices = <%- JSON.stringify(devices || []) %>;
+    const countries = <%- JSON.stringify(countries || []) %>;
+    const traffic = <%- JSON.stringify(traffic || []) %>;
+    const monthly = <%- JSON.stringify(monthly || []) %>;
+
+    // DEVICE PIE
+    new Chart(document.getElementById("deviceChart"), {
+        type: "pie",
+        data: {
+            labels: devices.map(d => d.dimensionValues[0].value),
+            datasets: [{
+                data: devices.map(d => Number(d.metricValues[0].value))
+            }]
+        }
+    });
+
+    // COUNTRY BAR
+    new Chart(document.getElementById("countryChart"), {
+        type: "bar",
+        data: {
+            labels: countries.map(c => c.dimensionValues[0].value),
+            datasets: [{
+                label: "Users",
+                data: countries.map(c => Number(c.metricValues[0].value))
+            }]
+        }
+    });
+
+    // TRAFFIC DOUGHNUT
+    new Chart(document.getElementById("trafficChart"), {
+        type: "doughnut",
+        data: {
+            labels: traffic.map(t => t.dimensionValues[0].value),
+            datasets: [{
+                data: traffic.map(t => Number(t.metricValues[0].value))
+            }]
+        }
+    });
+
+    // MONTHLY LINE
+    new Chart(document.getElementById("monthlyChart"), {
+        type: "line",
+        data: {
+            labels: ["Previous Period", "Current Period"],
+            datasets: [{
+                label: "Active Users",
+                data: [
+                    Number(monthly[1]?.metricValues[0]?.value || 0),
+                    Number(monthly[0]?.metricValues[0]?.value || 0)
+                ],
+                tension: 0.4
+            }]
+        }
+    });
+
+    // setInterval(async () => {
+    //     try {
+    //         const res = await fetch("/admin/analytics/realtime");
+    //         const data = await res.json();
+    //         document.getElementById("realtimeUsers").innerText = data.realtimeUsers;
+    //     } catch (err) {
+    //         console.error("Realtime update failed", err);
+    //     }
+    // }, 10000);
+
+    function applyFilter() {
+        const range = document.getElementById("dateRange").value;
+        window.location.href = `/admin/analytics?start=${range}&end=today`;
+    }
+
+    function animateCount(id, target) {
+        const element = document.getElementById(id);
+        let start = 0;
+        const duration = 1000;
+        const step = target / (duration / 16);
+
+        const counter = setInterval(() => {
+            start += step;
+            if (start >= target) {
+                element.innerText = target;
+                clearInterval(counter);
+            } else {
+                element.innerText = Math.floor(start);
+            }
+        }, 16);
+    }
+
+    animateCount("activeUsers", <%-summary.activeUsers %>);
+    animateCount("sessionsValue", <%-summary.sessions %>);
+    animateCount("pageViewsValue", <%-summary.pageViews %>);
+    animateCount("realtimeUsers", <%-summary.realtimeUsers %>);
+</script>

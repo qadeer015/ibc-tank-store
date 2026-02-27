@@ -176,9 +176,11 @@ h6 {
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
+
     0% {
         opacity: 0;
     }
@@ -425,6 +427,7 @@ h6 {
         visibility: hidden;
         opacity: 0;
     }
+
     .header .search-bar-show {
         top: 60px;
         visibility: visible;
@@ -643,6 +646,7 @@ h6 {
 }
 
 @media (min-width: 1200px) {
+
     #main,
     #footer {
         margin-left: 300px;
@@ -656,10 +660,12 @@ h6 {
 }
 
 @media (min-width: 1200px) {
+
     .toggle-sidebar #main,
     .toggle-sidebar #footer {
         margin-left: 0;
     }
+
     .toggle-sidebar .sidebar {
         left: -300px;
     }
@@ -846,6 +852,25 @@ h6 {
 .dashboard .customers-card .card-icon {
     color: #ff771d;
     background: #ffecdf;
+}
+
+.analytics .card-icon {
+    color: #4154f1;
+    background: #f6f6fe;
+    font-size: 32px;
+    line-height: 0;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.analytics .info-card h6 {
+    font-size: 28px;
+    color: #012970;
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
 }
 
 /* Activity */
@@ -1187,6 +1212,7 @@ h6 {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
