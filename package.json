@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "db:create": "dotenv -e .env -- sh -c 'mysql -u $DB_USER -p$DB_PASS < database_schema/schema.sql'",
+    "db:seed": "dotenv -e .env -- sh -c 'mysql -u $DB_USER -p$DB_PASS < database_schema/seed.sql'",
+    "db:drop": "dotenv -e .env -- sh -c 'mysql -u $DB_USER -p$DB_PASS < database_schema/drop.sql'",
+    "db:rest": "npm run db:drop && npm run db:create && npm run db:seed"
   },
   "repository": {
     "type": "git",
