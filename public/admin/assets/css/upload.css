@@ -1,0 +1,16 @@
+.border-dashed {
+    border: 2px dashed #dee2e6 !important;
+}
+
+.upload-placeholder {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-placeholder:hover {
+    transform: translateY(-2px);
+}
+
+.image-upload-container {
+    transition: all 0.3s;
+}

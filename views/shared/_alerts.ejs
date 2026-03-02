@@ -7,22 +7,30 @@
 
 <% if (typeof success !=='undefined' && success.length> 0) { %>
     <script type="application/json" id="success-flash">
-        <%- JSON.stringify(success) %>
-  </script>
+    <%- JSON.stringify(success) %>
+    </script>
 <% } %>
 
 <script>
-    const showFlash = (id, type) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        console.log('showFlash');
-        const data = JSON.parse(el.textContent);
-        if (Array.isArray(data)) {
-            data.forEach(msg => new Notification(msg, type));
-        } else {
-            new Notification(data, type);
-        }
-    };
-    showFlash('error-flash', 'danger');
-    showFlash('success-flash', 'success');
+    // Wait for DOM to be ready before showing alerts
+    document.addEventListener('DOMContentLoaded', function () {
+        const showFlash = (id, type) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const data = JSON.parse(el.textContent);
+            if (Array.isArray(data)) {
+                data.forEach(msg => {
+                    if (typeof window.CustomNotification !== 'undefined') {
+                        new window.CustomNotification(msg, type);
+                    }
+                });
+            } else {
+                if (typeof window.CustomNotification !== 'undefined') {
+                    new window.CustomNotification(data, type);
+                }
+            }
+        };
+        showFlash('error-flash', 'danger');
+        showFlash('success-flash', 'success');
+    });
 </script>

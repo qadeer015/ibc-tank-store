@@ -12,8 +12,15 @@ const contactController = {
 
     async submit(req, res) {
         const { name, email, message, contact_no } = req.body;
+        const phoneRegex = /^\+[1-9]\d{7,14}$/;
+
+        if (!phoneRegex.test(contact_no)) {
+            req.flash('error', 'Invalid phone number format.');
+            return res.redirect(req.get("Referer") || "/");
+        }
+
         const messageData = await Contact.create(name, email, message, contact_no);
-        
+
         const settingsArr = await Setting.all();
 
         // Convert array → object
@@ -27,9 +34,7 @@ const contactController = {
         });
 
         if (settings.notify_contact_submission) {
-
             if (settings.notification_method === 'email') {
-
                 const html = renderTemplate("contact_message.html", {
                     name,
                     email,
@@ -44,13 +49,12 @@ const contactController = {
                     text: `Message from ${name}`,
                     html
                 });
-
             } else if (settings.notification_method === 'discord') {
                 sendDiscordMessage('notification_endpoint', messageData);
             }
         }
         req.flash('success', 'Your query submitted successfully.');
-        res.json({ success: true });
+        res.redirect(req.get("Referer") || "/");
     },
 
     async list(req, res) {
@@ -76,9 +80,74 @@ const contactController = {
         await Contact.delete(id);
         req.flash('success', 'Message deleted successfully.');
         res.redirect('/admin/contacts');
-    }
-};
+    },
 
+    async markAsRead(req, res) {
+        const { id } = req.params;
+        await Contact.updateStatus(id, 'read');
+        res.json({ success: true });
+    },
+
+    async markAsReplied(req, res) {
+        const { id } = req.params;
+        await Contact.updateStatus(id, 'replied');
+        res.json({ success: true });
+    },
+
+    async replyForm(req, res) {
+        const { id } = req.params;
+        const contact = await Contact.getById(id);
+        if (!contact) {
+            req.flash('error', 'Contact not found');
+            return res.redirect('/admin/contacts');
+        }
+        if (contact) {
+            contact.created_at = formateDate(contact.created_at);
+        }
+        res.render('admin/contact/reply', { title: 'Reply to Contact', contact, viewPage: 'contacts-reply' });
+    },
+
+    async sendReply(req, res) {
+        try {
+            const { id } = req.params;
+            const { reply_message } = req.body;
+
+            if (!reply_message || !reply_message.trim()) {
+                return res.json({ success: false, message: 'Reply message cannot be empty' });
+            }
+
+            const contact = await Contact.getById(id);
+            if (!contact) {
+                return res.json({ success: false, message: 'Contact not found' });
+            }
+
+            // Render the email template
+            const html = renderTemplate("contact_reply.html", {
+                customerName: contact.name,
+                replyMessage: reply_message,
+                originalMessage: contact.message,
+                year: new Date().getFullYear()
+            });
+
+            // Send the reply email
+            await sendEmail({
+                to: contact.email,
+                subject: 'Re: Your Inquiry - IBC Tank Store',
+                text: `Reply to your inquiry`,
+                html
+            });
+
+            // Update contact status to 'replied'
+            await Contact.updateStatus(id, 'replied');
+
+            res.json({ success: true, message: 'Reply sent successfully' });
+        } catch (error) {
+            console.error('Error sending reply:', error);
+            res.json({ success: false, message: 'Error sending reply: ' + error.message });
+        }
+    }
+
+}
 
 function formateDate(date) {
     const d = new Date(date);
@@ -90,7 +159,5 @@ function formateDate(date) {
     const minutes = d.getMinutes();
     return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`; // Include AM/PM if using 12-hour format
 }
-
-
 
 module.exports = contactController;

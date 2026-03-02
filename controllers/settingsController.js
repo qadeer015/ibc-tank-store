@@ -36,17 +36,23 @@ exports.saveSettings = async (req, res) => {
     });
 
     const {
+      notify_after_signin,
       notify_contact_submission,
       notification_method,
       notification_endpoint,
-      contact_number
+      contact_number,
+      price_currency,
+      tinymce_api_key
     } = req.body;
 
     const allSettings = {
+      notify_after_signin: !!notify_after_signin,
       notify_contact_submission: !!notify_contact_submission,
       notification_method,
       notification_endpoint: notification_endpoint|| oldSettings.notification_endpoint,
-      contact_number
+      contact_number,
+      price_currency: price_currency || oldSettings.price_currency,
+      tinymce_api_key: tinymce_api_key || oldSettings.tinymce_api_key
     };
     
     for (const [key, value] of Object.entries(allSettings)) {

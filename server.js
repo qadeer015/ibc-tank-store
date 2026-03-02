@@ -91,6 +91,7 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     res.locals.path = req.originalUrl;
     res.locals.title = "IBC Tank Store";
+    res.locals.productImages = [];
     if (req.path.startsWith("/admin")) {
         res.locals.layout = "layouts/admin";
     } else {
@@ -112,17 +113,24 @@ app.get('/', async (req, res) => {
         const maxPrice = parseFloat(req.query.maxPrice) || 1000;
         const condition = req.query.condition || '';
         
+        latestProducts = latestProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+        
+        featuredProducts = featuredProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+        
         featuredProducts = featuredProducts.map(product => ({
             ...product,
             rating: parseFloat(product.rating).toFixed(1),
             price: parseFloat(product.price).toFixed(2)
         }));
-        
-        latestProducts = latestProducts.map(product => ({
-            ...product,
-            rating: parseFloat(product.rating).toFixed(1),
-            price: parseFloat(product.price).toFixed(2)
-        }));
+
 
         let allSettings = null;
 
@@ -142,6 +150,7 @@ app.get('/', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
+            productImages: [],
             user: req.user // Pass user to view
         });
     } catch (error) {
@@ -155,13 +164,19 @@ app.get('/', async (req, res) => {
 app.get('/search', async (req, res) => {
     try {
         const { q, category, minPrice, maxPrice, condition } = req.query;
-        const products = await Product.search({
+        let products = await Product.search({
             query: q,
             categoryId: category,
-            minPrice: parseFloat(minPrice),
-            maxPrice: parseFloat(maxPrice),
+            minPrice: parseInt(minPrice),
+            maxPrice: parseInt(maxPrice),
             condition
         });
+
+        products = products.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
         
         const categories = await Category.getAll();
         res.render('public/search', {
@@ -173,7 +188,8 @@ app.get('/search', async (req, res) => {
             minPrice,
             maxPrice,
             condition,
-            user: req.user // Pass user to view
+            productImages: [],
+            user: req.user
         });
     } catch (error) {
         console.error('Search error:', error);
@@ -214,4 +230,8 @@ app.use((err, req, res, next) => {
     res.render('error', { error: err });
 });
 
-app.listen(process.env.PORT , () => console.log(`Server running on http://localhost:${process.env.PORT }`));
+if(process.env.NODE_ENV !== 'production') {
+    app.listen(process.env.PORT, () => console.log(`Server running on http://localhost:${process.env.PORT}`));
+} else{
+    module.exports = app;
+}

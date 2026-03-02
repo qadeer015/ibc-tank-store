@@ -2,7 +2,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Rating = require('../models/Rating');
-const { getFileUrl } = require('../middlewares/upload');
+const { getFileUrl, deleteFile } = require('../middlewares/upload');
 
 const productController = {
     // productController.js
@@ -14,10 +14,10 @@ const productController = {
             products = products.map(product => ({
                 ...product,
                 rating: parseFloat(product.rating).toFixed(1),
-                price: parseFloat(product.price).toFixed(2)
+                price: parseInt(product.price)
             }));
 
-            if (req.user && req.user.role === 'admin') {
+            if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 return res.render('admin/products/index', {
                     title: 'Products',
                     products,
@@ -36,7 +36,7 @@ const productController = {
                 });
             }
         } catch (error) {
-            console.error('Product list error:', error);  // Detailed error log
+            console.error('Product list error:', error);
             req.flash('error', 'Failed to fetch products');
             res.redirect('/');
         }
@@ -54,20 +54,54 @@ const productController = {
     async create(req, res) {
         try {
             const { name, description, price, category_id, product_condition, stock } = req.body;
-            const image = getFileUrl(req.file);
+            const { additional_info_key = [], additional_info_value = [], specs_key = [], specs_value = [] } = req.body;
+            
+            const uploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
 
-            if (!image) {
-                throw new Error('Product image is required');
+            if (!uploaded.length) {
+                throw new Error('At least one product image is required');
+            }
+
+            const imageField = JSON.stringify(uploaded);
+
+            // Build additional_info object from key-value arrays
+            let additionalInfoJson = null;
+            if (Array.isArray(additional_info_key) && additional_info_key.length > 0) {
+                additionalInfoJson = {};
+                const keys = Array.isArray(additional_info_key) ? additional_info_key : [additional_info_key];
+                const values = Array.isArray(additional_info_value) ? additional_info_value : [additional_info_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        additionalInfoJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(additionalInfoJson).length === 0) additionalInfoJson = null;
+            }
+
+            // Build specs object from key-value arrays
+            let specsJson = null;
+            if (Array.isArray(specs_key) && specs_key.length > 0) {
+                specsJson = {};
+                const keys = Array.isArray(specs_key) ? specs_key : [specs_key];
+                const values = Array.isArray(specs_value) ? specs_value : [specs_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        specsJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(specsJson).length === 0) specsJson = null;
             }
 
             const newProduct = await Product.create(
                 name,
                 description,
                 price,
-                image,
+                imageField,
                 category_id,
                 product_condition,
-                stock
+                stock,
+                additionalInfoJson,
+                specsJson
             );
 
             req.flash('success', 'Product created successfully');
@@ -87,22 +121,27 @@ const productController = {
                 return res.redirect('/products');
             }
             const ratings = await Rating.getProductRatings(req.params.id);
+            const productImages = product.images || [];
+
             product = {
                 ...product,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
-                price: parseFloat(product.price).toFixed(2)
+                price: parseInt(product.price)
             };
+
             if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 res.render('admin/products/show', {
                     title: product.name,
                     viewPage: 'products-show',
                     product,
+                    productImages,
                     ratings
                 });
             } else {
                 res.render('public/products/show', {
                     title: product.name,
                     ratings,
+                    productImages,
                     product
                 });
             }
@@ -121,9 +160,12 @@ const productController = {
                 return res.redirect('/products');
             }
 
+            const productImages = product.images || [];
+
             res.render('admin/products/edit', {
                 title: `Edit ${product.name}`,
                 product,
+                productImages,
                 viewPage: 'products-edit',
                 categories
             });
@@ -136,33 +178,88 @@ const productController = {
     async update(req, res) {
         try {
             const { id } = req.params;
-            const { name, description, price, category_id, product_condition, stock, existingImage } = req.body;
+            const { name, description, price, category_id, product_condition, stock } = req.body;
+            const { additional_info_key = [], additional_info_value = [], specs_key = [], specs_value = [] } = req.body;
+            // existingImages can be a single value or an array
+            let { existingImages } = req.body;
+
             const product = await Product.getById(id);
+
             if (!product) {
                 req.flash('error', 'Product not found');
                 return res.redirect('/products');
             }
-            // If a new image is uploaded, use it; otherwise, keep the existing image
-            let productImage = existingImage;
-            if (req.file) {
-                // Delete old image if it exists and is from Cloudinary
-                if (product.image && product.image.includes('res.cloudinary.com')) {
-                    try {
-                        const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                        if (publicId) {
-                            await cloudinary.uploader.destroy(publicId);
-                        }
-                    } catch (err) {
-                        console.error('Error deleting old avatar:', err);
-                    }
+            // Normalize existingImages to array
+            if (!existingImages) existingImages = [];
+            else if (typeof existingImages === 'string') existingImages = [existingImages];
+
+            // Parse original product images
+            let originalImages = [];
+            if (product.image) {
+                try {
+                    const parsed = JSON.parse(product.image);
+                    if (Array.isArray(parsed)) originalImages = parsed;
+                    else if (typeof parsed === 'string') originalImages = [parsed];
+                } catch (err) {
+                    originalImages = [product.image];
                 }
-                productImage = getFileUrl(req.file);
             }
-            await Product.updateProduct(id, name, description, price, productImage, category_id, product_condition, stock);
+
+            // Determine removed images (present originally but not kept)
+            const removed = originalImages.filter(img => !existingImages.includes(img));
+            for (const rem of removed) {
+                try {
+                    await deleteFile(rem);
+                } catch (err) {
+                    console.error('Error deleting removed image:', err);
+                }
+            }
+
+            // New uploaded files
+            const newUploaded = (req.files && req.files.length) ? req.files.map(f => getFileUrl(f)) : [];
+
+            // Final images to save
+            const imagesToSave = [...existingImages, ...newUploaded];
+            if (!imagesToSave.length) {
+                throw new Error('At least one product image is required');
+            }
+
+            const imageField = JSON.stringify(imagesToSave);
+
+            // Build additional_info object from key-value arrays
+            let additionalInfoJson = null;
+            if (Array.isArray(additional_info_key) && additional_info_key.length > 0) {
+                additionalInfoJson = {};
+                const keys = Array.isArray(additional_info_key) ? additional_info_key : [additional_info_key];
+                const values = Array.isArray(additional_info_value) ? additional_info_value : [additional_info_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        additionalInfoJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(additionalInfoJson).length === 0) additionalInfoJson = null;
+            }
+
+            // Build specs object from key-value arrays
+            let specsJson = null;
+            if (Array.isArray(specs_key) && specs_key.length > 0) {
+                specsJson = {};
+                const keys = Array.isArray(specs_key) ? specs_key : [specs_key];
+                const values = Array.isArray(specs_value) ? specs_value : [specs_value];
+                keys.forEach((key, idx) => {
+                    if (key && key.trim()) {
+                        specsJson[key.trim()] = values[idx] || '';
+                    }
+                });
+                if (Object.keys(specsJson).length === 0) specsJson = null;
+            }
+
+            await Product.updateProduct(id, name, description, price, imageField, category_id, product_condition, stock, additionalInfoJson, specsJson);
             req.flash('success', 'Product updated successfully');
             res.redirect(`/admin/products/${id}`);
         } catch (error) {
-            req.flash('error', 'Failed to update product');
+            console.error('Update error:', error);
+            req.flash('error', error.message || 'Failed to update product');
             res.redirect(`/admin/products/${req.params.id}/edit`);
         }
     },
@@ -173,14 +270,22 @@ const productController = {
 
             // Delete the product image if it exists and is from Cloudinary
             const product = await Product.getById(id);
-            if (product && product.image && product.image.includes('res.cloudinary.com')) {
+            if (product && product.image) {
+                let imgs = [];
                 try {
-                    const publicId = product.image.split('/').slice(-2).join('/').split('.')[0];
-                    if (publicId) {
-                        await cloudinary.uploader.destroy(publicId);
-                    }
+                    const parsed = JSON.parse(product.image);
+                    if (Array.isArray(parsed)) imgs = parsed;
+                    else if (typeof parsed === 'string') imgs = [parsed];
                 } catch (err) {
-                    console.error('Error deleting product image:', err);
+                    imgs = [product.image];
+                }
+
+                for (const img of imgs) {
+                    try {
+                        await deleteFile(img);
+                    } catch (err) {
+                        console.error('Error deleting product image:', err);
+                    }
                 }
             }
 

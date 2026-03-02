@@ -32,6 +32,10 @@ class Contact {
         return rows[0];
     }
 
+    static async updateStatus(id, status) {
+        await db.execute('UPDATE contacts SET status = ? WHERE id = ?', [status, id]);
+    }
+
     static async count() {
         const [rows] = await db.execute('SELECT COUNT(*) AS count FROM contacts');
         return rows[0].count;

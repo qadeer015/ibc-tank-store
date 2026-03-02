@@ -3,18 +3,13 @@ const express = require('express');
 const passport = require('passport');
 const authController = require('../controllers/authController');
 const router = express.Router();
-const {sendEmail} = require("../api/emailService");
-const renderTemplate = require("../utils/templateRenderer");
-const User = require("../models/User");
 
-// Login routes
 router.get('/signin', (req, res) => {
   res.render('public/auth/signin', { user: req.user, title:'Signin'});
 });
 
 router.post('/logout', authController.logoutUser);
 
-// authRoutes.js
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
@@ -22,48 +17,7 @@ router.get('/google/callback',
     failureRedirect: '/auth/signin',
     failureFlash: true
   }),
-  async (req, res) => {
-    req.session.save(async () => {
-      const user = req.user;
-      let html = "";
-      if(user.is_new) {
-        // Render email template
-        html = renderTemplate("welcome.html", {
-          user_name: user.name,
-          year: new Date().getFullYear(),
-          app_name: "IBC Tank Store"
-        });
-        await User.isNewUser(user.id); // Set is_new to false
-      }else{
-        html = renderTemplate("signin.html", {
-          user_name: user.name,
-          year: new Date().getFullYear(),
-          app_name: "IBC Tank Store",
-          email: user.email,
-          username: user.name,
-          date: new Date().toDateString()
-        });
-      }
-      
-
-      // ✔ Fire-and-forget email — does not slow down login
-      sendEmail({
-        to: user.email,
-        subject: "Sign in to IBC Tank Store",
-        text: "You have signed in to IBC Tank Store",
-        html
-      });
-
-      // Redirect user based on role
-      if (user.role === 'admin') {
-        req.flash('success', 'Welcome Admin! You have logged in successfully');
-        return res.redirect('/admin/dashboard');
-      }
-
-      req.flash('success', 'You have logged in successfully');
-      return res.redirect('/');
-    });
-  }
+  authController.signWithGoogle
 );
 
 module.exports = router;

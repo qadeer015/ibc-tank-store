@@ -41,24 +41,65 @@
                         <textarea class="form-control tinymce-editor" id="description" name="description" rows="10">
                     </textarea>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Additional Information</label>
+                        <div id="additional_info_container" class="mb-2">
+                            <div class="row additional-info-row mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Key"
+                                        name="additional_info_key[]">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Value"
+                                        name="additional_info_value[]">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                        style="display: none;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_additional_info_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-semibold">Product Specifications</label>
+                        <div id="specs_container" class="mb-2">
+                            <div class="row specs-row mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Key" name="specs_key[]">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Value" name="specs_value[]">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row"
+                                        style="display: none;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add_specs_row">
+                            <i class="bi bi-plus"></i> Add Row
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Enhanced Image Upload Section -->
             <div class="col-lg-4">
                 <label class="form-label fw-semibold">Product Image</label>
                 <div class="image-upload-container border rounded py-4 px-3 text-center">
-                    <!-- Image Preview -->
-                    <div id="imagePreviewContainer" class="mb-3 d-none position-relative">
-                        <img id="imagePreview" src="" alt="Product preview" class="img-fluid rounded"
-                            style="max-height: 200px;">
-                        <button type="button" id="removeImageBtn"
-                            class="btn btn-sm btn-outline-danger rounded-circle position-absolute top-0 end-0">
-                            <i class="bi bi-x"></i>
-                        </button>
+                    <!-- Image Preview (multiple thumbnails) -->
+                    <div id="imagePreviewContainer" class="mb-3 d-none">
+                        <div id="thumbnails" class="d-flex gap-2 flex-wrap justify-content-center"></div>
                     </div>
                     <!-- Upload Area -->
                     <div id="uploadArea" class="p-4 border-dashed rounded">
-                        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" required>
+                        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" multiple>
                         <div class="upload-placeholder" onclick="document.getElementById('imageInput').click();">
                             <i class="bi bi-cloud-upload display-4 text-muted"></i>
                             <p class="mt-2 text-muted">Click to upload or drag and drop</p>
@@ -81,145 +122,5 @@
         </div>
     </form>
 </section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const imageInput = document.getElementById('imageInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        const uploadArea = document.getElementById('uploadArea');
-        const uploadLoading = document.getElementById('uploadLoading');
-        const removeImageBtn = document.getElementById('removeImageBtn');
-
-        // Handle file selection
-        imageInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                // Show loading indicator
-                uploadLoading.classList.remove('d-none');
-                uploadArea.classList.add('d-none');
-
-                // Simulate processing delay for better UX
-                setTimeout(() => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreviewContainer.classList.remove('d-none');
-                        uploadLoading.classList.add('d-none');
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                }, 800);
-            }
-        });
-
-        // Remove image functionality
-        removeImageBtn.addEventListener('click', function () {
-            imageInput.value = '';
-            imagePreviewContainer.classList.add('d-none');
-            uploadArea.classList.remove('d-none');
-        });
-
-        // Drag and drop functionality
-        const uploadContainer = document.querySelector('.image-upload-container');
-
-        uploadContainer.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            this.classList.add('border-primary');
-            this.querySelector('.upload-placeholder').classList.add('text-primary');
-        });
-
-        uploadContainer.addEventListener('dragleave', function (e) {
-            e.preventDefault();
-            this.classList.remove('border-primary');
-            this.querySelector('.upload-placeholder').classList.remove('text-primary');
-        });
-
-        uploadContainer.addEventListener('drop', function (e) {
-            e.preventDefault();
-            this.classList.remove('border-primary');
-            this.querySelector('.upload-placeholder').classList.remove('text-primary');
-
-            if (e.dataTransfer.files.length) {
-                imageInput.files = e.dataTransfer.files;
-                const event = new Event('change');
-                imageInput.dispatchEvent(event);
-            }
-        });
-
-        // Form validation for image
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function (e) {
-            if (!imageInput.files.length) {
-                e.preventDefault();
-                alert('Please select a product image');
-                uploadArea.classList.add('border-danger');
-            }
-        });
-    });
-</script>
-
-<style>
-    .border-dashed {
-        border: 2px dashed #dee2e6 !important;
-    }
-
-    .upload-placeholder {
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .upload-placeholder:hover {
-        transform: translateY(-2px);
-    }
-
-    .image-upload-container {
-        transition: all 0.3s;
-    }
-</style><!-- Place the first <script> tag in your HTML's <head> -->
-<script src="https://cdn.tiny.cloud/1/f4pyogqxs5bgdb3qb41ycnlez42gj1s0k9m83yn2pkig50dx/tinymce/8/tinymce.min.js"
-    referrerpolicy="origin" crossorigin="anonymous"></script>
-
-<script>
-
-    const ai_request = (request, respondWith) => {
-        respondWith.string((signal) =>
-            fetch("/api/ai/gemini", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    prompt: request.prompt
-                }),
-                signal
-            })
-                .then(async (res) => {
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.error || "AI Error");
-                    }
-
-                    const data = await res.json();
-                    return data.text;
-                })
-        );
-    };
-
-    tinymce.init({
-        selector: 'textarea',
-        plugins: [
-            // Core editing features
-            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-            // Your account includes a free trial of TinyMCE premium features
-            // Try the most popular premium features until Jan 11, 2026:
-            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-        ],
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | aidialog aishortcuts',
-        tinycomments_mode: 'embedded',
-        tinycomments_author: 'Author name',
-        mergetags_list: [
-            { value: 'First.Name', title: 'First Name' },
-            { value: 'Email', title: 'Email' },
-        ],
-        ai_request
-    });
-</script>
+<script src="/admin/assets/js/upload.js"></script>
+<!-- <script src="/admin/assets/js/dynamic-rows.js"></script> -->

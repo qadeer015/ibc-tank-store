@@ -80,41 +80,29 @@
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     <% products.forEach(product => { %>
                         <div class="col">
-                            <div class="card h-100">
-                                <a href="/products/<%= product.id %>" class="text-decoration-none">
-                                <% if (product.image) { %>
-                                    <img src="<%= product.image %>" class="card-img-top product-img" alt="<%= product.name %>">
-                                <% } else { %>
-                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                        <span class="text-muted">No image</span>
-                                    </div>
-                                <% } %>
+                            <div class="card product-card h-100 overflow-hidden border-0 rounded-0">
+                                <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
+                                    <img src="<%= product.image %>" loading="lazy" class="card-img-top product-img" alt="<%= product.name %>">
                                 </a>
-                                <div class="card-body">
-                                    <a href="/products/<%= product.id %>" class="text-decoration-none text-reset">
-                                        <h5 class="card-title"><%= product.name %></h5>
-                                    </a>
-                                    <a href="/products/<%= product.id %>" class="text-decoration-none text-reset">
-                                        <p class="card-text text-muted">
-                                            <small>Condition: <%= product.condition %></small>
+                                <div class="card-body position-relative">
+                                    <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
+                                        <p class="card-title">
+                                            <%= product.name %>
                                         </p>
                                     </a>
-                                    <a href="/products/<%= product.id %>" class="text-decoration-none text-reset">
-                                    <% if (product.rating) { %>
-                                        <div class="mb-2">
-                                            <% for(let i=1; i<=5; i++) { %>
-                                                <% if(i <= Math.floor(product.rating)) { %>
-                                                    <i class="bi bi-star-fill text-warning ratting-star"></i>
-                                                <% } else if(i === Math.ceil(product.rating) && product.rating % 1 > 0) { %>
-                                                    <i class="bi bi-star-half text-warning ratting-star"></i>
-                                                <% } else { %>
-                                                    <i class="bi bi-star text-warning ratting-star"></i>
-                                                <% } %>
-                                            <% } %>
-                                        </div>
-                                    <% } %>
-                                        <h5 class="text-success">Rs.<%= product.price %></h5>
+                                    <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
+                                        <strong class="card-text">
+                                            <%= settings.price_currency %>
+                                                <%= product.price %>
+                                        </strong>
                                     </a>
+                                    <div class="pop-up-footer bg-primary p-2 text-center">
+                                        <a href="https://wa.me/<%= settings.contact_number %>?text=<%= encodeURIComponent('Hi, I am interested in this product: ' + product.name) %>"
+                                            class="whatsapp-btn text-white text-decoration-none fw-semibold" target="_blank"
+                                            rel="noopener noreferrer">
+                                            <i class="bi bi-whatsapp me-1"></i> Contact
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

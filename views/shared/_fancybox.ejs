@@ -1,0 +1,77 @@
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        Fancybox.bind('[data-fancybox="product-gallery"]', {
+            Thumbs: {
+                autoStart: true
+            },
+
+            Toolbar: {
+                display: {
+                    left: ["infobar"],
+                    middle: ["zoom", "slideshow"],
+                    right: ["fullscreen", "close"]
+                }
+            },
+
+            Image: {
+                zoom: true
+            }
+        });
+    });
+</script>
+<script type="application/json" id="product-images-data">
+    <% if(typeof productImages === 'undefined') { %>
+        var productImages = [];
+    <% }else{ %>
+        <%- JSON.stringify(productImages) %>
+    <% } %>
+</script>
+<script src="/js/fancybox.js"></script>
+<style>
+    /* Main image */
+    .product-main-img {
+        width: 500px;
+        max-width: 100%;
+        height: auto;
+        cursor: zoom-in;
+    }
+
+    /* Thumbnails */
+    .product-thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border: 2px solid transparent;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .product-thumb.active {
+        border-color: #0d6efd;
+    }
+
+    /* Prev / Next buttons */
+    .gallery-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 25px;
+        width: 45px;
+        height: 45px;
+        cursor: pointer;
+        z-index: 5;
+    }
+
+    .gallery-nav.prev {
+        left: 0;
+    }
+
+    .gallery-nav.next {
+        right: 0;
+    }
+</style>
