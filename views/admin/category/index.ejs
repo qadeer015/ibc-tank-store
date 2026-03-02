@@ -158,22 +158,16 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                   if (data.success) {
                         // Close modal
                         const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
                         modal.hide();
 
-                        // Update table row
-                        const row = document.getElementById(`category-${categoryId}`);
-                        if (row) {
-                            const nameCell = row.querySelector('td:nth-child(2) strong');
-                            const editButton = row.querySelector('.edit-category-btn');
+                        // Clear form
+                        document.getElementById('editCategoryForm').reset();
 
-                            if (nameCell) nameCell.textContent = categoryName;
-                            if (editButton) editButton.setAttribute('data-name', categoryName);
-                        }
-
-                        new Notification('Category updated successfully!', 'success');
+                        // Refresh page to show new category
+                        window.location.reload();
                     } else {
                         new Notification(data.error || 'Failed to update category', 'danger');
                     }

@@ -1,3 +1,4 @@
+USE subhan_taders_ibc_tank;
 -- Disable FK checks
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -84,7 +85,12 @@ BEGIN
       CONCAT('Product ', i),
       CONCAT('Description for product ', i),
       ROUND(1000 + RAND() * 90000, 2),
-      CONCAT('https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868656/subhan-trader/products/mdmnuslhhwirfjcrxnki', '.png'),
+      ELT(
+        FLOOR(1 + RAND() * 3),
+        'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868656/subhan-trader/products/mdmnuslhhwirfjcrxnki.png',
+        'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868416/subhan-trader/products/nkx1vfyrqtzicp1cy5kl.jpg',
+        'https://res.cloudinary.com/dlfxf7tws/image/upload/v1768334947/ibc-tank-store/products/sdah8ujzx3dgyhdae745.jpg'
+      ),
       cat_id,
       IF(RAND() > 0.5, 'New', 'Used'),
       FLOOR(1 + RAND() * 100),
@@ -134,9 +140,11 @@ BEGIN
       (product_id, url, sort_order)
       VALUES (
         p_id,
-        CONCAT(
-          'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868656/subhan-trader/products/mdmnuslhhwirfjcrxnki',
-          '.png'
+        ELT(
+          FLOOR(1 + RAND() * 3),
+          'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868656/subhan-trader/products/mdmnuslhhwirfjcrxnki.png',
+          'https://res.cloudinary.com/dlfxf7tws/image/upload/v1757868416/subhan-trader/products/nkx1vfyrqtzicp1cy5kl.jpg',
+          'https://res.cloudinary.com/dlfxf7tws/image/upload/v1768334947/ibc-tank-store/products/sdah8ujzx3dgyhdae745.jpg'
         ),
         i
       );
