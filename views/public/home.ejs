@@ -13,7 +13,7 @@
                     <input type="text" name="q" class="form-control form-control-lg" placeholder="Search products..."
                         value="<%= searchQuery || '' %>">
                     <button class="btn btn-primary" type="submit">
-                        <i class="bi bi-search"></i> Search
+                        <i class="bi bi-search"></i>
                     </button>
                 </div>
             </form>
@@ -35,7 +35,7 @@
                         </a>
                         <div class="card-body">
                             <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                                <p class="card-title">
+                                <p class="card-title mb-0">
                                     <%= product.name %>
                                 </p>
                             </a>
@@ -57,12 +57,13 @@
     </div>
 </section>
 
+<h2 class="section-title mb-4">Latest Products</h2>
 <div class="row">
     <!-- Filters Sidebar -->
     <aside class="col-md-3">
         <div class="card filter-card mb-4">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Filters</h5>
+                <h5 class="mb-0">Filter Products</h5>
             </div>
             <div class="card-body">
                 <form id="filterForm" action="/search" method="GET">
@@ -118,22 +119,6 @@
 
     <!-- Latest Products Grid -->
     <section class="col-md-9">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="section-title mb-0">Latest Products</h2>
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Sort By
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <li><a class="dropdown-item" href="?sort=latest">Newest First</a></li>
-                    <li><a class="dropdown-item" href="?sort=price_asc">Price: Low to High</a></li>
-                    <li><a class="dropdown-item" href="?sort=price_desc">Price: High to Low</a></li>
-                    <li><a class="dropdown-item" href="?sort=rating">Top Rated</a></li>
-                </ul>
-            </div>
-        </div>
-
         <% if (latestProducts.length> 0) { %>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <% latestProducts.forEach(product=> { %>
@@ -144,7 +129,7 @@
                             </a>
                             <div class="card-body position-relative">
                                 <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                                    <p class="card-title">
+                                    <p class="card-title mb-0">
                                         <%= product.name %>
                                     </p>
                                 </a>

@@ -1,0 +1,242 @@
+// server.js
+const express = require('express');
+const app = express();
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const methodOverride = require("method-override");
+const path = require('path');
+const morgan = require("morgan");
+const passport = require('passport');
+const flash = require('connect-flash');
+const expressLayouts = require("express-ejs-layouts");
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const pool = require('./db'); // MySQL connection pool
+const Product = require('../models/Product');
+const Category = require('../models/Category');
+const Setting = require('../models/Setting');
+const { saveSettingsCookie } = require("../utils/settingsCookie");
+const settingMiddleware = require("../middlewares/settings");
+
+// Routes
+const productRoutes = require('../routes/productRoutes');
+const categoryRoutes = require('../routes/categoryRoutes');
+const contactRoutes = require('../routes/contactRoutes');
+const pageRoutes = require('../routes/pageRoutes');
+const authRoutes = require("../routes/authRoutes");
+const adminRoutes = require("../routes/adminRoutes");
+const ratingRoutes = require("../routes/ratingsRoutes");
+const aiRoutes = require("../routes/aiRoutes");
+
+require('dotenv').config({
+    quiet: true
+});
+
+require('./passport');
+
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev', {
+    skip: function (req, res) {
+        return res.statusCode < 400;
+    }
+}));
+app.use(methodOverride("_method"));
+
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+app.use(expressLayouts);
+
+app.set("layout", "layouts/public");
+
+app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files from uploads directory in development
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+}
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+// server.js
+const sessionStore = new MySQLStore({
+    expiration: 86400000, // 1 day in milliseconds
+    createDatabaseTable: true, // Will create sessions table if it doesn't exist
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
+}, pool);
+
+app.set('trust proxy', 1);
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+
+// Passport and flash middleware
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use(settingMiddleware);
+
+app.use((req, res, next) => {
+    res.locals.user = req.user || null;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    res.locals.path = req.originalUrl;
+    res.locals.title = "IBC Tank Store";
+    res.locals.productImages = [];
+    if (req.path.startsWith("/admin")) {
+        res.locals.layout = "layouts/admin";
+    } else {
+        res.locals.layout = "layouts/public";
+    }
+    next();
+});
+
+app.get('/', async (req, res) => {
+    try {
+        // Explicitly convert all numeric parameters
+        let featuredProducts = await Product.getTopRated(4, 5);
+        const categories = await Category.getAll();
+        let latestProducts = await Product.getLatest(8);
+
+        const searchQuery = req.query.search || '';
+        const selectedCategory = req.query.category || '';
+        const minPrice = parseFloat(req.query.minPrice) || 0;
+        const maxPrice = parseFloat(req.query.maxPrice) || 1000;
+        const condition = req.query.condition || '';
+
+        latestProducts = latestProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+
+        featuredProducts = featuredProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+
+        featuredProducts = featuredProducts.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseFloat(product.price).toFixed(2)
+        }));
+
+
+        let allSettings = null;
+
+        if (!req.cookies.ibc_tank_store_settings) {
+            // No cookie → fetch from DB and save
+            allSettings = await Setting.all();
+            saveSettingsCookie(res, allSettings);
+        }
+
+        res.render('public/home', {
+            title: 'Home',
+            featuredProducts,
+            latestProducts,
+            categories,
+            searchQuery,
+            selectedCategory,
+            minPrice,
+            maxPrice,
+            condition,
+            productImages: [],
+            user: req.user // Pass user to view
+        });
+    } catch (error) {
+        console.error('Homepage error:', error);
+        req.flash('error', 'Failed to load homepage');
+        res.redirect('/products');
+    }
+});
+
+// Search endpoint
+app.get('/search', async (req, res) => {
+    try {
+        const { q, category, minPrice, maxPrice, condition } = req.query;
+        let products = await Product.search({
+            query: q,
+            categoryId: category,
+            minPrice: parseInt(minPrice),
+            maxPrice: parseInt(maxPrice),
+            condition
+        });
+
+        products = products.map(product => ({
+            ...product,
+            rating: parseFloat(product.rating).toFixed(1),
+            price: parseInt(product.price)
+        }));
+
+        const categories = await Category.getAll();
+        res.render('public/search', {
+            title: 'Search Results',
+            products,
+            categories,
+            searchQuery: q,
+            selectedCategory: category,
+            minPrice,
+            maxPrice,
+            condition,
+            productImages: [],
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Search error:', error);
+        req.flash('error', 'Search failed');
+        res.redirect('/');
+    }
+});
+
+// Routes
+app.use('/', pageRoutes);
+app.use('/products', productRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/contact', contactRoutes);
+app.use("/auth", authRoutes);
+app.use("/ratings", ratingRoutes);
+app.use("/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
+
+// ========== ADD 404 HANDLER HERE ==========
+app.use((req, res) => {
+    res.status(404).render('404', {
+        title: 'Page Not Found',
+        viewPage: "404",
+        user: req.user || null
+    });
+});
+// ==========================================
+
+// Error handling middleware (keep this after 404 handler)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    if (req.flash) {
+        req.flash('error', 'Something went wrong!');
+        return res.redirect('/');
+    }
+
+    // Flash not available → send plain error
+    res.render('error', { error: err });
+});
+
+module.exports = app;
