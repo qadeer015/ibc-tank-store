@@ -62,6 +62,33 @@ router.get('/customers', async (req, res) => {
       }
 });
 
+// Customers
+router.get('/customers/:id', async (req, res) => {
+      try {
+            let customer = await User.getById(req.params.id);
+            if (!customer) {
+                  req.flash('error', 'Customer not found.');
+                  return res.redirect('/admin/customers');
+            }
+            res.render("admin/customer/show", { customer, viewPage: 'customers-show', title: 'Customer Details' });
+      } catch (error) {
+            console.log(error);
+      }
+});
+
+router.delete('/customers/:id/delete', async (req, res) => {
+      try {
+            console.log(req.params.id);
+            await User.delete(req.params.id);
+            req.flash('success', 'Customer deleted successfully.');
+            res.redirect('/admin/customers');
+      } catch (error) {
+            console.log(error);
+      }
+});
+
+// Analytics
 router.get("/analytics", analyticsController.getAnalyticsDashboard);
 router.get("/analytics/realtime", analyticsController.getRealtimeData);
+
 module.exports = router;

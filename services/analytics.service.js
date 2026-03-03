@@ -159,7 +159,7 @@ class AnalyticsService {
                 activeUsers: Number(stats.rows?.[0]?.metricValues?.[0]?.value || 0),
                 sessions: Number(stats.rows?.[0]?.metricValues?.[1]?.value || 0),
                 pageViews: Number(stats.rows?.[0]?.metricValues?.[2]?.value || 0),
-                realtimeUsers: Number(realtime.rows[0].metricValues[0].value)
+                realtimeUsers: Number(realtime.rows[0]?.metricValues?.[0]?.value || 0)
             },
             devices: devices.rows || [],
             countries: countries.rows || [],
