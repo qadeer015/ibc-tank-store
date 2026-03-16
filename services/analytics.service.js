@@ -154,6 +154,15 @@ class AnalyticsService {
             metrics: [{ name: "activeUsers" }],
         });
 
+        const [pagesResponse] = await analyticsDataClient.runReport({
+            property: `properties/${PROPERTY_ID}`,
+            dateRanges: [{ startDate, endDate }],
+            dimensions: [{ name: "pagePath" }],
+            metrics: [{ name: "screenPageViews" }],
+            limit: 5,
+            orderBy: [{ metric: { metricName: "screenPageViews" }, desc: true }]
+        });
+
         return {
             summary: {
                 activeUsers: Number(stats.rows?.[0]?.metricValues?.[0]?.value || 0),
@@ -164,7 +173,8 @@ class AnalyticsService {
             devices: devices.rows || [],
             countries: countries.rows || [],
             traffic: traffic.rows || [],
-            monthly: monthlyRows || []
+            monthly: monthlyRows || [],
+            pages: pagesResponse.rows || []
         };
     }
 }
