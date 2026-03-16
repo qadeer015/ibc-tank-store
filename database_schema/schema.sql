@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS subhan_taders_ibc_tank;
-
+USE subhan_taders_ibc_tank;
 -- Disable foreign key checks temporarily
 SET FOREIGN_KEY_CHECKS = 0;
 

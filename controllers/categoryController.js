@@ -11,7 +11,7 @@ const categoryController = {
         const { name } = req.body;
         await Category.create(name);
         req.flash('success', 'Category created successfully.');
-        res.redirect('/admin/categories');
+        res.json({ success: true });
     },
 
     async update(req, res) {
@@ -26,7 +26,7 @@ const categoryController = {
         const { id } = req.params;
         await Category.delete(id);
         req.flash('success', 'Category deleted successfully.');
-        res.redirect('/categories');
+        res.redirect('/admin/categories');
     }
 };
 

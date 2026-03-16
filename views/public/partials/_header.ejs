@@ -1,5 +1,5 @@
 <!-- views/partials/_header.ejs -->
-<nav class="navbar navbar-expand-lg navbar-dark mx-lg-5 p-0 position-sticky top-0 z-3">
+<nav class="navbar navbar-expand-lg navbar-dark mx-lg-5 p-0 position-sticky z-3" style="top: 10px !important;">
   <div class="container bg-dark p-2 rounded px-4">
     <a class="navbar-brand" href="/">IBC TANK STORE</a>
     <ul class="navbar-nav ms-auto flex-row gap-2">
@@ -38,9 +38,9 @@
                   </li>
             </ul>
           </div>
-          <% } else { %>
-            <button class="nav-link text-white bg-transparent border-0" onclick="showAuthModal()">Sign in</button>
-            <% } %>
+        <% } else { %>
+          <button class="nav-link text-white bg-transparent border-0" onclick="showAuthModal()">Sign in</button>
+        <% } %>
       </li>
     </ul>
   </div>

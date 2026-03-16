@@ -1,0 +1,38 @@
+<!-- views/admin/customer/show.ejs -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8 col-md-10">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-semibold mb-0">
+                <i class="bi bi-person-circle me-2 text-primary"></i>
+                <%= customer.name %>
+            </h4>
+            <small class="text-muted">
+                <i class="bi bi-calendar-event me-1"></i>
+                <%= customer.created_at %>
+            </small>
+        </div>
+
+        <!-- Email -->
+        <p class="mb-2">
+            <i class="bi bi-envelope me-2 text-secondary"></i>
+            <strong>Email:</strong>
+            <a href="mailto:<%= customer.email %>" class="text-decoration-none">
+                <%= customer.email %>
+            </a>
+        </p>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between">
+            <a href="/admin/customers/<%= customer.id %>/reply" class="btn btn-sm btn-primary">
+                <i class="bi bi-reply me-1"></i> Message
+            </a>
+            <form action="/admin/customers/<%= customer.id %>/delete?_method=DELETE" method="POST"
+                onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

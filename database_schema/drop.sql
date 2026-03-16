@@ -1,0 +1,1 @@
+DROP DATABASE IF EXISTS subhan_taders_ibc_tank;

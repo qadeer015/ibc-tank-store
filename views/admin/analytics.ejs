@@ -97,14 +97,14 @@
                     <% pages.forEach(page=> { %>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <%= page.dimensionValues[0].value %>
-                                <span class="badge bg-primary rounded-pill">
-                                    <%= page.metricValues[0].value %>
-                                </span>
+                            <span class="badge bg-primary rounded-pill">
+                                <%= page.metricValues[0].value %>
+                            </span>
                         </li>
-                        <% }) %>
-                            <% } else { %>
-                                <li class="list-group-item text-muted">No data available</li>
-                                <% } %>
+                    <% }) %>
+                <% } else { %>
+                    <li class="list-group-item text-muted">No data available</li>
+                <% } %>
             </ul>
         </div>
     </div>
@@ -201,15 +201,15 @@
         }
     });
 
-    // setInterval(async () => {
-    //     try {
-    //         const res = await fetch("/admin/analytics/realtime");
-    //         const data = await res.json();
-    //         document.getElementById("realtimeUsers").innerText = data.realtimeUsers;
-    //     } catch (err) {
-    //         console.error("Realtime update failed", err);
-    //     }
-    // }, 10000);
+    setInterval(async () => {
+        try {
+            const res = await fetch("/admin/analytics/realtime");
+            const data = await res.json();
+            document.getElementById("realtimeUsers").innerText = data.realtimeUsers;
+        } catch (err) {
+            console.error("Realtime update failed", err);
+        }
+    }, 10000);
 
     function applyFilter() {
         const range = document.getElementById("dateRange").value;

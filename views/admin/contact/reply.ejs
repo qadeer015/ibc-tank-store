@@ -1,65 +1,58 @@
 <!-- views/admin/contact/reply.ejs -->
 <div class="row justify-content-center mt-4">
-    <div class="col-lg-8 col-md-10">
-        <!-- Header -->
-        <div class="mb-4">
-            <h4 class="fw-semibold mb-3">
-                <i class="bi bi-reply-all me-2 text-primary"></i>
-                Reply to <%= contact.name %>
-            </h4>
-            <div class="card border-0 bg-light">
-                <div class="card-body">
-                    <p class="mt-3 mb-2">
-                        <strong>To:</strong>
-                        <a href="mailto:<%= contact.email %>" class="text-decoration-none">
-                            <%= contact.email %>
-                        </a>
-                    </p>
-                    <p class="mb-0">
-                        <strong>Subject:</strong>
-                        <span class="text-muted">Re: Your Inquiry</span>
-                    </p>
-                </div>
+    <!-- Header -->
+    <div class="mb-4">
+        <h4 class="fw-semibold mb-3">
+            <i class="bi bi-reply-all me-2 text-primary"></i>
+            Reply to <%= contact.name %>
+        </h4>
+        <div class="card border-0 bg-light m-0">
+            <div class="card-body">
+                <p class="mt-3 mb-2">
+                    <strong>To:</strong>
+                    <a href="mailto:<%= contact.email %>" class="text-decoration-none">
+                        <%= contact.email %>
+                    </a>
+                </p>
+                <p class="mb-0">
+                    <strong>Subject:</strong>
+                    <span class="text-muted">Re: Your Inquiry</span>
+                </p>
             </div>
         </div>
-
-        <!-- Original Message -->
-        <div class="mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h6 class="fw-semibold">Message</h6>
-                <small class="text-muted ms-2">
-                    <%= contact.created_at %>
-                </small>
-            </div>
-            <div class="card border-0 bg-light">
-                <div class="card-body pt-2">
-                    <p class="mb-0 text-muted">
-                        <%= contact.message %>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reply Form -->
-        <form action="/admin/contacts/<%= contact.id %>/send-reply" method="POST" class="needs-validation"
-            id="replyForm">
-            <div class="mb-3">
-                <label for="reply_message" class="form-label fw-semibold">Write Your Reply</label>
-                <textarea id="reply_message" name="reply_message" class="form-control tinymce-editor"
-                    rows="8"></textarea>
-            </div>
-
-            <!-- Form Actions -->
-            <div class="d-flex gap-2 justify-content-between">
-                <a href="/admin/contacts/<%= contact.id %>" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Back
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-send me-1"></i> Send Reply
-                </button>
-            </div>
-        </form>
     </div>
+    
+    <!-- Original Message -->
+    <div class="mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <h6 class="fw-semibold">Message</h6>
+            <small class="text-muted ms-2">
+                <%= contact.created_at %>
+            </small>
+        </div>
+        <div class="card border-0 bg-light m-0">
+            <div class="card-body pt-2">
+                <p class="mb-0 text-muted">
+                    <%= contact.message %>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reply Form -->
+    <form action="/admin/contacts/<%= contact.id %>/send-reply" method="POST" class="needs-validation" id="replyForm">
+        <div class="mb-3">
+            <label for="reply_message" class="form-label fw-semibold">Write Your Reply</label>
+            <textarea id="reply_message" name="reply_message" class="form-control tinymce-editor" rows="8"></textarea>
+        </div>
+    
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send me-1"></i> Send Reply
+            </button>
+        </div>
+    </form>
 </div>
 
 <!-- TinyMCE Editor -->

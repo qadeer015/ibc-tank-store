@@ -17,6 +17,12 @@ const productController = {
                 price: parseInt(product.price)
             }));
 
+            const searchQuery = req.query.search || '';
+            const selectedCategory = req.query.category || '';
+            const minPrice = parseFloat(req.query.minPrice) || 0;
+            const maxPrice = parseFloat(req.query.maxPrice) || 1000;
+            const condition = req.query.condition || '';
+
             if (req.user && req.user.role === 'admin' && req.baseUrl === '/admin') {
                 return res.render('admin/products/index', {
                     title: 'Products',
@@ -31,6 +37,11 @@ const productController = {
                     title: 'Products',
                     products,
                     categories,
+                    searchQuery,
+                    selectedCategory,
+                    minPrice,
+                    maxPrice,
+                    condition,
                     success: req.flash('success'),
                     error: req.flash('error')
                 });

@@ -1,6 +1,11 @@
 // models/User.js
 const db = require('../config/db');
 class User {
+  static async getById(id) {
+    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    return users[0];
+  }
+
   static async findByEmail(email) {
     const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     return users[0];
@@ -46,6 +51,11 @@ class User {
   static async count(role='customer') {
     const [rows] = await db.execute('SELECT COUNT(*) AS count FROM users WHERE role = ?', [role]);
     return rows[0].count;
+  }
+
+  static async delete(id) {
+    const result = await db.execute('DELETE FROM users WHERE id = ?', [id]);
+    return result;
   }
 
 }
