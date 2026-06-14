@@ -121,102 +121,80 @@
         <div class="ibc-accent-line"></div>
         <p class="ibc-section-subtitle ibc-animate">Our most popular IBC tanks trusted by hundreds of businesses across
             Pakistan.</p>
-        <% if (typeof latestProducts !=='undefined' && latestProducts.length> 0) { %>
+        <% if (typeof latestProducts !=='undefined' && latestProducts.length > 0) { %>
             <div class="ibc-products-grid">
                 <% latestProducts.slice(0, 8).forEach(function(product) { %>
-                    <div class="ibc-product-card ibc-animate">
-                        <a href="/products/<%= product.id %>">
-                            <img src="<%= product.image %>" alt="<%= product.name %>" class="ibc-product-img"
-                                loading<%=settings.contact_number %>h="400" height="220">
-                        </a>
+                    <a href="/products/<%= product.id %>" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+                        <div class="ibc-product-img-wrapper">
+                            <img src="<%= product.image %>" alt="<%= product.name %>" class="ibc-product-img" loading="lazy" width="400" height="220">
+                        </div>
                         <div class="ibc-product-body">
-                            <h3><a href="/products/<%= product.id %>" style="color:var(--ibc-dark)">
-                                    <%= product.name %>
-                                </a></h3>
+                            <h3><%= product.name %></h3>
                             <div class="ibc-product-capacity"><i class="bi bi-box"></i> 1000 Liters</div>
                             <p class="ibc-product-usage">Suitable for water, chemical & industrial storage</p>
-                            <div class="ibc-product-actions">
-                                <a href="https://wa.me/<%= settings.contact_number %>?text=Hi%2C%20I%20am%20interested%20in%20<%= encodeURIComponent(product.name) %>.%20Please%20share%20pricing%20and%20availability."
-                                    class="ibc-btn ibc-btn-whatsapp ibc-btn-sm" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <i class="bi bi-whatsapp"></i> Inquire
-                                </a>
-                                <a href="/products/<%= product.id %>" class="ibc-btn ibc-btn-dark ibc-btn-sm">
-                                    <i class="bi bi-eye"></i> Details
-                                </a>
-                            </div>
                         </div>
-                    </div>
+                        <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
                     <% }); %>
             </div>
             <% } else { %>
                 <div class="ibc-products-grid">
-                    <!-- Fallback static products when no DB products -->
-                    <div class="ibc-product-card ibc-animate">
-                        <div class="ibc-product-img"
-                            style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
-                            <i class="bi bi-droplet-fill"></i>
+                    <a href="/products" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+                        <div class="ibc-product-img-wrapper">
+                            <div class="ibc-product-img"
+                                style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
+                                <i class="bi bi-droplet-fill"></i>
+                            </div>
                         </div>
                         <div class="ibc-product-body">
                             <h3>1000 Liter Water IBC Tank</h3>
                             <div class="ibc-product-capacity"><i class="bi bi-box"></i> 1000 Liters</div>
-                            <p class="ibc-product-usage">Perfect for clean water storage on farms, homes & businesses
-                            </p>
-                            <div class="ibc-product-actions">
-                                <a href="https://wa.me/<%= settings.contact_number %>?text=Hi%2C%20I%20am%20interested%20in%201000%20Liter%20Water%20IBC%20Tank"
-                                    class="ibc-btn ibc-btn-whatsapp ibc-btn-sm" target="_blank"
-                                    rel="noopener noreferrer"><i class="bi bi-whatsapp"></i> Inquire</a>
-                            </div>
+                            <p class="ibc-product-usage">Perfect for clean water storage on farms, homes & businesses</p>
                         </div>
-                    </div>
-                    <div class="ibc-product-card ibc-animate">
-                        <div class="ibc-product-img"
-                            style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
-                            <i class="bi bi-flower1"></i>
+                        <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
+                    <a href="/products" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+                        <div class="ibc-product-img-wrapper">
+                            <div class="ibc-product-img"
+                                style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
+                                <i class="bi bi-flower1"></i>
+                            </div>
                         </div>
                         <div class="ibc-product-body">
                             <h3>1000 Liter Fertilizer Tank</h3>
                             <div class="ibc-product-capacity"><i class="bi bi-box"></i> 1000 Liters</div>
                             <p class="ibc-product-usage">Ideal for fertilizer storage in agriculture operations</p>
-                            <div class="ibc-product-actions">
-                                <a href="https://wa.me/<%= settings.contact_number %>?text=Hi%2C%20I%20am%20interested%20in%201000%20Liter%20Fertilizer%20Tank"
-                                    class="ibc-btn ibc-btn-whatsapp ibc-btn-sm" target="_blank"
-                                    rel="noopener noreferrer"><i class="bi bi-whatsapp"></i> Inquire</a>
-                            </div>
                         </div>
-                    </div>
-                    <div class="ibc-product-card ibc-animate">
-                        <div class="ibc-product-img"
-                            style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
-                            <i class="bi bi-droplet-half"></i>
+                        <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
+                    <a href="/products" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+                        <div class="ibc-product-img-wrapper">
+                            <div class="ibc-product-img"
+                                style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
+                                <i class="bi bi-droplet-half"></i>
+                            </div>
                         </div>
                         <div class="ibc-product-body">
                             <h3>1000 Liter Chemical Tank</h3>
                             <div class="ibc-product-capacity"><i class="bi bi-box"></i> 1000 Liters</div>
                             <p class="ibc-product-usage">Chemical-resistant IBC tank for industrial use</p>
-                            <div class="ibc-product-actions">
-                                <a href="https://wa.me/<%= settings.contact_number %>?text=Hi%2C%20I%20am%20interested%20in%201000%20Liter%20Chemical%20Tank"
-                                    class="ibc-btn ibc-btn-whatsapp ibc-btn-sm" target="_blank"
-                                    rel="noopener noreferrer"><i class="bi bi-whatsapp"></i> Inquire</a>
-                            </div>
                         </div>
-                    </div>
-                    <div class="ibc-product-card ibc-animate">
-                        <div class="ibc-product-img"
-                            style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
-                            <i class="bi bi-cup-hot-fill"></i>
+                        <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
+                    <a href="/products" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+                        <div class="ibc-product-img-wrapper">
+                            <div class="ibc-product-img"
+                                style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);color:#fff;font-size:48px">
+                                <i class="bi bi-cup-hot-fill"></i>
+                            </div>
                         </div>
                         <div class="ibc-product-body">
                             <h3>Food Grade IBC Tank</h3>
                             <div class="ibc-product-capacity"><i class="bi bi-box"></i> 1000 Liters</div>
                             <p class="ibc-product-usage">Food-safe storage for juices, oils & edible liquids</p>
-                            <div class="ibc-product-actions">
-                                <a href="https://wa.me/<%= settings.contact_number %>?text=Hi%2C%20I%20am%20interested%20in%20Food%20Grade%20IBC%20Tank"
-                                    class="ibc-btn ibc-btn-whatsapp ibc-btn-sm" target="_blank"
-                                    rel="noopener noreferrer"><i class="bi bi-whatsapp"></i> Inquire</a>
-                            </div>
                         </div>
-                    </div>
+                        <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
                 </div>
                 <% } %>
     </div>
@@ -355,53 +333,101 @@
         <div class="ibc-accent-line"></div>
         <p class="ibc-section-subtitle ibc-animate">Real reviews from businesses and individuals who trust IBC Tank
             Store.</p>
-        <div class="ibc-testimonials-grid">
-            <div class="ibc-testimonial-card ibc-animate">
-                <div class="ibc-testimonial-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                        class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        <div class="ibc-testimonial-slider" id="testimonialSlider">
+            <div class="ibc-testimonial-track">
+                <div class="ibc-testimonial-slide">
+                    <div class="ibc-testimonial-card">
+                        <div class="ibc-testimonial-stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="ibc-testimonial-text">Excellent quality IBC tanks. We ordered 20 tanks for our agriculture farm and they delivered within 3 days to Multan. Very professional service!</p>
+                        <div class="ibc-testimonial-author">
+                            <div class="ibc-testimonial-avatar">AH</div>
+                            <div>
+                                <div class="ibc-testimonial-name">Ahmed Hassan</div>
+                                <div class="ibc-testimonial-city">Multan, Punjab</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="ibc-testimonial-text">Excellent quality IBC tanks. We ordered 20 tanks for our agriculture
-                    farm and they delivered within 3 days to Multan. Very professional service!</p>
-                <div class="ibc-testimonial-author">
-                    <div class="ibc-testimonial-avatar">AH</div>
-                    <div>
-                        <div class="ibc-testimonial-name">Ahmed Hassan</div>
-                        <div class="ibc-testimonial-city">Multan, Punjab</div>
+                <div class="ibc-testimonial-slide">
+                    <div class="ibc-testimonial-card">
+                        <div class="ibc-testimonial-stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="ibc-testimonial-text">Best prices for bulk IBC tank orders in Pakistan. We've been buying from them for 2 years now. Chemical tanks are top quality and well-maintained.</p>
+                        <div class="ibc-testimonial-author">
+                            <div class="ibc-testimonial-avatar">FK</div>
+                            <div>
+                                <div class="ibc-testimonial-name">Faisal Khan</div>
+                                <div class="ibc-testimonial-city">Lahore, Punjab</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibc-testimonial-slide">
+                    <div class="ibc-testimonial-card">
+                        <div class="ibc-testimonial-stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                        </div>
+                        <p class="ibc-testimonial-text">I was looking for a food grade IBC tank for my juice business. They had exactly what I needed and delivered to Karachi within 4 days. Highly recommended!</p>
+                        <div class="ibc-testimonial-author">
+                            <div class="ibc-testimonial-avatar">SR</div>
+                            <div>
+                                <div class="ibc-testimonial-name">Sara Raza</div>
+                                <div class="ibc-testimonial-city">Karachi, Sindh</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="ibc-testimonial-card ibc-animate">
-                <div class="ibc-testimonial-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                        class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p class="ibc-testimonial-text">Best prices for bulk IBC tank orders in Pakistan. We've been buying from
-                    them for 2 years now. Chemical tanks are top quality and well-maintained.</p>
-                <div class="ibc-testimonial-author">
-                    <div class="ibc-testimonial-avatar">FK</div>
-                    <div>
-                        <div class="ibc-testimonial-name">Faisal Khan</div>
-                        <div class="ibc-testimonial-city">Lahore, Punjab</div>
-                    </div>
-                </div>
-            </div>
-            <div class="ibc-testimonial-card ibc-animate">
-                <div class="ibc-testimonial-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                        class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                </div>
-                <p class="ibc-testimonial-text">I was looking for a food grade IBC tank for my juice business. They had
-                    exactly what I needed and delivered to Karachi within 4 days. Highly recommended!</p>
-                <div class="ibc-testimonial-author">
-                    <div class="ibc-testimonial-avatar">SR</div>
-                    <div>
-                        <div class="ibc-testimonial-name">Sara Raza</div>
-                        <div class="ibc-testimonial-city">Karachi, Sindh</div>
-                    </div>
-                </div>
-            </div>
+            <button class="ibc-slider-btn ibc-slider-prev" onclick="ibcSlideTestimonial(-1)"><i class="bi bi-chevron-left"></i></button>
+            <button class="ibc-slider-btn ibc-slider-next" onclick="ibcSlideTestimonial(1)"><i class="bi bi-chevron-right"></i></button>
+            <div class="ibc-slider-dots" id="testimonialDots"></div>
         </div>
+        <script>
+        (function(){
+            var slider = document.getElementById('testimonialSlider');
+            if(!slider) return;
+            var track = slider.querySelector('.ibc-testimonial-track');
+            var slides = slider.querySelectorAll('.ibc-testimonial-slide');
+            var dots = document.getElementById('testimonialDots');
+            var current = 0;
+            var total = slides.length;
+            var autoInterval;
+
+            // Create dots
+            for(var i=0; i<total; i++){
+                var dot = document.createElement('button');
+                dot.className = 'ibc-slider-dot' + (i===0?' active':'');
+                dot.setAttribute('aria-label','Testimonial '+(i+1));
+                dot.onclick = (function(idx){return function(){goTo(idx)}})(i);
+                dots.appendChild(dot);
+            }
+
+            function goTo(idx){
+                slides[current].classList.remove('active');
+                current = (idx+total)%total;
+                track.style.transform = 'translateX(-'+(current*100)+'%)';
+                slides[current].classList.add('active');
+                var allDots = dots.querySelectorAll('.ibc-slider-dot');
+                for(var d=0;d<allDots.length;d++) allDots[d].classList.toggle('active',d===current);
+            }
+
+            window.ibcSlideTestimonial = function(dir){
+                clearInterval(autoInterval);
+                goTo(current+dir);
+                startAuto();
+            };
+
+            function startAuto(){
+                autoInterval = setInterval(function(){goTo(current+1)},5000);
+            }
+
+            goTo(0);
+            startAuto();
+        })();
+        </script>
     </div>
 </section>
 
