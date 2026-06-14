@@ -1,0 +1,202 @@
+<!-- Category Page Template -->
+<!-- Page Hero -->
+<section class="ibc-page-hero">
+    <div class="ibc-container">
+        <div class="ibc-breadcrumb">
+            <a href="/">Home</a> <i class="bi bi-chevron-right" style="font-size:10px"></i> <span>
+                <%= pageTitle %>
+            </span>
+        </div>
+        <h1>
+            <%= pageTitle %>
+        </h1>
+        <p>
+            <%= pageSubtitle %>
+        </p>
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:2">
+            <a href="#quote-form" class="ibc-btn ibc-btn-primary ibc-btn-lg"><i class="bi bi-chat-quote"></i> Get
+                Quote</a>
+            <a href="https://wa.me/<%= settings.contact_number %>?text=Hello%2C%20I%20am%20interested%20in%20<%= encodeURIComponent(pageTitle) %>.%20Please%20share%20pricing%20and%20availability."
+                class="ibc-btn ibc-btn-whatsapp ibc-btn-lg" target="_blank" rel="noopener noreferrer"><i
+                    class="bi bi-whatsapp"></i> WhatsApp Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="ibc-section ibc-bg-white">
+    <div class="ibc-container">
+        <div class="ibc-contact-grid">
+            <div class="ibc-animate">
+                <h2 style="font-size:24px;font-weight:800;color:var(--ibc-dark);margin-bottom:16px">Why Choose Our <%=
+                        pageTitle %>?</h2>
+                <ul class="ibc-benefits-list">
+                    <% benefits.forEach(function(benefit) { %>
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            <div>
+                                <h4>
+                                    <%= benefit.title %>
+                                </h4>
+                                <p>
+                                    <%= benefit.desc %>
+                                </p>
+                            </div>
+                        </li>
+                        <% }); %>
+                </ul>
+            </div>
+            <div class="ibc-animate">
+                <div
+                    style="background:linear-gradient(135deg,var(--ibc-primary) 0%,var(--ibc-primary-light) 100%);border-radius:var(--ibc-radius-lg);padding:40px;display:flex;align-items:center;justify-content:center;min-height:300px;color:#fff;font-size:120px">
+                    <i class="bi <%= iconClass %>"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Applications -->
+<section class="ibc-section" style="background:var(--ibc-gray-100)">
+    <div class="ibc-container">
+        <h2 class="ibc-section-title ibc-animate">Applications & Use Cases</h2>
+        <div class="ibc-accent-line"></div>
+        <p class="ibc-section-subtitle ibc-animate">
+            <%= pageTitle %> are used across a wide range of industries in Pakistan.
+        </p>
+        <div class="ibc-features-grid">
+            <% applications.forEach(function(app) { %>
+                <div class="ibc-feature-card ibc-animate">
+                    <div class="ibc-feature-icon"><i class="bi bi-<%= app.icon %>"></i></div>
+                    <h3>
+                        <%= app.title %>
+                    </h3>
+                    <p>
+                        <%= app.desc %>
+                    </p>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- Specifications -->
+<section class="ibc-section ibc-bg-white">
+    <div class="ibc-container">
+        <h2 class="ibc-section-title ibc-animate">Product Specifications</h2>
+        <div class="ibc-accent-line"></div>
+        <div style="max-width:700px;margin:0 auto" class="ibc-animate">
+            <table class="ibc-spec-table">
+                <% specs.forEach(function(spec) { %>
+                    <tr>
+                        <td>
+                            <%= spec.label %>
+                        </td>
+                        <td>
+                            <%= spec.value %>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="ibc-section" style="background:var(--ibc-gray-100)">
+    <div class="ibc-container">
+        <h2 class="ibc-section-title ibc-animate">Frequently Asked Questions</h2>
+        <div class="ibc-accent-line"></div>
+        <div class="ibc-faq-list ibc-animate">
+            <% faqs.forEach(function(faq, i) { %>
+                <div class="ibc-faq-item<%= i === 0 ? ' ibc-open' : '' %>">
+                    <button class="ibc-faq-question">
+                        <%= faq.q %>
+                            <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="ibc-faq-answer">
+                        <p>
+                            <%= faq.a %>
+                        </p>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="ibc-cta-banner">
+    <div class="ibc-container">
+        <h2>Need a Quote for <%= pageTitle %>?</h2>
+        <p>Contact us today for the best prices and fast delivery across Pakistan.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="https://wa.me/<%= settings.contact_number %>?text=Hello%2C%20I%20am%20interested%20in%20<%= encodeURIComponent(pageTitle) %>.%20Please%20share%20pricing%20and%20availability."
+                class="ibc-btn ibc-btn-whatsapp ibc-btn-lg" target="_blank" rel="noopener noreferrer"><i
+                    class="bi bi-whatsapp"></i> WhatsApp Us</a>
+            <a href="tel:+<%= settings.contact_number %>" class="ibc-btn ibc-btn-dark ibc-btn-lg"><i
+                    class="bi bi-telephone"></i> Call
+                Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- Quote Form -->
+<section class="ibc-quote-section ibc-section" id="quote-form">
+    <div class="ibc-container">
+        <div style="display:grid;grid-template-columns:1fr;gap:40px;align-items:center" class="ibc-animate">
+            <div>
+                <h2 style="color:var(--ibc-white);font-size:28px;font-weight:800;margin-bottom:16px">Get a Free Quote
+                </h2>
+                <p style="color:rgba(255,255,255,.8);font-size:16px;line-height:1.7;margin-bottom:24px">Fill out the
+                    form and our team will get back to you within 30 minutes with the best pricing.</p>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.8)"><i
+                            class="bi bi-check-circle-fill"
+                            style="color:var(--ibc-accent);font-size:20px"></i><span>Free consultation and quote</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.8)"><i
+                            class="bi bi-check-circle-fill"
+                            style="color:var(--ibc-accent);font-size:20px"></i><span>Response within 30 minutes</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.8)"><i
+                            class="bi bi-check-circle-fill"
+                            style="color:var(--ibc-accent);font-size:20px"></i><span>Bulk discounts available</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="ibc-quote-form">
+                    <h2>Request Free Quote</h2>
+                    <p class="ibc-form-subtitle">Fill in your details and we'll contact you shortly.</p>
+                    <form action="/contact/quote" method="POST">
+                        <div class="ibc-quote-form-grid">
+                            <div class="ibc-form-group"><label>Your Name *</label><input type="text" name="name"
+                                    placeholder="Enter your full name" required></div>
+                            <div class="ibc-form-group"><label>Phone Number *</label><input type="tel" name="phone"
+                                    placeholder="03XX XXXXXXX" required></div>
+                            <div class="ibc-form-group"><label>City *</label>
+                                <select name="city" required>
+                                    <option value="">Select your city</option>
+                                    <option value="Lahore">Lahore</option>
+                                    <option value="Karachi">Karachi</option>
+                                    <option value="Islamabad">Islamabad</option>
+                                    <option value="Faisalabad">Faisalabad</option>
+                                    <option value="Multan">Multan</option>
+                                    <option value="Peshawar">Peshawar</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="ibc-form-group"><label>Quantity *</label><input type="number" name="quantity"
+                                    placeholder="How many tanks?" min="1" required></div>
+                        </div>
+                        <input type="hidden" name="product_type" value="<%= pageTitle %>">
+                        <button type="submit" class="ibc-btn ibc-btn-primary ibc-btn-lg"
+                            style="width:100%;justify-content:center;margin-top:8px"><i class="bi bi-send"></i> Request
+                            Free Quote</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

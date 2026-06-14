@@ -1,50 +1,91 @@
-<!-- views/partials/_header.ejs -->
-<nav class="navbar navbar-expand-lg navbar-dark mx-lg-5 p-0 position-sticky z-3" style="top: 10px !important;">
-  <div class="container bg-dark p-2 rounded px-4">
-    <a class="navbar-brand" href="/">
-      <img src="/img/brand/logo.png" alt="IBC Tank Store Logo" height="40">
-      <span class="ms-2 fw-bold">IBC Tank Store</span>
-    </a>
-    <ul class="navbar-nav ms-auto flex-row gap-2">
-      <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
-      <li class="nav-item">
-        <% if (typeof user !=='undefined' && user) { %>
-          <div class="user-profile dropdown">
-            <button class="bg-transparent border-0 outline-0 d-flex align-items-center" type="button">
-              <% if (user.profile_photo) { %>
-                <img src="<%= user.profile_photo %>" alt="<%= user.name %>'s profile photo" class="rounded-circle"
-                  width="40" height="40">
-                <% } else { %>
-                  <span
-                    class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
-                    style="width:40px; height:40px;">
-                    <%= user.name.charAt(0).toUpperCase() %>
-                  </span>
-                  <% } %>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-              <li>
-                <div class="dropdown-item fw-semibold">
-                  <%= user.name %>
-                </div>
-              </li>
-              <%if(user.role==='admin' ){ %>
-                <li>
-                  <a href="/admin/dashboard" class="dropdown-item">Dashboard</a>
-                </li>
-                <%}%>
-                  <li>
-                    <form action="/auth/logout" method="POST">
-                      <input type="hidden" name="_method" value="DELETE">
-                      <button type="submit" class="dropdown-item">Sign out</button>
-                    </form>
-                  </li>
-            </ul>
-          </div>
-        <% } else { %>
-          <button class="nav-link text-white bg-transparent border-0" onclick="showAuthModal()">Sign in</button>
-        <% } %>
-      </li>
-    </ul>
+<!-- IBC Header -->
+<header class="ibc-header">
+  <!-- Top Bar -->
+  <div class="ibc-topbar ibc-bg-dark">
+    <div class="ibc-container">
+      <div class="ibc-topbar-inner">
+        <div class="ibc-topbar-left">
+          <a href="tel:+<%= settings.contact_number %>"><i class="bi bi-telephone-fill"></i>
+            <%= settings.contact_number %>
+          </a>
+          <a href="mailto:info@ibctankstore.com" class="d-none d-md-inline"><i class="bi bi-envelope-fill"></i>
+            info@ibctankstore.com</a>
+        </div>
+        <div class="ibc-topbar-right">
+          <span><i class="bi bi-truck"></i> Nationwide Delivery</span>
+          <span class="d-none d-sm-inline"><i class="bi bi-clock"></i> Mon-Sat: 9AM - 6PM</span>
+        </div>
+      </div>
+    </div>
   </div>
-</nav>
+
+  <!-- Main Navbar -->
+  <div class="ibc-container">
+    <nav class="ibc-navbar">
+      <!-- Logo -->
+      <a href="/" class="ibc-logo">
+        <img src="/img/brand/logo.png" alt="IBC Tank Store - Pakistan's Leading IBC Tank Supplier">
+        <span>IBC Tank Store</span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <% var currentPath=(typeof path !=='undefined' && path) ? path : '/' ; function isActive(href) { if (href==='/' )
+        return currentPath==='/' || currentPath==='' ; return currentPath.indexOf(href)===0; } %>
+        <ul class="ibc-nav-links">
+          <li><a href="/" class="<%= isActive('/') ? 'ibc-active' : '' %>">Home</a></li>
+          <li><a href="/water-ibc-tanks" class="<%= isActive('/water-ibc-tanks') ? 'ibc-active' : '' %>">Water Tanks</a>
+          </li>
+          <li><a href="/chemical-ibc-tanks" class="<%= isActive('/chemical-ibc-tanks') ? 'ibc-active' : '' %>">Chemical
+              Tanks</a></li>
+          <li><a href="/fertilizer-ibc-tanks"
+              class="<%= isActive('/fertilizer-ibc-tanks') ? 'ibc-active' : '' %>">Fertilizer Tanks</a></li>
+          <li><a href="/about" class="<%= isActive('/about') ? 'ibc-active' : '' %>">About</a></li>
+          <li><a href="/contact" class="<%= isActive('/contact') ? 'ibc-active' : '' %>">Contact</a></li>
+        </ul>
+
+        <!-- Desktop CTA -->
+        <div class="ibc-nav-cta">
+          <!-- Login / User Profile -->
+          <% if (typeof user !== 'undefined' && user) { %>
+            <div class="ibc-user-menu" style="position:relative;display:inline-flex;align-items:center">
+              <button class="ibc-user-btn" onclick="document.getElementById('ibcUserDropdown').classList.toggle('ibc-open')" style="display:flex;align-items:center;gap:6px;background:none;border:1px solid rgba(255,255,255,.2);border-radius:var(--ibc-radius-sm);padding:7px 12px;cursor:pointer;color:var(--ibc-white);font-size:14px;font-weight:500;transition:var(--ibc-transition)">
+                <% if (user.profile_photo) { %>
+                  <img src="<%= user.profile_photo %>" alt="<%= user.name %>" style="width:28px;height:28px;border-radius:50%;object-fit:cover">
+                <% } else { %>
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--ibc-accent);color:var(--ibc-dark);font-weight:700;font-size:13px"><%= user.name.charAt(0).toUpperCase() %></span>
+                <% } %>
+                <span class="d-none d-lg-inline"><%= user.name.split(' ')[0] %></span>
+                <i class="bi bi-chevron-down" style="font-size:12px"></i>
+              </button>
+              <div id="ibcUserDropdown" style="position:absolute;top:calc(100% + 8px);right:0;background:var(--ibc-white);border-radius:var(--ibc-radius-sm);box-shadow:var(--ibc-shadow-lg);padding:8px 0;min-width:180px;display:none;z-index:100;border:1px solid rgba(0,0,0,.08)">
+                <div style="padding:10px 16px;border-bottom:1px solid var(--ibc-gray-300);margin-bottom:4px">
+                  <div style="font-weight:700;font-size:14px;color:var(--ibc-dark)"><%= user.name %></div>
+                  <div style="font-size:12px;color:var(--ibc-gray-500)"><%= user.email || '' %></div>
+                </div>
+                <% if (user.role === 'admin') { %>
+                  <a href="/admin/dashboard" style="display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:14px;color:var(--ibc-gray-700);font-weight:500;transition:var(--ibc-transition);width:100%" onmouseover="this.style.background='var(--ibc-gray-100)';this.style.color='var(--ibc-primary)'" onmouseout="this.style.background='';this.style.color='var(--ibc-gray-700)'">
+                    <i class="bi bi-speedometer2" style="font-size:16px"></i> Dashboard
+                  </a>
+                <% } %>
+                <form action="/auth/logout" method="POST" style="margin:0">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" style="display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:14px;color:var(--ibc-gray-700);font-weight:500;transition:var(--ibc-transition);width:100%;cursor:pointer;background:none;border:none;text-align:left" onmouseover="this.style.background='var(--ibc-gray-100)';this.style.color='var(--ibc-danger)'" onmouseout="this.style.background='';this.style.color='var(--ibc-gray-700)'">
+                    <i class="bi bi-box-arrow-right" style="font-size:16px"></i> Sign Out
+                  </button>
+                </form>
+              </div>
+            </div>
+          <% } else { %>
+            <button class="ibc-btn ibc-btn-outline ibc-btn-sm" onclick="showAuthModal()">
+              <i class="bi bi-person-fill"></i> Login
+            </button>
+          <% } %>
+        </div>
+
+        <!-- Hamburger (Mobile) -->
+        <button class="ibc-hamburger" onclick="ibcOpenMobileMenu()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+    </nav>
+  </div>
+</header>

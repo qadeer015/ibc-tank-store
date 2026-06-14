@@ -167,7 +167,13 @@ app.get('/', async (req, res) => {
             maxPrice,
             condition,
             productImages: [],
-            user: req.user // Pass user to view
+            user: req.user,
+            metaTitle: "IBC Tank Store - Pakistan's #1 Supplier of IBC Tanks & Storage Solutions",
+            metaDescription: "Pakistan's trusted supplier of 1000 Liter IBC Tanks. Water, chemical, fertilizer & industrial storage tanks with nationwide delivery. Get a free quote today!",
+            metaKeywords: "IBC Tank Pakistan, IBC Tank Lahore, 1000 Liter Water Tank, IBC Tank Price Pakistan, Chemical Storage Tank, Food Grade IBC Tank, Fertilizer IBC Tank",
+            canonicalPath: '/',
+            path: '/',
+            schemaMarkup: null
         });
     } catch (error) {
         console.error('Homepage error:', error);

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ibctankstore.com/sitemap.xml
+
+# Disallow admin area
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /cart/
+Disallow: /checkout/

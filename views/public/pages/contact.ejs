@@ -1,0 +1,106 @@
+<!-- Contact Page -->
+<section class="ibc-page-hero">
+    <div class="ibc-container">
+        <div class="ibc-breadcrumb">
+            <a href="/">Home</a> <i class="bi bi-chevron-right" style="font-size:10px"></i> <span>Contact Us</span>
+        </div>
+        <h1>Contact IBC Tank Store</h1>
+        <p>Get in touch with our team for IBC tank inquiries, bulk orders, and free quotes. We respond within 30
+            minutes.</p>
+    </div>
+</section>
+
+<section class="ibc-section ibc-bg-white">
+    <div class="ibc-container">
+        <div class="ibc-contact-grid">
+            <!-- Contact Info -->
+            <div class="ibc-contact-card ibc-animate">
+                <h3><i class="bi bi-telephone-fill"></i> Call Us</h3>
+                <p style="font-size:20px;font-weight:700;color:var(--ibc-primary);margin-bottom:16px">
+                    <%= settings.contact_number %>
+                </p>
+                <p style="font-size:14px;color:var(--ibc-gray-700);margin-bottom:8px">Mon-Sat: 9AM - 6PM</p>
+                <p style="font-size:14px;color:var(--ibc-gray-700)">We answer calls during business hours. For
+                    after-hours inquiries, use WhatsApp.</p>
+
+                <h3 style="margin-top:24px"><i class="bi bi-whatsapp"></i> WhatsApp</h3>
+                <p style="font-size:14px;color:var(--ibc-gray-700);margin-bottom:12px">Chat with us anytime on WhatsApp
+                    for instant quotes and product inquiries.</p>
+                <a href="https://wa.me/<%= settings.contact_number %>?text=Hello%2C%20I%20am%20interested%20in%20your%20IBC%20tanks.%20Please%20share%20pricing%20and%20availability."
+                    class="ibc-btn ibc-btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-whatsapp"></i> Chat on WhatsApp
+                </a>
+
+                <h3 style="margin-top:24px"><i class="bi bi-envelope-fill"></i> Email</h3>
+                <p style="font-size:14px;color:var(--ibc-gray-700);margin-bottom:4px"><a
+                        href="mailto:info@ibctankstore.com"
+                        style="color:var(--ibc-primary);font-weight:600">info@ibctankstore.com</a></p>
+
+                <h3 style="margin-top:24px"><i class="bi bi-geo-alt-fill"></i> Address</h3>
+                <p style="font-size:14px;color:var(--ibc-gray-700)">Lahore, Punjab, Pakistan</p>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="ibc-contact-card ibc-animate">
+                <h3><i class="bi bi-chat-quote-fill"></i> Send Us a Message</h3>
+                <form action="/contact" method="POST">
+                    <div class="ibc-quote-form-grid">
+                        <div class="ibc-form-group">
+                            <label>Your Name *</label>
+                            <input type="text" name="name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="ibc-form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" name="phone" placeholder="03XX XXXXXXX" required>
+                        </div>
+                        <div class="ibc-form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" placeholder="you@example.com">
+                        </div>
+                        <div class="ibc-form-group">
+                            <label>City</label>
+                            <select name="city">
+                                <option value="">Select your city</option>
+                                <option value="Lahore">Lahore</option>
+                                <option value="Karachi">Karachi</option>
+                                <option value="Islamabad">Islamabad</option>
+                                <option value="Faisalabad">Faisalabad</option>
+                                <option value="Multan">Multan</option>
+                                <option value="Peshawar">Peshawar</option>
+                                <option value="Gujranwala">Gujranwala</option>
+                                <option value="Sialkot">Sialkot</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ibc-form-group">
+                        <label>Subject</label>
+                        <input type="text" name="subject" placeholder="e.g., IBC Tank Inquiry">
+                    </div>
+                    <div class="ibc-form-group">
+                        <label>Message *</label>
+                        <textarea name="message" placeholder="Tell us about your requirements..." required></textarea>
+                    </div>
+                    <button type="submit" class="ibc-btn ibc-btn-primary ibc-btn-lg"
+                        style="width:100%;justify-content:center">
+                        <i class="bi bi-send"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Maps -->
+<section class="ibc-section" style="background:var(--ibc-gray-100)">
+    <div class="ibc-container">
+        <h2 class="ibc-section-title ibc-animate">Our Location</h2>
+        <div class="ibc-accent-line"></div>
+        <div class="ibc-map-embed ibc-animate">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27225.284762616!2d74.3!3d31.55!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3919046af4b1f22b%3A0xe7e7c2a5e8e0e5c0!2sLahore%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                title="IBC Tank Store Location - Lahore, Pakistan"></iframe>
+        </div>
+    </div>
+</section>

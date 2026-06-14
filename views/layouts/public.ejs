@@ -5,55 +5,196 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="author" content="Abdul Qadeer, Zaheer Ahmed, Kafil Anwer">
-  <meta name="description" content="IBC Tank Store's Public Site">
+  <meta name="author" content="IBC Tank Store - Pakistan's Trusted IBC Tank Supplier">
+
+  <!-- Primary SEO -->
   <title>
-    <%= typeof title !=='undefined' ? title : 'IBC Tank Store' %> | IBC Tank Store
+    <%= typeof metaTitle !=='undefined' ? metaTitle : (typeof title !=='undefined' ? title + ' | ' : '' )
+      + 'IBC Tank Store - Pakistan\' s Leading IBC Tank Supplier' %>
   </title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" /><!-- Link Swiper's CSS -->
+  <meta name="description"
+    content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Pakistan\'s trusted supplier of 1000 Liter IBC Tanks for water, chemical, fertilizer, and industrial storage. Nationwide delivery, bulk orders available. Get a free quote today!' %>">
+  <meta name="keywords"
+    content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'IBC Tank Pakistan, IBC Tank Lahore, 1000 Liter Water Tank, IBC Tank Price Pakistan, Chemical Storage Tank, Food Grade IBC Tank' %>">
+
+  <!-- Open Graph -->
+  <meta property="og:title"
+    content="<%= typeof metaTitle !== 'undefined' ? metaTitle : 'IBC Tank Store - Pakistan\'s Leading IBC Tank Supplier' %>">
+  <meta property="og:description"
+    content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Pakistan\'s trusted supplier of 1000 Liter IBC Tanks. Water, chemical, fertilizer & industrial storage tanks with nationwide delivery.' %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ibctankstore.com<%= typeof path !== 'undefined' ? path : '/' %>">
+  <meta property="og:site_name" content="IBC Tank Store">
+  <meta property="og:locale" content="en_PK">
+
+  <!-- Canonical -->
+  <link rel="canonical"
+    href="https://ibctankstore.com<%= typeof canonicalPath !== 'undefined' ? canonicalPath : '/' %>">
+
+  <!-- Favicon -->
   <link href="/img/brand/favicon.ico" rel="icon">
   <link href="/img/brand/favicon.ico" rel="apple-touch-icon">
-  <%- include('../shared/_styles') %>
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5595834937390441"
-     crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
-  <script src="/javascript/controllers/index.mjs" type="module"></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/css/ibc-main.css">
+
+  <!-- Legacy CSS (keep existing styles for non-redesigned pages) -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <%- include('../shared/_styles') %>
+
+    <!-- Schema.org Structured Data -->
+    <% if (typeof schemaMarkup !=='undefined' && schemaMarkup) { %>
+      <script type="application/ld+json"><%- JSON.stringify(schemaMarkup) %></script>
+      <% } %>
 </head>
 
 <body>
-  <%- include('../public/partials/_header')%>
-    <%- include('../shared/_alerts') %>
-      <%- include('../shared/_authModal') %>
-        <main class="mx-lg-5 p-0 py-4">
-          <div class="container mb-5">
-            <%- body %>
-          </div>
-        </main>
-        <%- include('../public/partials/_footer')%>
-          <script src="/js/bootstrap.min.js"></script>
-          <!-- Swiper JS -->
-          <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-          <%- include('../shared/_authHelper') %>
-            <%- include('../shared/_fancybox') %>
-              <%- include('../shared/_scripts') %>
-              <!-- Google tag (gtag.js) -->
-              <script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
-              <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag() { dataLayer.push(arguments); }
-                gtag('js', new Date());
+  <!-- Mobile Menu Overlay -->
+  <div class="ibc-mobile-menu-overlay" id="ibcMobileOverlay" onclick="ibcCloseMobileMenu()"></div>
 
-                gtag('config', 'G-L32FERKX51');
-              </script>
+  <!-- Mobile Menu -->
+  <div class="ibc-mobile-menu" id="ibcMobileMenu">
+    <div class="ibc-mobile-menu-header">
+      <div class="ibc-logo">
+        <img src="/img/brand/logo.png" alt="IBC Tank Store">
+        <span>IBC Tank Store</span>
+      </div>
+      <button class="ibc-mobile-menu-close" onclick="ibcCloseMobileMenu()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <ul>
+      <li><a href="/" onclick="ibcCloseMobileMenu()">Home</a></li>
+      <li><a href="/water-ibc-tanks">Water IBC Tanks</a></li>
+      <li><a href="/chemical-ibc-tanks">Chemical IBC Tanks</a></li>
+      <li><a href="/fertilizer-ibc-tanks">Fertilizer IBC Tanks</a></li>
+      <li><a href="/food-grade-ibc-tanks">Food Grade IBC Tanks</a></li>
+      <li><a href="/used-ibc-tanks">Used IBC Tanks</a></li>
+      <li><a href="/diesel-storage-tanks">Diesel Storage Tanks</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <% if (user.profile_photo) { %>
+            <img src="<%= user.profile_photo %>" alt="<%= user.name %>" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.3);">
+          <% } else { %>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--ibc-accent);color:var(--ibc-dark);font-weight:700;font-size:16px;"><%= user.name.charAt(0).toUpperCase() %></span>
+          <% } %>
+          <div>
+            <div style="font-weight:600;color:var(--ibc-white);font-size:15px;"><%= user.name %></div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.6);"><%= user.email || '' %></div>
+          </div>
+        </div>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin/dashboard" class="ibc-btn ibc-btn-outline ibc-btn-sm" style="width:100%;margin-bottom:10px;justify-content:center;border-color:rgba(255,255,255,0.3);color:var(--ibc-white);">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        <% } %>
+        <form action="/auth/logout" method="POST" style="margin:0;">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="ibc-btn ibc-btn-outline ibc-btn-sm" style="width:100%;justify-content:center;border-color:rgba(255,255,255,0.3);color:var(--ibc-white);">
+            <i class="bi bi-box-arrow-right"></i> Sign Out
+          </button>
+        </form>
+      <% } else { %>
+        <button onclick="showAuthModal();ibcCloseMobileMenu();" class="ibc-btn ibc-btn-primary" style="width:100%;justify-content:center;">
+          <i class="bi bi-person-fill"></i> Login
+        </button>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('../shared/_alerts') %>
+  <script src="/js/bootstrap.min.js"></script>
+  <%- include('../shared/_authModal') %>
+
+    <%- include('../public/partials/_header') %>
+
+      <main class="ibc-main-content">
+        <%- body %>
+      </main>
+
+      <%- include('../public/partials/_footer') %>
+
+        <!-- WhatsApp Sticky Button -->
+        <div class="ibc-whatsapp-float">
+          <span class="ibc-whatsapp-tooltip">Chat with us!</span>
+          <a href="https://wa.me/<%= settings.contact_number %>?text=Hello%2C%20I%20am%20interested%20in%20your%20IBC%20tanks.%20Please%20share%20pricing%20and%20availability."
+            target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+            <i class="bi bi-whatsapp"></i>
+          </a>
+        </div>
+
+        <!-- Scripts -->
+        <script>
+          // Mobile Menu
+          function ibcOpenMobileMenu() {
+            document.getElementById('ibcMobileMenu').classList.add('ibc-open');
+            document.getElementById('ibcMobileOverlay').classList.add('ibc-open');
+            document.body.style.overflow = 'hidden';
+          }
+          function ibcCloseMobileMenu() {
+            document.getElementById('ibcMobileMenu').classList.remove('ibc-open');
+            document.getElementById('ibcMobileOverlay').classList.remove('ibc-open');
+            document.body.style.overflow = '';
+          }
+
+          // FAQ Toggle
+          document.addEventListener('click', function (e) {
+            if (e.target.closest('.ibc-faq-question')) {
+              var item = e.target.closest('.ibc-faq-item');
+              item.classList.toggle('ibc-open');
+            }
+          });
+
+    // Scroll Animations
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('ibc-visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    // Close user dropdown on outside click
+    document.addEventListener('click', function(e) {
+      var dropdown = document.getElementById('ibcUserDropdown');
+      var userBtn = e.target.closest('.ibc-user-btn');
+      var userMenu = e.target.closest('.ibc-user-menu');
+      if (dropdown && !userMenu) {
+        dropdown.classList.remove('ibc-open');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.ibc-animate').forEach(function(el) {
+        observer.observe(el);
+      });
+    });
+        </script>
+
+        <%- include('../shared/_scripts') %>
+
+          <!-- Google tag (gtag.js) -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-L32FERKX51');
+          </script>
 </body>
 
 </html>

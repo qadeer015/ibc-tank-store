@@ -1,19 +1,99 @@
-<!-- views/partials/_footer.ejs -->
-<footer class="bg-dark text-white py-2 mt-auto">
-    <div class="container pt-3">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-12 mb-3">
-                <%- include('_contact') %>
-            </div>
-            <div class="col-lg-4 col-md-6 col-12 mb-3">
-                <%- include('_links') %>
-            </div>
-            <div class="col-lg-4 col-md-6 col-12 mb-1">
-                <%- include('_locations') %>
-            </div>
+<!-- IBC Footer -->
+<footer class="ibc-footer">
+  <div class="ibc-container">
+    <div class="ibc-footer-grid">
+      <!-- Company Info -->
+      <div>
+        <div class="ibc-logo" style="margin-bottom:16px">
+          <img src="/img/brand/logo.png" alt="IBC Tank Store" height="36">
+          <span>IBC Tank Store</span>
+        </div>
+        <p>Pakistan's trusted supplier of IBC tanks and storage solutions. Serving farmers, industries, and businesses
+          with premium quality tanks since 2020.</p>
+        <p style="margin-top:12px">
+          <i class="bi bi-shield-check" style="color:var(--ibc-accent);margin-right:6px"></i>
+          Trusted by 500+ customers across Pakistan
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <% var footerPath=(typeof path !=='undefined' && path) ? path : '/' ; function isFooterActive(href) { if
+        (href==='/' ) return footerPath==='/' || footerPath==='' ; return footerPath.indexOf(href)===0; } %>
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="ibc-footer-links">
+            <li><a href="/" class="<%= isFooterActive('/') ? 'ibc-active' : '' %>"><i class="bi bi-chevron-right"></i>
+                Home</a></li>
+            <li><a href="/water-ibc-tanks" class="<%= isFooterActive('/water-ibc-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Water IBC Tanks</a></li>
+            <li><a href="/chemical-ibc-tanks"
+                class="<%= isFooterActive('/chemical-ibc-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Chemical IBC Tanks</a></li>
+            <li><a href="/fertilizer-ibc-tanks"
+                class="<%= isFooterActive('/fertilizer-ibc-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Fertilizer IBC Tanks</a></li>
+            <li><a href="/food-grade-ibc-tanks"
+                class="<%= isFooterActive('/food-grade-ibc-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Food Grade Tanks</a></li>
+            <li><a href="/used-ibc-tanks" class="<%= isFooterActive('/used-ibc-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Used IBC Tanks</a></li>
+            <li><a href="/diesel-storage-tanks"
+                class="<%= isFooterActive('/diesel-storage-tanks') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Diesel Storage Tanks</a></li>
+          </ul>
+        </div>
+
+        <!-- Resources -->
+        <div>
+          <h4>Resources</h4>
+          <ul class="ibc-footer-links">
+            <li><a href="/about" class="<%= isFooterActive('/about') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> About Us</a></li>
+            <li><a href="/contact" class="<%= isFooterActive('/contact') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Contact</a></li>
+            <li><a href="/faqs" class="<%= isFooterActive('/faqs') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> FAQs</a></li>
+            <li><a href="/shipping-and-delivery"
+                class="<%= isFooterActive('/shipping-and-delivery') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Shipping & Delivery</a></li>
+            <li><a href="/privacy-policy" class="<%= isFooterActive('/privacy-policy') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Privacy Policy</a></li>
+            <li><a href="/terms" class="<%= isFooterActive('/terms') ? 'ibc-active' : '' %>"><i
+                  class="bi bi-chevron-right"></i> Terms & Conditions</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h4>Contact Us</h4>
+          <div class="ibc-footer-contact-item">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>Lahore, Punjab, Pakistan</span>
+          </div>
+          <div class="ibc-footer-contact-item">
+            <i class="bi bi-telephone-fill"></i>
+            <span><a href="tel:+<%= settings.contact_number %>" style="color:rgba(255,255,255,.6)">
+                <%= settings.contact_number %>
+              </a></span>
+          </div>
+          <div class="ibc-footer-contact-item">
+            <i class="bi bi-envelope-fill"></i>
+            <span><a href="mailto:info@ibctankstore.com"
+                style="color:rgba(255,255,255,.6)">info@ibctankstore.com</a></span>
+          </div>
+          <div class="ibc-footer-contact-item">
+            <i class="bi bi-whatsapp"></i>
+            <span><a href="https://wa.me/<%= settings.contact_number %>" style="color:rgba(255,255,255,.6)"
+                target="_blank" rel="noopener noreferrer">WhatsApp Us</a></span>
+          </div>
         </div>
     </div>
-    <div class="text-center">
-        <small>&copy; 2025 IBC Store. All rights reserved.</small>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="ibc-footer-bottom">
+    <div class="ibc-container">
+      <p>&copy; 2025 IBC Tank Store. All rights reserved. | Pakistan's Leading IBC Tank Supplier</p>
     </div>
+  </div>
 </footer>
