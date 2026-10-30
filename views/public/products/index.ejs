@@ -1,7 +1,7 @@
 <!-- views/public/products/index.ejs -->
 <div class="px-lg-5">
 
-<h2 class="mb-4">Products</h2>
+<h1 class="h2 mb-4">Products</h1>
 
 <form class="row g-3 mb-4" method="get">
     <div class="col-md-4">
@@ -36,15 +36,15 @@
                 </a>
                 <div class="card-body position-relative">
                     <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                        <p class="card-title">
+                        <h2 class="card-title h5">
                             <%= product.name %>
-                        </p>
+                        </h2>
                     </a>
                     <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                        <strong class="card-text">
+                        <span class="card-text price-text">
                             <%= settings.price_currency %>
                                 <%= product.price %>
-                        </strong>
+                        </span>
                     </a>
                     <div class="pop-up-footer bg-primary p-2 text-center">
                         <a href="https://wa.me/<%= settings.contact_number %>?text=<%= encodeURIComponent('Hi, I am interested in this product: ' + product.name) %>"

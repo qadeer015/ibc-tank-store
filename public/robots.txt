@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /contact/submit
+
+Sitemap: https://ibctankstore.com/sitemap.xml

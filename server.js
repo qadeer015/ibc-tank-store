@@ -1,4 +1,8 @@
 // server.js
+require('dotenv').config({
+  quiet: true
+});
+
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -25,10 +29,8 @@ const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const ratingRoutes = require("./routes/ratingsRoutes");
 const aiRoutes = require("./routes/aiRoutes");
-
-require('dotenv').config({
-  quiet: true
-});
+const sitemapRoutes = require('./routes/sitemapRoutes');
+const { SITE_URL, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS, absoluteUrl } = require('./utils/seo');
 
 require('./config/passport');
 
@@ -39,7 +41,21 @@ app.use(expressLayouts);
 
 app.set("layout", "layouts/public");
 
+// Defaults available to every view/layout (express-ejs-layouts does not forward res.locals)
+app.locals.siteUrl = SITE_URL;
+app.locals.metaDescription = DEFAULT_DESCRIPTION;
+app.locals.metaKeywords = DEFAULT_KEYWORDS;
+app.locals.ogType = 'website';
+app.locals.ogImage = absoluteUrl('/img/favicon.ico');
+app.locals.structuredData = null;
+app.locals.canonicalUrl = SITE_URL + '/';
+
+// Dynamic sitemap must be registered before static files
+app.use(sitemapRoutes);
+
 app.use(express.static(path.join(__dirname, 'public')));
+// Self-hosted TinyMCE (no Tiny Cloud API key required)
+app.use('/admin/vendors/tinymce', express.static(path.join(__dirname, 'node_modules/tinymce')));
 // Serve static files from uploads directory in development
 if (process.env.NODE_ENV !== 'production') {
     app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -92,11 +108,46 @@ app.use((req, res, next) => {
     res.locals.path = req.originalUrl;
     res.locals.title = "IBC Tank Store";
     res.locals.productImages = [];
+    res.locals.siteUrl = SITE_URL;
+    res.locals.canonicalUrl = absoluteUrl(req.path === '/' ? '/' : req.path);
+    res.locals.metaDescription = DEFAULT_DESCRIPTION;
+    res.locals.metaKeywords = DEFAULT_KEYWORDS;
+    res.locals.ogType = 'website';
+    res.locals.ogImage = absoluteUrl('/img/favicon.ico');
+    res.locals.structuredData = null;
     if (req.path.startsWith("/admin")) {
         res.locals.layout = "layouts/admin";
     } else {
         res.locals.layout = "layouts/public";
     }
+
+    // express-ejs-layouts only copies render() options into the layout.
+    // Merge SEO locals into options so layout meta tags always receive them.
+    const originalRender = res.render.bind(res);
+    res.render = function renderWithSeo(view, options, callback) {
+        if (typeof options === 'function') {
+            callback = options;
+            options = {};
+        }
+        options = options || {};
+        const seoKeys = [
+            'siteUrl',
+            'canonicalUrl',
+            'metaDescription',
+            'metaKeywords',
+            'ogType',
+            'ogImage',
+            'structuredData',
+            'title',
+        ];
+        seoKeys.forEach((key) => {
+            if (typeof options[key] === 'undefined' && typeof res.locals[key] !== 'undefined') {
+                options[key] = res.locals[key];
+            }
+        });
+        return originalRender(view, options, callback);
+    };
+
     next();
 });
 
@@ -151,7 +202,8 @@ app.get('/', async (req, res) => {
             maxPrice,
             condition,
             productImages: [],
-            user: req.user // Pass user to view
+            user: req.user,
+            metaDescription: "Shop new and used IBC tanks, water tanks, and storage containers at IBC Tank Store — Pakistan's trusted industrial tank marketplace."
         });
     } catch (error) {
         console.error('Homepage error:', error);
@@ -180,7 +232,7 @@ app.get('/search', async (req, res) => {
         
         const categories = await Category.getAll();
         res.render('public/search', {
-            title: 'Search Results',
+            title: q ? `Search: ${q}` : 'Search Results',
             products,
             categories,
             searchQuery: q,
@@ -189,7 +241,10 @@ app.get('/search', async (req, res) => {
             maxPrice,
             condition,
             productImages: [],
-            user: req.user
+            user: req.user,
+            metaDescription: q
+                ? `Search results for "${q}" at IBC Tank Store — new and used IBC tanks and storage solutions in Pakistan.`
+                : 'Search IBC Tank Store for new and used IBC tanks, drums, and storage solutions in Pakistan.'
         });
     } catch (error) {
         console.error('Search error:', error);

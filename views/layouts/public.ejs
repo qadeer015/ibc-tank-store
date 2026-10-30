@@ -1,21 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-PK">
+<% 
+  const pageTitle = typeof title !== 'undefined' && title ? title : 'IBC Tank Store';
+  const description = typeof metaDescription !== 'undefined' && metaDescription
+    ? metaDescription
+    : "IBC Tank Store — Pakistan's trusted marketplace for new & used IBC tanks. Buy water tanks, chemical containers & storage solutions at the best prices.";
+  const keywords = typeof metaKeywords !== 'undefined' && metaKeywords
+    ? metaKeywords
+    : 'IBC tanks Pakistan, IBC tank store, buy IBC tanks, used IBC tanks, water tanks Lahore, chemical containers, Sumandri Jhag, storage tanks';
+  const pageUrl = typeof canonicalUrl !== 'undefined' && canonicalUrl
+    ? canonicalUrl
+    : 'https://ibctankstore.com/';
+  const shareImage = typeof ogImage !== 'undefined' && ogImage
+    ? ogImage
+    : 'https://ibctankstore.com/img/favicon.ico';
+  const shareType = typeof ogType !== 'undefined' && ogType ? ogType : 'website';
+  const baseUrl = typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : 'https://ibctankstore.com';
+  const pageSchemas = typeof structuredData === 'undefined' || !structuredData
+    ? []
+    : (Array.isArray(structuredData) ? structuredData : [structuredData]);
+%>
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="author" content="Abdul Qadeer, Zaheer Ahmed, Kafil Anwer">
-  <meta name="description" content="IBC Tank Store's Public Site">
+  <meta name="description" content="<%= description %>">
+  <meta name="keywords" content="<%= keywords %>">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="<%= pageUrl %>">
   <title>
-    <%= typeof title !=='undefined' ? title : 'IBC Tank Store' %> | IBC Tank Store
+    <%= pageTitle %> | IBC Tank Store
   </title>
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="IBC Tank Store">
+  <meta property="og:locale" content="en_PK">
+  <meta property="og:type" content="<%= shareType %>">
+  <meta property="og:title" content="<%= pageTitle %> | IBC Tank Store">
+  <meta property="og:description" content="<%= description %>">
+  <meta property="og:url" content="<%= pageUrl %>">
+  <meta property="og:image" content="<%= shareImage %>">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= pageTitle %> | IBC Tank Store">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image" content="<%= shareImage %>">
+
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" /><!-- Link Swiper's CSS -->
-  <link href="/img/favicon.ico" rel="icon">
-  <link href="/img/favicon.ico" rel="apple-touch-icon">
   <link href="/img/favicon.ico" rel="icon">
   <link href="/img/favicon.ico" rel="apple-touch-icon">
   <%- include('../shared/_styles') %>
@@ -28,6 +65,48 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "IBC Tank Store",
+      "url": baseUrl,
+      "logo": baseUrl + "/img/favicon.ico",
+      "email": "ibctank.team@gmail.com",
+      "telephone": "+923204904565",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Lahore",
+        "addressCountry": "PK"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+923204904565",
+        "contactType": "customer service",
+        "areaServed": "PK",
+        "availableLanguage": ["English", "Urdu"]
+      }
+    }) %>
+  </script>
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "IBC Tank Store",
+      "url": baseUrl,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": baseUrl + "/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }) %>
+  </script>
+  <% pageSchemas.forEach(function(schema) { %>
+  <script type="application/ld+json">
+    <%- typeof schema === 'string' ? schema : JSON.stringify(schema) %>
+  </script>
+  <% }) %>
 </head>
 
 <body>

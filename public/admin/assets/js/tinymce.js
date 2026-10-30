@@ -1,5 +1,3 @@
-
-
 const ai_request = (request, respondWith) => {
     respondWith.string((signal) =>
         fetch("/api/ai/gemini", {
@@ -14,7 +12,7 @@ const ai_request = (request, respondWith) => {
         })
             .then(async (res) => {
                 if (!res.ok) {
-                    const err = await res.json();
+                    const err = await res.json().catch(() => ({}));
                     throw new Error(err.error || "AI Error");
                 }
 
@@ -25,17 +23,21 @@ const ai_request = (request, respondWith) => {
 };
 
 tinymce.init({
-    selector: 'textarea',
+    selector: 'textarea.tinymce-editor, textarea#reply_message',
+    license_key: 'gpl',
+    base_url: '/admin/vendors/tinymce',
+    suffix: '.min',
+    height: 400,
+    menubar: 'file edit view insert format tools table help',
     plugins: [
-        // Core editing features
-        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-        // Your account includes a free trial of TinyMCE premium features
-        // Try the most popular premium features until Jan 11, 2026:
-        // 'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+        'advlist', 'anchor', 'autolink', 'charmap', 'code', 'codesample',
+        'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace',
+        'table', 'visualblocks', 'wordcount'
     ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | aidialog aishortcuts',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [{}],
+    toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | emoticons charmap | removeformat | code',
+    content_style: 'body { font-family:Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size:14px }',
+    branding: false,
+    promotion: false,
+    automatic_uploads: false,
     ai_request
 });

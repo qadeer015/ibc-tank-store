@@ -76,6 +76,13 @@ class Product {
         return await this.attachImages(rows);
     }
 
+    static async getSitemapEntries() {
+        const [rows] = await db.execute(
+            'SELECT id, created_at FROM products ORDER BY created_at DESC'
+        );
+        return rows;
+    }
+
     static async getById(id) {
         const [rows] = await db.execute(`
             SELECT 

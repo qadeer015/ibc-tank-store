@@ -30,7 +30,7 @@
             <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
                 <% productImages.forEach((image, index)=> { %>
                     <img src="<%= image %>" class="product-thumb <%= index === 0 ? 'active' : '' %>"
-                        data-index="<%= index %>" alt="Thumbnail" />
+                        data-index="<%= index %>" alt="<%= product.name %> - Image <%= index + 1 %>" />
                 <% }) %>
             </div>
         <% } else { %>

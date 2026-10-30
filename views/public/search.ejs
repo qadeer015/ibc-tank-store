@@ -86,15 +86,15 @@
                                 </a>
                                 <div class="card-body position-relative">
                                     <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                                        <p class="card-title">
+                                        <h3 class="card-title h5">
                                             <%= product.name %>
-                                        </p>
+                                        </h3>
                                     </a>
                                     <a class="text-decoration-none text-dark" href="/products/<%= product.id %>">
-                                        <strong class="card-text">
+                                        <span class="card-text price-text">
                                             <%= settings.price_currency %>
                                                 <%= product.price %>
-                                        </strong>
+                                        </span>
                                     </a>
                                     <div class="pop-up-footer bg-primary p-2 text-center">
                                         <a href="https://wa.me/<%= settings.contact_number %>?text=<%= encodeURIComponent('Hi, I am interested in this product: ' + product.name) %>"

@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Rating = require('../models/Rating');
 const { getFileUrl, deleteFile } = require('../middlewares/upload');
+const { truncate, absoluteUrl, buildProductSchema, SITE_URL } = require('../utils/seo');
 
 const productController = {
     // productController.js
@@ -32,7 +33,8 @@ const productController = {
                     products,
                     categories,
                     success: req.flash('success'),
-                    error: req.flash('error')
+                    error: req.flash('error'),
+                    metaDescription: 'Browse new and used IBC tanks, drums, and storage solutions available at IBC Tank Store in Pakistan.'
                 });
             }
         } catch (error) {
@@ -138,11 +140,50 @@ const productController = {
                     ratings
                 });
             } else {
+                const currency = (res.locals.settings && res.locals.settings.price_currency) || 'PKR';
+                const primaryImage = productImages[0] || product.image;
                 res.render('public/products/show', {
                     title: product.name,
                     ratings,
                     productImages,
-                    product
+                    product,
+                    metaDescription: truncate(
+                        product.description || `${product.name} available at IBC Tank Store. Condition: ${product.product_condition || 'N/A'}.`,
+                        160
+                    ),
+                    ogType: 'product',
+                    ogImage: primaryImage ? absoluteUrl(primaryImage) : absoluteUrl('/img/favicon.ico'),
+                    structuredData: [
+                        buildProductSchema(product, {
+                            siteUrl: SITE_URL,
+                            currency,
+                            images: productImages,
+                        }),
+                        {
+                            '@context': 'https://schema.org',
+                            '@type': 'BreadcrumbList',
+                            itemListElement: [
+                                {
+                                    '@type': 'ListItem',
+                                    position: 1,
+                                    name: 'Home',
+                                    item: SITE_URL + '/',
+                                },
+                                {
+                                    '@type': 'ListItem',
+                                    position: 2,
+                                    name: 'Products',
+                                    item: SITE_URL + '/products',
+                                },
+                                {
+                                    '@type': 'ListItem',
+                                    position: 3,
+                                    name: product.name,
+                                    item: `${SITE_URL}/products/${product.id}`,
+                                },
+                            ],
+                        },
+                    ],
                 });
             }
         } catch (error) {
