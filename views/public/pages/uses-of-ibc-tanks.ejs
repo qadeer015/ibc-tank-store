@@ -1,0 +1,339 @@
+<%
+const ideas = [
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Composting',
+    icon: 'bi-recycle',
+    title: 'Compost Bin',
+    description: 'Turn an IBC tank into a large composting enclosure. Add ventilation openings and access panels so organic scraps and yard waste can break down into rich compost.',
+    example: 'Make a removable side panel to turn the pile and collect finished compost.'
+  },
+  {
+    category: 'home',
+    categoryLabel: 'Home & Outdoor',
+    topic: 'Storage',
+    icon: 'bi-tree',
+    title: 'Firewood Storage',
+    description: 'Remove or modify the container walls to create a ventilated bay that keeps firewood organized and raised off damp ground. Add a roof or cover for rain protection.',
+    example: 'Store a season’s supply of split logs beside an outdoor fireplace.'
+  },
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Aquaculture',
+    icon: 'bi-droplet',
+    title: 'Fish Tank / Aquaponics',
+    description: 'A suitable, food-safe IBC can be adapted as a fish-rearing tank and paired with a grow bed. Water circulates between the fish and plants in an aquaponics setup.',
+    example: 'Pair a fish tank with a media-filled bed for growing leafy greens.'
+  },
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Water',
+    icon: 'bi-cloud-rain',
+    title: 'Rainwater Collection',
+    description: 'Connect a downpipe from a roof gutter to a properly screened and covered tank. A tap near the bottom makes collected rainwater easy to use for suitable outdoor tasks.',
+    example: 'Collect roof runoff for watering ornamental plants.'
+  },
+  {
+    category: 'home',
+    categoryLabel: 'Home & Outdoor',
+    topic: 'Outdoor Living',
+    icon: 'bi-water',
+    title: 'Hot Tub',
+    description: 'The container can inspire a compact soaking-tub project, but it must not be used as a bath unless the liner, structure, plumbing, heating, and water treatment are specifically rated for that purpose.',
+    example: 'Build a professionally designed, insulated plunge or soaking tub using a suitable vessel.'
+  },
+  {
+    category: 'animals',
+    categoryLabel: 'Animal Care',
+    topic: 'Animal Care',
+    icon: 'bi-house',
+    title: 'Dog House',
+    description: 'Use sections of a clean tank as weather-resistant cladding or a sheltered kennel structure. Provide a wide entrance, ventilation, insulation where needed, and a comfortable floor.',
+    example: 'Create a shaded outdoor dog shelter with a sloped, rain-shedding roof.'
+  },
+  {
+    category: 'animals',
+    categoryLabel: 'Animal Care',
+    topic: 'Poultry',
+    icon: 'bi-house',
+    title: 'Chicken Coop',
+    description: 'Repurpose tank panels as walls or roofing for a small coop. Add secure mesh, roosting bars, nesting boxes, ventilation, and predator-resistant doors.',
+    example: 'Use cut panels to weatherproof one side of a backyard chicken run.'
+  },
+  {
+    category: 'animals',
+    categoryLabel: 'Animal Care',
+    topic: 'Poultry',
+    icon: 'bi-brightness-high',
+    title: 'Brooding Box',
+    description: 'A cut-down, thoroughly cleaned tank can form a brooder enclosure for young chicks. It needs safe heat, good airflow, dry bedding, and enough room to move away from the warm area.',
+    example: 'Make a temporary brooder for a small batch of chicks.'
+  },
+  {
+    category: 'animals',
+    categoryLabel: 'Animal Care',
+    topic: 'Animal Care',
+    icon: 'bi-house',
+    title: 'Rabbit Hutch',
+    description: 'Use clean panels to build sheltered sections of a rabbit enclosure. Include a secure mesh area, shade, dry resting space, and enough room for natural movement.',
+    example: 'Make a rainproof roof and windbreak for an existing rabbit run.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Handling',
+    icon: 'bi-basket',
+    title: 'Carry Basket',
+    description: 'Cut a clean tank into smaller open-top bins with smooth, reinforced edges and sturdy handholds. These can help move bulky, non-hazardous materials around a property.',
+    example: 'Make a large harvest basket for collecting garden produce.'
+  },
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Gardening',
+    icon: 'bi-flower1',
+    title: 'Raised Garden Bed',
+    description: 'Cut the tank into a low-sided planter or use its frame to support a raised bed. Add drainage and suitable soil, and make sure the material is safe for growing the intended plants.',
+    example: 'Build a compact vegetable bed for a patio or small garden.'
+  },
+  {
+    category: 'home',
+    categoryLabel: 'Home & Outdoor',
+    topic: 'Outdoor Living',
+    icon: 'bi-droplet',
+    title: 'Shower House',
+    description: 'Use tank panels as weather-resistant wall or roof material for a simple outdoor shower enclosure. Include privacy screening, a stable floor, drainage, and safe water connections.',
+    example: 'Create a rinse-off area near a pool, garden, or workshop.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Sanitation',
+    icon: 'bi-exclamation-triangle',
+    title: 'Septic Tank',
+    description: 'An ordinary IBC tank is not a safe or approved septic tank. This idea is best treated as a reminder that wastewater systems need purpose-built, certified tanks and professional installation.',
+    example: 'Use a certified septic system sized and installed for the property and local rules.'
+  },
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Water Garden',
+    icon: 'bi-water',
+    title: 'Small Pond',
+    description: 'A cut-down, suitable container can become a small ornamental pond. Add a safe liner if required, aquatic plants, and gentle circulation; protect children and pets from open water.',
+    example: 'Make a patio pond with water lilies and a small recirculating pump.'
+  },
+  {
+    category: 'home',
+    categoryLabel: 'Home & Outdoor',
+    topic: 'Events',
+    icon: 'bi-lightbulb',
+    title: 'Event Lighting',
+    description: 'Translucent tank panels can diffuse light or form part of a decorative lighting feature. Use only suitable low-voltage, outdoor-rated lighting and keep electrical parts protected from water.',
+    example: 'Create a softly glowing feature for a garden party or outdoor event.'
+  },
+  {
+    category: 'animals',
+    categoryLabel: 'Animal Care',
+    topic: 'Livestock',
+    icon: 'bi-box-seam',
+    title: 'Hay Feeder',
+    description: 'Use clean, safely finished tank sections as a frame or weather shield for a livestock feeder. Remove sharp edges and design openings to reduce entanglement and waste.',
+    example: 'Build a covered hay station for goats or sheep.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Serving',
+    icon: 'bi-cup',
+    title: 'Drink Stand',
+    description: 'A tank can support a self-service water station or beverage stand, but the liquid must be held in a separate food-grade container with a suitable dispenser. Never serve drinks from an unknown-use tank.',
+    example: 'Use the frame as a stand for a sealed, food-safe water dispenser at an event.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Outdoors',
+    icon: 'bi-binoculars',
+    title: 'Hunting Blind',
+    description: 'Panels can be reused as cladding for a simple wildlife-observation hide. Add safe viewing openings, camouflage, ventilation, and a stable base; follow local land and hunting regulations.',
+    example: 'Build a small concealed birdwatching shelter overlooking a field.'
+  },
+  {
+    category: 'workshop',
+    categoryLabel: 'Workshop',
+    topic: 'Storage',
+    icon: 'bi-droplet-half',
+    title: 'Chemical / Liquid Storage',
+    description: 'IBC tanks are commonly designed for bulk liquid handling, but reuse depends on the exact chemical, previous contents, liner condition, and compatibility. Keep labels and safety documentation intact.',
+    example: 'Store a compatible non-potable process liquid in a tank rated for that substance.'
+  },
+  {
+    category: 'workshop',
+    categoryLabel: 'Workshop',
+    topic: 'Construction',
+    icon: 'bi-tools',
+    title: 'Concrete Form',
+    description: 'Sections of an IBC cage or suitable panels may help create a temporary mould or form for a small project. They must be braced for the load and pressure of wet concrete.',
+    example: 'Use reinforced panels as part of a form for a small garden feature.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Water Supply',
+    icon: 'bi-droplet',
+    title: 'Water Tower',
+    description: 'An IBC can serve as the storage tank in a properly engineered elevated water system. The supporting tower must safely handle the full tank weight, wind, and ground conditions.',
+    example: 'Supply gravity-fed irrigation to a garden from a professionally supported tank.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Sanitation',
+    icon: 'bi-house',
+    title: 'Compost Toilet',
+    description: 'Tank panels may be used in the enclosure or structure around a composting toilet. The toilet itself needs a purpose-designed, ventilated system and careful handling of waste.',
+    example: 'Build a weatherproof outer shelter around a certified composting toilet unit.'
+  },
+  {
+    category: 'farm',
+    categoryLabel: 'Farm & Utility',
+    topic: 'Harvesting',
+    icon: 'bi-droplet',
+    title: 'Sap Collection',
+    description: 'A clean, food-contact-approved tank can collect sap from tapped trees before processing. Keep it covered, cool, and sanitary, and use dedicated equipment that has never held chemicals.',
+    example: 'Connect several tree collection lines to a dedicated sap holding tank.'
+  },
+  {
+    category: 'garden',
+    categoryLabel: 'Garden & Water',
+    topic: 'Water',
+    icon: 'bi-water',
+    title: 'Water Storage',
+    description: 'Store water for irrigation, cleaning, or other suitable non-potable uses in a sound, covered tank. Check the previous contents, clean it appropriately, and protect it from sunlight and contamination.',
+    example: 'Keep a reserve of irrigation water near a greenhouse or vegetable plot.'
+  }
+];
+%>
+
+<section class="ibc-page-hero">
+  <div class="ibc-container">
+    <div class="ibc-breadcrumb">
+      <a href="/">Home</a> <i class="bi bi-chevron-right" style="font-size:10px"></i> <span>Uses of IBC Tanks</span>
+    </div>
+    <h1>24 Uses for IBC Tanks</h1>
+    <p>Discover practical and creative ways to put an Intermediate Bulk Container to work around your home, garden, farm, or workshop.</p>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <span class="badge rounded-pill bg-light text-dark px-3 py-2">24 practical ideas</span>
+      <span class="badge rounded-pill bg-light text-dark px-3 py-2">5 use categories</span>
+      <span class="badge rounded-pill bg-light text-dark px-3 py-2">One versatile container</span>
+    </div>
+  </div>
+</section>
+
+<section class="ibc-section ibc-bg-white">
+  <div class="ibc-container">
+    <h2 class="ibc-section-title ibc-animate">Find a use for your IBC tank</h2>
+    <p class="ibc-section-subtitle ibc-animate">Browse the ideas, read a quick explanation, and picture how each could work in your space.</p>
+
+    <div class="row align-items-end g-3 mb-4">
+      <div class="col-md-6">
+        <label for="usesSearch" class="form-label fw-semibold">Search ideas</label>
+        <input id="usesSearch" class="form-control" type="search" placeholder="Search IBC tank uses..." aria-label="Search IBC tank uses">
+      </div>
+      <div class="col-md-6 text-md-end">
+        <span class="text-muted" id="usesResultCount" aria-live="polite"><%= ideas.length %> ideas</span>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="Filter ideas by category">
+      <button type="button" class="btn btn-primary active" data-use-filter="all" aria-pressed="true">All ideas</button>
+      <button type="button" class="btn btn-outline-primary" data-use-filter="garden" aria-pressed="false">Garden &amp; water</button>
+      <button type="button" class="btn btn-outline-primary" data-use-filter="animals" aria-pressed="false">Animal care</button>
+      <button type="button" class="btn btn-outline-primary" data-use-filter="home" aria-pressed="false">Home &amp; outdoor</button>
+      <button type="button" class="btn btn-outline-primary" data-use-filter="farm" aria-pressed="false">Farm &amp; utility</button>
+      <button type="button" class="btn btn-outline-primary" data-use-filter="workshop" aria-pressed="false">Workshop</button>
+    </div>
+
+    <div class="row g-4" id="ibcUseIdeas" aria-label="IBC tank uses">
+      <% ideas.forEach(function (idea, index) { %>
+      <div class="col-md-6 col-lg-4 ibc-use-idea" data-category="<%= idea.category %>">
+        <article class="card h-100 shadow-sm ibc-animate">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="bi <%= idea.icon %> fs-4 text-primary" aria-hidden="true"></i>
+              <span class="badge bg-light text-dark"><%= idea.categoryLabel %></span>
+            </div>
+            <span class="small text-primary fw-bold text-uppercase mb-2"><%= String(index + 1).padStart(2, '0') %> / <%= idea.topic %></span>
+            <h3 class="h5 card-title"><%= idea.title %></h3>
+            <p class="card-text text-muted"><%= idea.description %></p>
+            <div class="border-top pt-3 mt-auto small">
+              <strong>Example:</strong> <%= idea.example %>
+            </div>
+          </div>
+        </article>
+      </div>
+      <% }); %>
+    </div>
+
+    <p id="ibcUseEmpty" class="alert alert-info mt-4" role="status" hidden>No matching ideas found. Try another search term or category.</p>
+
+    <aside class="alert alert-warning mt-5 mb-0" role="note">
+      <h2 class="h5"><i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>Important safety note</h2>
+      <p class="mb-0">Not every IBC tank is suitable for every use. Check its previous contents, labels, material compatibility, condition, and local regulations before repurposing it. Never use a tank that held unknown or hazardous chemicals for drinking water, food, fish, animals, or edible crops. Water towers, septic systems, hot tubs, electrical installations, and structural projects need properly rated equipment and competent design. These ideas are conceptual examples, not construction plans.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="ibc-cta-banner">
+  <div class="ibc-container">
+    <h2>Looking for the right IBC tank?</h2>
+    <p>Contact our team for help finding a tank for your storage needs.</p>
+    <a href="/contact" class="ibc-btn ibc-btn-dark ibc-btn-lg"><i class="bi bi-chat-dots me-2" aria-hidden="true"></i>Contact Us</a>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const search = document.getElementById('usesSearch');
+    const ideas = Array.from(document.querySelectorAll('.ibc-use-idea'));
+    const filters = Array.from(document.querySelectorAll('[data-use-filter]'));
+    const empty = document.getElementById('ibcUseEmpty');
+    const resultCount = document.getElementById('usesResultCount');
+    let activeFilter = 'all';
+
+    function updateIdeas() {
+      const term = search.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      ideas.forEach(function (idea) {
+        const categoryMatches = activeFilter === 'all' || idea.dataset.category === activeFilter;
+        const searchMatches = !term || idea.textContent.toLowerCase().includes(term);
+        const isVisible = categoryMatches && searchMatches;
+        idea.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      empty.hidden = visibleCount > 0;
+      resultCount.textContent = visibleCount + (visibleCount === 1 ? ' idea' : ' ideas');
+    }
+
+    search.addEventListener('input', updateIdeas);
+    filters.forEach(function (button) {
+      button.addEventListener('click', function () {
+        activeFilter = button.dataset.useFilter;
+        filters.forEach(function (filter) {
+          const isActive = filter === button;
+          filter.classList.toggle('btn-primary', isActive);
+          filter.classList.toggle('active', isActive);
+          filter.classList.toggle('btn-outline-primary', !isActive);
+          filter.setAttribute('aria-pressed', String(isActive));
+        });
+        updateIdeas();
+      });
+    });
+  })();
+</script>

@@ -33,7 +33,7 @@
       <% var currentPath=(typeof path !=='undefined' && path) ? path : '/' ; function isActive(href) { if (href==='/' )
         return currentPath==='/' || currentPath==='' ; return currentPath.indexOf(href)===0; } %>
         <ul class="ibc-nav-links">
-          <li><a href="/" class="<%= isActive('/') ? 'ibc-active' : '' %>"<%- isActive('/') ? ' aria-current="page"' : '' %>>Home</a></li>
+          <li><a href="/uses-of-ibc-tanks" class="<%= isActive('/uses-of-ibc-tanks') ? 'ibc-active' : '' %>" <%- isActive('/uses-of-ibc-tanks') ? ' aria-current="page"' : '' %>>Uses of IBC Tanks</a></li>
           <li><a href="/about" class="<%= isActive('/about') ? 'ibc-active' : '' %>"<%- isActive('/about') ? ' aria-current="page"' : '' %>>About</a></li>
           <li><a href="/contact" class="<%= isActive('/contact') ? 'ibc-active' : '' %>"<%- isActive('/contact') ? ' aria-current="page"' : '' %>>Contact</a></li>
         </ul>
