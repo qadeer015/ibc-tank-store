@@ -103,7 +103,7 @@ class Product {
                     product_id,
                     ROUND(AVG(rating), 1) AS rating,
                     COUNT(*) AS rating_count
-                FROM ratings
+                FROM reviews
                 GROUP BY product_id
             ) r ON r.product_id = p.id
             WHERE p.id = ?;`,
@@ -169,7 +169,7 @@ class Product {
         COUNT(r.id) AS rating_count
       FROM products p
       JOIN categories c ON p.category_id = c.id
-      LEFT JOIN ratings r ON r.product_id = p.id
+      LEFT JOIN reviews r ON r.product_id = p.id
       GROUP BY p.id, c.name
       HAVING rating >= ${minRating}
       ORDER BY rating DESC, rating_count DESC

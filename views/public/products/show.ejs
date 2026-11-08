@@ -1,4 +1,19 @@
 <!-- Product Show Page -->
+<style>
+  .ibc-product-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+
+  @media (min-width: 992px) {
+    .ibc-product-layout {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
+
 <section class="ibc-page-hero">
   <div class="ibc-container">
     <div class="ibc-breadcrumb">
@@ -12,7 +27,7 @@
 
 <div class="ibc-section" style="background:var(--ibc-white)">
   <div class="ibc-container">
-    <div style="display:grid;grid-template-columns:1fr;gap:40px;align-items:start" class="ibc-animate">
+    <div class="ibc-product-layout ibc-animate">
       <!-- Product Images -->
       <div>
         <% if (productImages && productImages.length > 0) { %>
@@ -47,8 +62,24 @@
 
       <!-- Product Info -->
       <div>
-        <!-- Name (visible on desktop) -->
-        <h1 style="font-size:28px;font-weight:800;color:var(--ibc-dark);margin-bottom:12px;display:none"><%= product.name %></h1>
+        <!-- Rating Display -->
+        <div class="ibc-rating-display">
+          <div class="ibc-rating-stars">
+            <% for(let i = 1; i <= 5; i++) { %>
+              <% if(i <= Math.floor(product.rating)) { %>
+                <button type="button" class="ibc-review-star-button" data-review-rating="<%= i %>" aria-label="Write a <%= i %> star review"><i class="bi bi-star-fill"></i></button>
+              <% } else if(i === Math.ceil(product.rating) && product.rating % 1 > 0) { %>
+                <button type="button" class="ibc-review-star-button" data-review-rating="<%= i %>" aria-label="Write a <%= i %> star review"><i class="bi bi-star-half"></i></button>
+              <% } else { %>
+                <button type="button" class="ibc-review-star-button" data-review-rating="<%= i %>" aria-label="Write a <%= i %> star review"><i class="bi bi-star"></i></button>
+              <% } %>
+            <% } %>
+          </div>
+          <span><%= product.rating %> (<%= product.rating_count %>)</span>
+          <button type="button" class="bg-transparent outline-none border-0" data-review-open>Write a review</button>
+        </div>
+        <!-- Name -->
+        <h1 style="font-size:32px;font-weight:800;color:var(--ibc-dark);margin-bottom:12px;display:block"><%= product.name %></h1>
 
         <!-- Price -->
         <div class="ibc-product-show-price">
@@ -97,22 +128,6 @@
             </table>
           </div>
         <% } %>
-
-        <!-- Rating Display -->
-        <div class="ibc-rating-display">
-          <div class="ibc-rating-stars">
-            <% for(let i = 1; i <= 5; i++) { %>
-              <% if(i <= Math.floor(product.rating)) { %>
-                <i class="bi bi-star-fill"></i>
-              <% } else if(i === Math.ceil(product.rating) && product.rating % 1 > 0) { %>
-                <i class="bi bi-star-half"></i>
-              <% } else { %>
-                <i class="bi bi-star"></i>
-              <% } %>
-            <% } %>
-          </div>
-          <span><%= product.rating %> / 5 · <%= product.rating_count %> <%= product.rating_count > 1 ? 'Ratings' : 'Rating' %></span>
-        </div>
 
         <!-- Trust Signals -->
         <div class="ibc-trust-signals">
@@ -172,21 +187,24 @@
       <div class="ibc-tab-content" id="reviews" style="display:none">
         <div class="ibc-tab-panel">
           <h3>Customer Reviews</h3>
-          <% if (ratings.length === 0) { %>
+          <% if (reviews.length === 0) { %>
             <p style="color:var(--ibc-gray-500);text-align:center;padding:32px 0">No reviews yet. Be the first to review this product!</p>
           <% } else { %>
             <div class="ibc-reviews-list">
-              <% for (let rating of ratings) { %>
+              <% for (let rating of reviews) { %>
                 <div class="ibc-review-card">
                   <div class="ibc-review-header">
                     <div class="ibc-testimonial-avatar" style="width:36px;height:36px;font-size:13px">
-                      <%= rating.user_name ? rating.user_name.charAt(0).toUpperCase() : 'U' %>
+                      <%= rating.nickname ? rating.nickname.charAt(0).toUpperCase() : 'U' %>
                     </div>
                     <div>
-                      <div class="ibc-review-name"><%= rating.user_name %></div>
+                      <div class="ibc-review-name"><%= rating.nickname || 'Customer' %></div>
                       <div class="ibc-review-date"><%= new Date(rating.created_at).toLocaleDateString('en-PK', {year:'numeric',month:'short',day:'numeric'}) %></div>
                     </div>
                   </div>
+                  <% if (rating.review_title) { %>
+                    <h4 class="h6 mt-2"><%= rating.review_title %></h4>
+                  <% } %>
                   <div class="ibc-review-stars">
                     <% for(let i = 1; i <= 5; i++) { %>
                       <% if(i <= Math.floor(rating.rating)) { %>
@@ -198,29 +216,14 @@
                       <% } %>
                     <% } %>
                   </div>
-                  <% if (rating.comment) { %>
-                    <p class="ibc-review-text"><%= rating.comment %></p>
+                  <% if (rating.review) { %>
+                    <p class="ibc-review-text"><%= rating.review %></p>
                   <% } %>
                 </div>
               <% } %>
             </div>
           <% } %>
 
-          <!-- Rating Form -->
-          <div class="ibc-rating-form-section">
-            <h4><i class="bi bi-star"></i> Rate this product</h4>
-            <form id="ratingForm">
-              <div class="ibc-rating-input">
-                <% for(let i = 5; i >= 1; i--) { %>
-                  <input type="radio" name="rating" value="<%= i %>" id="star<%= i %>">
-                  <label for="star<%= i %>"><i class="bi bi-star-fill"></i></label>
-                <% } %>
-              </div>
-              <button type="submit" id="submitRatingBtn" class="ibc-btn ibc-btn-primary ibc-btn-sm" style="display:none">
-                <i class="bi bi-check-circle"></i> Submit Rating
-              </button>
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -246,6 +249,8 @@
     </div>
   </div>
 </div>
+
+<%- include('_review-modal.ejs') %>
 
 <!-- Quote Form -->
 <%- include('../partials/_quote_form.ejs') %>

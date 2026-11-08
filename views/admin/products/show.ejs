@@ -97,7 +97,13 @@
                             Delete
                         </button>
                     </form>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="copyReviewLinkButton"
+                        data-product-id="<%= product.id %>">
+                        <i class="bi bi-clipboard"></i>
+                        Copy review link
+                    </button>
                 </div>
+                <p id="copyReviewLinkStatus" class="small mt-2 mb-0" role="status" aria-live="polite"></p>
             </div>
         </div>
     </div>
@@ -208,47 +214,43 @@
                 <h4 class="text-primary fw-semibold mb-3">
                     Reviews
                 </h4>
-                <% if (ratings.length===0) { %>
+                <% if (reviews.length === 0) { %>
                     <p class="text-muted">No reviews yet.</p>
-                    <% } %>
-                        <% for (let rating of ratings) { %>
-                            <div class="card shadow-sm border-0 mb-3">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between w-100">
-                                        <div class="d-flex">
-                                            <img src="<%= rating.user_profile_photo || 'https://dummyimage.com/50x50/ced4da/6c757d.jpg' %>"
-                                                class="rounded-circle me-2" width="50" height="50">
-                                            <div class="d-flex flex-column">
-                                                <h6 class="mb-0">
-                                                    <%= rating.user_name %>
-                                                </h6>
-                                                <div class="mt-1">
-                                                    <% for(let i=1; i<=5; i++) { %>
-                                                        <% if(i <=Math.floor(rating.rating)) { %>
-                                                            <i class="bi bi-star-fill text-warning"></i>
-                                                            <% } else if(i===Math.ceil(rating.rating) && rating.rating %
-                                                                1> 0) { %>
-                                                                <i class="bi bi-star-half text-warning"></i>
-                                                                <% } else { %>
-                                                                    <i class="bi bi-star text-warning"></i>
-                                                                    <% } %>
-                                                                        <% } %>
-                                                </div>
-                                                <%if(rating.comment) {%>
-                                                    <p class="text-muted">
-                                                        <%= rating.comment %>
-                                                    </p>
-                                                    <%}%>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-muted">
-                                            <%= new Date(rating.created_at).toLocaleDateString() %>
-                                        </div>
+                <% } %>
+                <% for (let review of reviews) { %>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between w-100">
+                                <div class="d-flex flex-column">
+                                    <h6 class="mb-0"><%= review.nickname || 'Customer' %></h6>
+                                    <% if (review.email) { %>
+                                        <small class="text-muted"><%= review.email %></small>
+                                    <% } %>
+                                    <div class="mt-1">
+                                        <% for (let i = 1; i <= 5; i++) { %>
+                                            <% if (i <= Math.floor(review.rating)) { %>
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            <% } else if (i === Math.ceil(review.rating) && review.rating % 1 > 0) { %>
+                                                <i class="bi bi-star-half text-warning"></i>
+                                            <% } else { %>
+                                                <i class="bi bi-star text-warning"></i>
+                                            <% } %>
+                                        <% } %>
                                     </div>
+                                    <% if (review.review_title) { %>
+                                        <strong class="mt-2"><%= review.review_title %></strong>
+                                    <% } %>
+                                    <% if (review.review) { %>
+                                        <p class="text-muted mb-0"><%= review.review %></p>
+                                    <% } %>
+                                </div>
+                                <div class="text-muted">
+                                    <%= new Date(review.created_at).toLocaleDateString() %>
                                 </div>
                             </div>
-                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
@@ -343,4 +345,27 @@
         mainImg.style.cursor = 'zoom-in';
         mainImg.addEventListener('click', () => openFancybox());
     })();
+</script>
+<script>
+    const copyReviewLinkButton = document.getElementById('copyReviewLinkButton');
+    const copyReviewLinkStatus = document.getElementById('copyReviewLinkStatus');
+
+    copyReviewLinkButton.addEventListener('click', async () => {
+        const reviewLink = new URL(
+            `/products/${encodeURIComponent(copyReviewLinkButton.dataset.productId)}?action=write_a_review`,
+            window.location.origin
+        ).toString();
+
+        try {
+            await navigator.clipboard.writeText(reviewLink);
+            copyReviewLinkStatus.textContent = 'Review link copied to clipboard.';
+            copyReviewLinkStatus.classList.remove('text-danger');
+            copyReviewLinkStatus.classList.add('text-success');
+        } catch (error) {
+            copyReviewLinkStatus.textContent = 'Unable to copy the review link. Check clipboard permissions and try again.';
+            copyReviewLinkStatus.classList.remove('text-success');
+            copyReviewLinkStatus.classList.add('text-danger');
+            console.error('Copying review link failed:', error);
+        }
+    });
 </script>

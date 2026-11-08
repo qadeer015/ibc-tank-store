@@ -190,24 +190,21 @@ CREATE TABLE IF NOT EXISTS product_images (
 
 
 -- =========================
--- RATINGS TABLE
+-- REVIEWS TABLE
 -- =========================
-CREATE TABLE IF NOT EXISTS ratings (
+CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
-    user_id INT NOT NULL,
-    rating INT,
+    rating INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    review_title VARCHAR(255),
+    nickname VARCHAR(100) NOT NULL,
+    review TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_ratings_product
+    CONSTRAINT fk_reviews_product
         FOREIGN KEY (product_id)
         REFERENCES products(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT fk_ratings_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
