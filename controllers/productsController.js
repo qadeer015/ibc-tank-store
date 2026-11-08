@@ -1,7 +1,7 @@
 // controllers/productsController.js
 const Product = require('../models/Product');
 const Category = require('../models/Category');
-const Rating = require('../models/Rating');
+const Review = require('../models/Review');
 const { deleteFile } = require('../middlewares/upload');
 
 // ─────────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ const productController = {
                 return res.redirect('/products');
             }
 
-            const ratings = await Rating.getProductRatings(req.params.id);
+            const reviews = await Review.getProductReviews(req.params.id);
             const productImages = product.images || [];
 
             product = {
@@ -173,7 +173,7 @@ const productController = {
                 viewPage: 'products-show',
                 product,
                 productImages,
-                ratings,
+                reviews,
             });
         } catch (error) {
             console.error('Show error:', error);

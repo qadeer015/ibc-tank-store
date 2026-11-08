@@ -1,0 +1,152 @@
+<!-- Review Modal -->
+<style>
+    #reviewModal .modal-content {
+        position: relative;
+    }
+
+    #reviewModal .review-modal-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.85);
+    }
+
+    #reviewModal .review-modal-loading[hidden] {
+        display: none;
+    }
+
+    h2, label{
+        display: flex;
+        word-break: break-word;
+        width: auto;
+        font-size: 40px;
+        line-height: 22.5px;
+        color: rgb(51, 51, 51);
+        font-family: Sanremo, sans-serif;
+        font-style: normal;
+        font-weight: bold;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div id="reviewModalLoading" class="review-modal-loading" role="status" aria-live="polite" hidden>
+        <span class="spinner-border text-primary" aria-hidden="true"></span>
+        <span class="visually-hidden">Loading saved review...</span>
+      </div>
+      <form id="ratingForm" class="needs-validation overflow-auto" novalidate>
+        <div class="modal-header px-4">
+          <div class="d-flex align-items-center">
+            <img src="<%= productImages[0]%>" class="thumbnail" width="60px">
+            <div class="ms-4">
+              <h2 class="modal-title" id="reviewModalTitle">My Review</h2>
+              <h2 class="modal-title"><%= product.name %></h2>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-header px-4">
+          <p class="fw-bold m-0 text-uppercase">Required fields are marked with *</p>
+        </div>
+        <div class="modal-body px-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="fw-semibold">
+              <i class="bi bi-star"></i> Your reviews
+            </p>
+            <p id="reviewStatusBadge" class="badge bg-warning">In progress</p>
+          </div>
+          <div class="mb-4">
+            <label for="reviewRating" class="form-label">Overall Rating*</label>
+            <div class="ibc-rating-input" id="reviewRating" role="radiogroup" aria-label="Your rating">
+              <% for(let i = 5; i >= 1; i--) { %>
+              <input type="radio" name="rating" value="<%= i %>" id="reviewStar<%= i %>" required>
+              <label for="reviewStar<%= i %>" aria-label="<%= i %> stars"><i class="bi bi-star"></i></label>
+              <% } %>
+            </div>
+            <span class="fw-bold" id="reviewRatingMsg" aria-live="polite"></span>
+          </div>
+          <div class="mb-4">
+            <div class="d-flex justify-content-between">
+              <label for="reviewText" class="form-label">Review</label>
+              <button type="button" class="bg-transparent outline-0 border-0" data-review-info="guidelines">Review guidelines</button>
+            </div>
+            <textarea id="reviewText" class="form-control" name="review" placeholder="Example: I bought this a month ago and am so happy that i did..." rows="5" minlength="50" required aria-describedby="reviewTextCount reviewTextError"></textarea>
+            <span class="fw-bold float-end"><span id="reviewTextCount">0</span>/50 MINIMUM</span>
+            <span class="d-block text-danger small" id="reviewTextError" aria-live="polite"></span>
+          </div>
+          <div class="mb-4">
+            <label for="reviewTitle" class="form-label">Review Title</label>
+            <input id="reviewTitle" class="form-control" type="text" placeholder="Example: Great features!" name="review_title" maxlength="50" required aria-describedby="reviewTitleCount reviewTitleError">
+            <span class="fw-bold float-end"><span id="reviewTitleCount">0</span>/50 MAXIMUM</span>
+            <span class="d-block text-danger small" id="reviewTitleError" aria-live="polite"></span>
+          </div>
+          <div class="mb-4" data-review-identity-field="nickname">
+            <label for="reviewNickname" class="form-label">Nickname*</label>
+            <input id="reviewNickname" class="form-control" type="text" name="nickname" placeholder="Example: john12" minlength="4" autocomplete="nickname" required aria-describedby="reviewNicknameCount reviewNicknameError">
+            <span class="fw-bold float-end"><span id="reviewNicknameCount">0</span>/4 MINIMUM</span>
+            <span class="d-block text-danger small" id="reviewNicknameError" aria-live="polite"></span>
+          </div>
+          <div class="mb-4" data-review-identity-field="email">
+            <label for="reviewEmail" class="form-label">Email*</label>
+            <input id="reviewEmail" class="form-control" type="email" name="email" placeholder="Example: yourname@example.com" autocomplete="email" required aria-describedby="reviewEmailError">
+            <span class="d-block text-danger small" id="reviewEmailError" aria-live="polite"></span>
+          </div>
+          <div id="reviewFormError" class="alert alert-danger mb-0" role="alert" hidden></div>
+          <div class="mb-3 form-check">
+            <input class="form-check-input" id="reviewCheckbox" type="checkbox" required>
+            <div class="d-flex align-items-center">
+                <label for="reviewCheckbox" class="form-label fs-5">I agree to the</label>
+                <button type="button" class="bg-transparent outline-0 border-0" data-review-info="terms">terms &amp; conditions</button>
+            </div>
+          </div>
+
+          <p class="fw-bold text-uppercase mb-2"> You may receive emails regarding this submission. Any emails will include the ability to opt-out of future communications.</p>
+          <button type="submit" id="submitReviewBtn" class="ibc-btn ibc-btn-primary">
+            <i class="bi bi-check-circle me-1"></i> Submit review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reviewGuidelinesModal" tabindex="-1" aria-labelledby="reviewGuidelinesTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="reviewGuidelinesTitle">Review Guidelines</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close review guidelines"></button>
+      </div>
+      <div class="modal-body">
+        <p>Help other customers by sharing an honest, useful account of your experience with this product.</p>
+        <ul>
+          <li>Focus on the product, its features, and how you used it.</li>
+          <li>Keep your comments respectful, clear, and based on your experience.</li>
+          <li>Do not include personal, sensitive, or confidential information.</li>
+          <li>Avoid advertising, spam, or content unrelated to the product.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reviewTermsModal" tabindex="-1" aria-labelledby="reviewTermsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="reviewTermsTitle">Review Terms &amp; Conditions</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close review terms"></button>
+      </div>
+      <div class="modal-body">
+        <p>By submitting a review, you confirm that it reflects your genuine experience and does not contain unlawful, abusive, misleading, or private information.</p>
+        <p>Reviews may be checked for relevance and compliance with these requirements before they are displayed. Do not submit content that you do not have the right to share.</p>
+      </div>
+    </div>
+  </div>
+</div>

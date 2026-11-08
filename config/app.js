@@ -24,7 +24,7 @@ const pageRoutes = require('../routes/pageRoutes');
 const uploadRoutes = require('../routes/upload.route');
 const authRoutes = require("../routes/authRoutes");
 const adminRoutes = require("../routes/adminRoutes");
-const ratingRoutes = require("../routes/ratingsRoutes");
+const reviewRoutes = require("../routes/reviewsRoutes");
 const aiRoutes = require("../routes/aiRoutes");
 const quoteRoutes = require("../routes/quoteRoutes");
 
@@ -227,7 +227,7 @@ app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/contact', contactRoutes);
 app.use("/auth", authRoutes);
-app.use("/ratings", ratingRoutes);
+app.use("/reviews", reviewRoutes);
 app.use("/uploads", uploadRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
