@@ -110,7 +110,7 @@ function ibcInitRatingForm() {
             count: document.getElementById('reviewTextCount'),
             error: document.getElementById('reviewTextError'),
             validate: input => {
-                if (!input.value.trim()) return 'Required: Review.';
+                if (!input.value.trim()) return; // return 'Required: Review.';
                 const remaining = input.minLength - input.value.length;
                 return remaining > 0 ? `${remaining} ${remaining === 1 ? 'character' : 'characters'} too short` : '';
             }
@@ -119,7 +119,7 @@ function ibcInitRatingForm() {
             input: document.getElementById('reviewTitle'),
             count: document.getElementById('reviewTitleCount'),
             error: document.getElementById('reviewTitleError'),
-            validate: input => input.value.trim() ? '' : 'Required: Review Title.'
+            validate: input => input.value.trim() ? '' : '' //'Required: Review Title.'
         },
         {
             input: document.getElementById('reviewNickname'),
@@ -385,7 +385,7 @@ function ibcInitRatingForm() {
             if (!response.ok) {
                 throw new Error(result.message || 'Failed to submit review.');
             }
-
+                
             window.location.reload();
         } catch (error) {
             if (errorElement) {

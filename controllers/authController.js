@@ -63,7 +63,7 @@ const signWithGoogle = async (req, res) => {
   }
 
   // Redirect based on role
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "developer") {
     req.flash("success", "Welcome Admin! You have logged in successfully");
     return res.redirect("/admin/dashboard");
   }

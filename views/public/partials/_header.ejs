@@ -1,205 +1,660 @@
-<!-- IBC Header -->
-<!-- Top Bar — sits above the sticky navbar so it scrolls away naturally,
-     leaving a compact navbar while browsing (no JS, no layout shift). -->
+<!-- Top Bar -->
 <div class="ibc-topbar ibc-bg-dark">
   <div class="ibc-container">
     <div class="ibc-topbar-inner">
+
       <div class="ibc-topbar-left">
-        <a href="tel:+<%= settings.contact_number %>"><i class="bi bi-telephone-fill"></i>
+        <a href="tel:+<%= settings.contact_number %>">
+          <i class="bi bi-telephone-fill"></i>
           <%= settings.contact_number %>
         </a>
-        <a href="mailto:info@ibctankstore.com" class="d-none d-md-inline"><i class="bi bi-envelope-fill"></i>
-          info@ibctankstore.com</a>
+
+        <a href="mailto:info@ibctankstore.com" class="d-none d-md-inline">
+          <i class="bi bi-envelope-fill"></i>
+          info@ibctankstore.com
+        </a>
       </div>
+
       <div class="ibc-topbar-right">
-        <span><i class="bi bi-truck"></i> Nationwide Delivery</span>
-        <span class="d-none d-sm-inline"><i class="bi bi-clock"></i> Mon-Sat: 9AM - 6PM</span>
+        <span>
+          <i class="bi bi-truck"></i>
+          Nationwide Delivery
+        </span>
+
+        <span class="d-none d-sm-inline">
+          <i class="bi bi-clock"></i>
+          Mon-Sat: 9AM - 6PM
+        </span>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Sticky Navbar -->
+
+<!-- =========================================================
+     STICKY NAVBAR
+========================================================= -->
+
 <header class="ibc-header" id="ibcHeader">
   <div class="ibc-container">
+
     <nav class="ibc-navbar" aria-label="Primary">
+
       <!-- Logo -->
       <a href="/" class="ibc-logo">
         <img src="/img/brand/logo.png" alt="IBC Tank Store - Pakistan's Leading IBC Tank Supplier">
         <span>IBC Tank Store</span>
       </a>
 
-      <!-- Desktop Nav Links -->
-      <% var currentPath=(typeof path !=='undefined' && path) ? path : '/' ; function isActive(href) { if (href==='/' )
-        return currentPath==='/' || currentPath==='' ; return currentPath.indexOf(href)===0; } %>
-        <ul class="ibc-nav-links">
-          <li><a href="/uses-of-ibc-tanks" class="<%= isActive('/uses-of-ibc-tanks') ? 'ibc-active' : '' %>" <%- isActive('/uses-of-ibc-tanks') ? ' aria-current="page"' : '' %>>Uses of IBC Tanks</a></li>
-          <li><a href="/about" class="<%= isActive('/about') ? 'ibc-active' : '' %>"<%- isActive('/about') ? ' aria-current="page"' : '' %>>About</a></li>
-          <li><a href="/contact" class="<%= isActive('/contact') ? 'ibc-active' : '' %>"<%- isActive('/contact') ? ' aria-current="page"' : '' %>>Contact</a></li>
-        </ul>
 
-        <!-- Desktop Search (≥992px) — the icon is the submit button -->
-        <form action="/search" method="GET" class="ibc-header-search" role="search">
-          <label class="ibc-sr-only" for="ibcHeaderSearchInput">Search tanks</label>
-          <input id="ibcHeaderSearchInput" type="search" name="q" autocomplete="off" placeholder="Search tanks..."
-            value="<%= typeof searchQuery !== 'undefined' && searchQuery ? searchQuery : '' %>">
-          <button type="submit" class="ibc-header-search-btn" aria-label="Search">
+      <!-- Navigation Links -->
+      <% 
+        var currentPath = (typeof path !== 'undefined' && path) ? path : '/';
+
+        function isActive(href) {
+          if (href === '/') {
+            return currentPath === '/' || currentPath === '';
+          }
+
+          return currentPath.indexOf(href) === 0;
+        }
+      %>
+
+      <ul class="ibc-nav-links" id="ibcHeaderNavLinks">
+
+        <li>
+          <a href="/uses-of-ibc-tanks" class="<%= isActive('/uses-of-ibc-tanks') ? 'ibc-active' : '' %>" <%- isActive('/uses-of-ibc-tanks') ? ' aria-current="page"' : '' %>>
+            Uses of IBC Tanks
+          </a>
+        </li>
+
+        <li>
+          <a href="/about" class="<%= isActive('/about') ? 'ibc-active' : '' %>" <%- isActive('/about') ? ' aria-current="page"' : '' %>>
+            About
+          </a>
+        </li>
+
+        <li>
+          <a href="/contact" class="<%= isActive('/contact') ? 'ibc-active' : '' %>" <%- isActive('/contact') ? ' aria-current="page"' : '' %>>
+            Contact
+          </a>
+        </li>
+
+      </ul>
+
+
+      <!-- =====================================================
+           DESKTOP SEARCH (992px+)
+      ====================================================== -->
+
+      <form action="/search" method="GET" class="ibc-header-search" id="ibcHeaderSearchForm" role="search">
+
+        <label class="ibc-sr-only" for="ibcHeaderSearchInput">
+          Search
+        </label>
+
+        <!-- Search Toggle -->
+        <button type="button" class="ibc-header-search-toggle" id="ibcHeaderSearchToggle" aria-label="Open search" aria-expanded="false" aria-controls="ibcHeaderSearchInput">
+          <i class="bi bi-search"></i>
+        </button>
+
+        <!-- Search Input -->
+        <input id="ibcHeaderSearchInput" type="search" name="q" autocomplete="off" placeholder="Search tanks..." value="<%= typeof searchQuery !== 'undefined' && searchQuery ? searchQuery : '' %>">
+
+        <!-- Search Submit -->
+        <button type="submit" class="ibc-header-search-btn" id="ibcHeaderSearchSubmit" aria-label="Search" disabled>
+          <i class="bi bi-search"></i>
+        </button>
+
+      </form>
+
+
+      <!-- =====================================================
+           NAVIGATION ACTIONS
+      ====================================================== -->
+
+      <div class="ibc-nav-cta">
+
+        <!-- Mobile Search Toggle -->
+        <button type="button" class="ibc-icon-btn ibc-search-toggle" id="ibcSearchToggle" aria-label="Open search" aria-expanded="false" aria-controls="ibcSearchPanel">
+          <i class="bi bi-search"></i>
+        </button>
+
+
+        <!-- Login / User Account -->
+
+        <% if (typeof user !== 'undefined' && user) { %>
+
+        <div class="ibc-user-menu">
+
+          <button type="button" class="ibc-user-btn" id="ibcUserBtn" aria-haspopup="true" aria-expanded="false" aria-controls="ibcUserDropdown">
+
+            <% if (user.profile_photo) { %>
+
+            <img src="<%= user.profile_photo %>" alt="<%= user.name %>" class="ibc-avatar">
+
+            <% } else { %>
+
+            <span class="ibc-avatar-placeholder">
+              <%= user.name.charAt(0).toUpperCase() %>
+            </span>
+
+            <% } %>
+
+            <span class="d-none d-lg-inline">
+              <%= user.name.split(' ')[0] %>
+            </span>
+
+            <i class="bi bi-chevron-down"></i>
+
+          </button>
+
+
+          <!-- User Dropdown -->
+          <div id="ibcUserDropdown" class="ibc-user-dropdown" aria-label="Account menu">
+
+            <div class="ibc-user-dropdown-head">
+              <strong><%= user.name %></strong>
+              <span><%= user.email || '' %></span>
+            </div>
+
+
+            <% if (user.role === 'admin' || user.role === 'developer') { %>
+
+            <a href="/admin/dashboard" class="ibc-user-dropdown-item">
+              <i class="bi bi-speedometer2"></i>
+              Dashboard
+            </a>
+
+            <% } %>
+
+
+            <form action="/auth/logout" method="POST">
+
+              <input type="hidden" name="_method" value="DELETE">
+
+              <button type="submit" class="ibc-user-dropdown-item ibc-danger">
+                <i class="bi bi-box-arrow-right"></i>
+                Sign Out
+              </button>
+
+            </form>
+
+          </div>
+
+        </div>
+
+        <% } else { %>
+
+        <button type="button" class="ibc-btn ibc-btn-outline ibc-btn-sm" onclick="showAuthModal()">
+          <i class="bi bi-person-fill"></i>
+          <span class="d-none d-sm-inline">Login</span>
+        </button>
+
+        <% } %>
+
+      </div>
+
+
+      <!-- =====================================================
+           MOBILE SEARCH PANEL
+      ====================================================== -->
+
+      <div class="ibc-search-panel" id="ibcSearchPanel">
+
+        <form action="/search" method="GET" role="search" class="ibc-mobile-search-form">
+
+          <label class="ibc-sr-only" for="ibcMobileSearchInput">
+            Search tanks
+          </label>
+
+          <input id="ibcMobileSearchInput" type="search" name="q" autocomplete="off" placeholder="Search tanks..." value="<%= typeof searchQuery !== 'undefined' && searchQuery ? searchQuery : '' %>">
+
+          <button type="submit" class="ibc-header-search-btn" id="ibcMobileSearchSubmit" aria-label="Search" disabled>
             <i class="bi bi-search"></i>
           </button>
+
         </form>
 
-        <!-- Actions: mobile search toggle + login / account -->
-        <div class="ibc-nav-cta">
-          <!-- Mobile search toggle (<992px) -->
-          <button type="button" class="ibc-icon-btn ibc-search-toggle" id="ibcSearchToggle"
-            aria-label="Open search" aria-expanded="false" aria-controls="ibcSearchPanel">
-            <i class="bi bi-search"></i>
-          </button>
+      </div>
 
-          <!-- Login / User Profile -->
-          <% if (typeof user !== 'undefined' && user) { %>
-            <div class="ibc-user-menu">
-              <button type="button" class="ibc-user-btn" id="ibcUserBtn"
-                aria-haspopup="true" aria-expanded="false" aria-controls="ibcUserDropdown">
-                <% if (user.profile_photo) { %>
-                  <img src="<%= user.profile_photo %>" alt="<%= user.name %>" class="ibc-avatar">
-                <% } else { %>
-                  <span class="ibc-avatar-placeholder"><%= user.name.charAt(0).toUpperCase() %></span>
-                <% } %>
-                <span class="d-none d-lg-inline"><%= user.name.split(' ')[0] %></span>
-                <i class="bi bi-chevron-down"></i>
-              </button>
-              <div id="ibcUserDropdown" class="ibc-user-dropdown" aria-label="Account menu">
-                <div class="ibc-user-dropdown-head">
-                  <strong><%= user.name %></strong>
-                  <span><%= user.email || '' %></span>
-                </div>
-                <% if (user.role === 'admin' || user.role === 'developer') { %>
-                  <a href="/admin/dashboard" class="ibc-user-dropdown-item">
-                    <i class="bi bi-speedometer2"></i> Dashboard
-                  </a>
-                <% } %>
-                <form action="/auth/logout" method="POST">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="ibc-user-dropdown-item ibc-danger">
-                    <i class="bi bi-box-arrow-right"></i> Sign Out
-                  </button>
-                </form>
-              </div>
-            </div>
-          <% } else { %>
-            <button class="ibc-btn ibc-btn-outline ibc-btn-sm" onclick="showAuthModal()">
-              <i class="bi bi-person-fill"></i> <span class="d-none d-sm-inline">Login</span>
-            </button>
-          <% } %>
-        </div>
 
-        <!-- Mobile search panel — slides down below the navbar (<992px) -->
-        <div class="ibc-search-panel" id="ibcSearchPanel">
-          <form action="/search" method="GET" role="search">
-            <label class="ibc-sr-only" for="ibcMobileSearchInput">Search tanks</label>
-            <input id="ibcMobileSearchInput" type="search" name="q" autocomplete="off" placeholder="Search tanks..."
-              value="<%= typeof searchQuery !== 'undefined' && searchQuery ? searchQuery : '' %>">
-            <button type="submit" class="ibc-header-search-btn" aria-label="Search">
-              <i class="bi bi-search"></i>
-            </button>
-          </form>
-        </div>
+      <!-- =====================================================
+           MOBILE HAMBURGER
+      ====================================================== -->
 
-        <!-- Hamburger (Mobile) — morphs into a close (×) when the menu is open -->
-        <button type="button" class="ibc-hamburger" id="ibcHamburger" onclick="ibcOpenMobileMenu()"
-          aria-label="Open menu" aria-expanded="false" aria-controls="ibcMobileMenu">
-          <span></span><span></span><span></span>
-        </button>
-      </nav>
+      <button type="button" class="ibc-hamburger" id="ibcHamburger" onclick="ibcOpenMobileMenu()" aria-label="Open menu" aria-expanded="false" aria-controls="ibcMobileMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </nav>
+
   </div>
 </header>
 
 
+<!-- =========================================================
+     HEADER SEARCH VISIBILITY FIXES
+========================================================= -->
+
+<style>
+  /* Hide desktop search toggle while search is open */
+  .ibc-header-search.ibc-open .ibc-header-search-toggle {
+    display: none !important;
+  }
+
+  /* Hide navigation links while desktop search is open */
+  .ibc-header-nav-links.ibc-hidden,
+  .ibc-nav-links.ibc-hidden {
+    display: none !important;
+  }
+
+  /* Keep desktop search input accessible when open */
+  .ibc-header-search.ibc-open {
+    position: relative;
+  }
+</style>
+
+
+<!-- =========================================================
+     HEADER JAVASCRIPT
+========================================================= -->
+
 <script>
-  (function () {
+  (function() {
+    'use strict';
+
+    /* =========================================================
+       ELEMENT REFERENCES
+    ========================================================== */
+
     var header = document.getElementById('ibcHeader');
+
+    // Desktop search
+    var desktopSearchForm = document.getElementById('ibcHeaderSearchForm');
+    var desktopSearchInput = document.getElementById('ibcHeaderSearchInput');
+    var desktopSearchToggle = document.getElementById('ibcHeaderSearchToggle');
+    var desktopSearchSubmit = document.getElementById('ibcHeaderSearchSubmit');
+
+    var navLinks = document.getElementById('ibcHeaderNavLinks');
+
+    // Mobile search
     var searchToggle = document.getElementById('ibcSearchToggle');
     var searchPanel = document.getElementById('ibcSearchPanel');
     var mobileSearchInput = document.getElementById('ibcMobileSearchInput');
+    var mobileSearchSubmit = document.getElementById('ibcMobileSearchSubmit');
+
+    // Account dropdown
     var userBtn = document.getElementById('ibcUserBtn');
     var userDropdown = document.getElementById('ibcUserDropdown');
 
-    /* Compact + shadow the sticky header once the user scrolls */
-    var onScroll = function () {
+
+    /* =========================================================
+       SEARCH SUBMIT BUTTON
+    ========================================================== */
+
+    function updateSubmitButton(input, button) {
+      if (!input || !button) return;
+
+      var hasText = input.value.trim().length > 0;
+
+      button.disabled = !hasText;
+
+      button.setAttribute(
+        'aria-disabled',
+        String(!hasText)
+      );
+
+      button.classList.toggle('ibc-disabled', !hasText);
+    }
+
+
+    /* =========================================================
+       DESKTOP SEARCH
+    ========================================================== */
+
+    function setDesktopSearchOpen(open) {
+      if (
+        !desktopSearchForm ||
+        !desktopSearchInput ||
+        !desktopSearchToggle ||
+        !desktopSearchSubmit
+      ) {
+        return;
+      }
+
+      // Toggle search form state
+      desktopSearchForm.classList.toggle('ibc-open', open);
+
+      // Hide/show navigation links
+      if (navLinks) {
+        navLinks.classList.toggle('ibc-hidden', open);
+      }
+
+      // Update accessibility
+      desktopSearchToggle.setAttribute(
+        'aria-expanded',
+        String(open)
+      );
+
+      desktopSearchToggle.setAttribute(
+        'aria-label',
+        open ? 'Close search' : 'Open search'
+      );
+
+      // Focus input when opening
+      if (open) {
+        desktopSearchInput.focus();
+      }
+
+      updateSubmitButton(
+        desktopSearchInput,
+        desktopSearchSubmit
+      );
+    }
+
+
+    // Desktop search toggle
+    if (desktopSearchToggle && desktopSearchForm) {
+
+      desktopSearchToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        var isOpen = desktopSearchForm.classList.contains('ibc-open');
+
+        setDesktopSearchOpen(!isOpen);
+      });
+
+    }
+
+
+    // Desktop search input
+    if (desktopSearchInput && desktopSearchSubmit) {
+
+      updateSubmitButton(
+        desktopSearchInput,
+        desktopSearchSubmit
+      );
+
+      desktopSearchInput.addEventListener('input', function() {
+        updateSubmitButton(
+          desktopSearchInput,
+          desktopSearchSubmit
+        );
+      });
+
+      desktopSearchSubmit.addEventListener('click', function(e) {
+
+        if (!desktopSearchInput.value.trim()) {
+          e.preventDefault();
+          desktopSearchInput.focus();
+        }
+
+      });
+
+    }
+
+
+    /* =========================================================
+       MOBILE SEARCH
+    ========================================================== */
+
+    function setSearchPanel(open) {
+      if (!searchPanel || !searchToggle) return;
+
+      searchPanel.classList.toggle('ibc-open', open);
+
+      searchToggle.classList.toggle('ibc-active', open);
+
+      searchToggle.setAttribute(
+        'aria-expanded',
+        String(open)
+      );
+
+      searchToggle.setAttribute(
+        'aria-label',
+        open ? 'Close search' : 'Open search'
+      );
+
+      if (open && mobileSearchInput) {
+
+        mobileSearchInput.focus();
+
+        updateSubmitButton(
+          mobileSearchInput,
+          mobileSearchSubmit
+        );
+
+      }
+    }
+
+
+    // Mobile search toggle
+    if (searchToggle) {
+
+      searchToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        var isOpen = searchPanel.classList.contains('ibc-open');
+
+        setSearchPanel(!isOpen);
+      });
+
+    }
+
+
+    // Mobile search input
+    if (mobileSearchInput && mobileSearchSubmit) {
+
+      updateSubmitButton(
+        mobileSearchInput,
+        mobileSearchSubmit
+      );
+
+      mobileSearchInput.addEventListener('input', function() {
+        updateSubmitButton(
+          mobileSearchInput,
+          mobileSearchSubmit
+        );
+      });
+
+      mobileSearchSubmit.addEventListener('click', function(e) {
+
+        if (!mobileSearchInput.value.trim()) {
+          e.preventDefault();
+          mobileSearchInput.focus();
+        }
+
+      });
+
+    }
+
+
+    /* =========================================================
+       USER ACCOUNT DROPDOWN
+    ========================================================== */
+
+    function setUserDropdown(open) {
+      if (!userDropdown || !userBtn) return;
+
+      userDropdown.classList.toggle('ibc-open', open);
+
+      userBtn.setAttribute(
+        'aria-expanded',
+        String(open)
+      );
+    }
+
+
+    if (userBtn && userDropdown) {
+
+      userBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        var isOpen = userDropdown.classList.contains('ibc-open');
+
+        setUserDropdown(!isOpen);
+      });
+
+
+      // Hover-open on desktop pointer devices
+      var userMenu = userBtn.closest('.ibc-user-menu');
+
+      if (
+        userMenu &&
+        window.matchMedia &&
+        window.matchMedia('(hover:hover) and (min-width:992px)').matches
+      ) {
+
+        userMenu.addEventListener('mouseenter', function() {
+          setUserDropdown(true);
+        });
+
+        userMenu.addEventListener('mouseleave', function() {
+          setUserDropdown(false);
+        });
+
+      }
+
+      userDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+    }
+
+
+    /* =========================================================
+       OUTSIDE CLICK HANDLER
+    ========================================================== */
+
+    document.addEventListener('click', function(e) {
+
+      var target = e.target;
+
+      if (!target || !target.closest) return;
+
+
+      // -------------------------------------------------------
+      // Close DESKTOP SEARCH when clicking outside its form
+      // -------------------------------------------------------
+
+      if (
+        desktopSearchForm &&
+        desktopSearchForm.classList.contains('ibc-open') &&
+        !desktopSearchForm.contains(target)
+      ) {
+
+        setDesktopSearchOpen(false);
+
+      }
+
+
+      // -------------------------------------------------------
+      // Close MOBILE SEARCH when clicking outside its panel
+      // -------------------------------------------------------
+
+      if (
+        searchPanel &&
+        searchPanel.classList.contains('ibc-open') &&
+        !searchPanel.contains(target) &&
+        !searchToggle.contains(target)
+      ) {
+
+        setSearchPanel(false);
+
+      }
+
+
+      // -------------------------------------------------------
+      // Close USER DROPDOWN when clicking outside
+      // -------------------------------------------------------
+
+      if (
+        userDropdown &&
+        userDropdown.classList.contains('ibc-open') &&
+        !target.closest('.ibc-user-menu')
+      ) {
+
+        setUserDropdown(false);
+
+      }
+
+    });
+
+
+    /* =========================================================
+       ESCAPE KEY HANDLER
+    ========================================================== */
+
+    document.addEventListener('keydown', function(e) {
+
+      if (e.key !== 'Escape') return;
+
+      // Close desktop search
+      setDesktopSearchOpen(false);
+
+      // Close mobile search
+      setSearchPanel(false);
+
+      // Close account dropdown
+      setUserDropdown(false);
+
+      // Close mobile navigation
+      if (typeof window.ibcCloseMobileMenu === 'function') {
+        window.ibcCloseMobileMenu();
+      }
+
+    });
+
+
+    /* =========================================================
+       STICKY HEADER SCROLL EFFECT
+    ========================================================== */
+
+    function onScroll() {
       if (!header) return;
-      header.classList.toggle('ibc-scrolled', window.scrollY > 10);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
+
+      header.classList.toggle(
+        'ibc-scrolled',
+        window.scrollY > 10
+      );
+    }
+
+    window.addEventListener('scroll', onScroll, {
+      passive: true
+    });
+
     onScroll();
 
-    /* Mobile search panel */
-    var setSearchPanel = function (open) {
-      if (!searchPanel || !searchToggle) return;
-      searchPanel.classList.toggle('ibc-open', open);
-      searchToggle.classList.toggle('ibc-active', open);
-      searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      searchToggle.setAttribute('aria-label', open ? 'Close search' : 'Open search');
-      if (open && mobileSearchInput) mobileSearchInput.focus();
-    };
-    if (searchToggle) {
-      searchToggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        setSearchPanel(!searchPanel.classList.contains('ibc-open'));
-      });
-    }
 
-    /* Account dropdown */
-    var setUserDropdown = function (open) {
-      if (!userDropdown || !userBtn) return;
-      userDropdown.classList.toggle('ibc-open', open);
-      userBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    };
-    if (userBtn && userDropdown) {
-      userBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        setUserDropdown(!userDropdown.classList.contains('ibc-open'));
-      });
-      // Hover-open on pointer devices, but keep click/keys as the source of truth
-      var menu = userBtn.closest('.ibc-user-menu');
-      if (menu && window.matchMedia && window.matchMedia('(hover:hover) and (min-width:992px)').matches) {
-        menu.addEventListener('mouseenter', function () { setUserDropdown(true); });
-        menu.addEventListener('mouseleave', function () { setUserDropdown(false); });
-      }
-      userDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
-    }
+    /* =========================================================
+       RESPONSIVE BREAKPOINT HANDLING
+    ========================================================== */
 
-    /* Outside click closes both popups (self-contained so the header works
-       even if the layout's own handlers fail to register). */
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest) return;
-      if (searchPanel && searchPanel.classList.contains('ibc-open') &&
-        !e.target.closest('#ibcSearchPanel') && !e.target.closest('#ibcSearchToggle')) {
-        setSearchPanel(false);
-      }
-      if (userDropdown && userDropdown.classList.contains('ibc-open') &&
-        !e.target.closest('.ibc-user-menu')) {
-        setUserDropdown(false);
-      }
-    });
-
-    /* Escape closes everything, and also closes the mobile menu */
-    document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      setSearchPanel(false);
-      setUserDropdown(false);
-      if (typeof window.ibcCloseMobileMenu === 'function') window.ibcCloseMobileMenu();
-    });
-
-    /* Growing to desktop must not leave the mobile search panel open */
     var wasDesktop = window.innerWidth >= 992;
-    window.addEventListener('resize', function () {
+
+    window.addEventListener('resize', function() {
+
       var isDesktop = window.innerWidth >= 992;
+
       if (isDesktop !== wasDesktop) {
+
         wasDesktop = isDesktop;
+
+        // Reset desktop and mobile search states
+        setDesktopSearchOpen(false);
         setSearchPanel(false);
+
+        // Close account dropdown
         setUserDropdown(false);
+
       }
+
     });
+
+
   })();
 </script>

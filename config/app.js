@@ -95,6 +95,7 @@ app.use(flash());
 app.use(settingMiddleware);
 
 app.use((req, res, next) => {
+    res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
     res.locals.user = req.user || null;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');

@@ -18,11 +18,9 @@ router.post("/:productId/create", async (req, res, next) => {
             rating > 5 ||
             !validator.isEmail(email) ||
             email.length > 255 ||
-            !reviewTitle ||
             reviewTitle.length > 255 ||
             !nickname ||
             nickname.length > 100 ||
-            !review ||
             review.length > 5000
         ) {
             return res.status(400).json({ success: false, message: "Please provide a valid rating and complete all review fields." });

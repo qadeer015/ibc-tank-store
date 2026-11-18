@@ -206,7 +206,7 @@
   <%- include('../shared/_scripts') %>
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
   <script src="/js/fancybox.js"></script>
-
+  <% if(NODE_ENV === "production") {%>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-L32FERKX51"></script>
   <script>
@@ -218,6 +218,7 @@
     gtag('js', new Date());
     gtag('config', 'G-L32FERKX51');
   </script>
+  <%}%>
 </body>
 
 </html>
