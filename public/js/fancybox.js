@@ -385,11 +385,8 @@ function ibcInitRatingForm() {
             if (!response.ok) {
                 throw new Error(result.message || 'Failed to submit review.');
             }
-            
-            // reload page after 500ms
-            setTimeout(()=>{
-                window.location.reload();
-            }, 500)
+                
+            window.location.reload();
         } catch (error) {
             if (errorElement) {
                 errorElement.textContent = error.message || 'An error occurred while submitting your review.';

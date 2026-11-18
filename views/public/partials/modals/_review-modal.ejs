@@ -1,36 +1,46 @@
 <!-- Review Modal -->
 <style>
-    #reviewModal .modal-content {
-        position: relative;
-    }
+  #reviewModal .modal-content {
+    position: relative;
+  }
 
-    #reviewModal .review-modal-loading {
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.85);
-    }
+  #reviewModal .review-modal-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.85);
+  }
 
-    #reviewModal .review-modal-loading[hidden] {
-        display: none;
-    }
+  #reviewModal .review-modal-loading[hidden] {
+    display: none;
+  }
 
-    .modal-title, label{
-        display: flex;
-        word-break: break-word;
-        width: auto;
-        font-size: 40px;
-        line-height: 22.5px;
-        color: rgb(51, 51, 51);
-        font-family: Sanremo, sans-serif;
-        font-style: normal;
-        font-weight: bold;
-        text-decoration: none;
-        text-transform: uppercase;
+  .modal-title,
+  label {
+    display: flex;
+    word-break: break-word;
+    width: auto;
+    font-size: 40px;
+    line-height: 33px;
+    color: rgb(51, 51, 51);
+    font-family: Sanremo, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+
+    .modal-title,
+    label {
+      font-size: 30px;
+      line-height: 27px;
     }
+  }
 </style>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalTitle" aria-hidden="true">
@@ -101,8 +111,8 @@
           <div class="mb-3 form-check">
             <input class="form-check-input" id="reviewCheckbox" type="checkbox" required>
             <div class="d-flex align-items-center">
-                <label for="reviewCheckbox" class="form-label fs-5">I agree to the</label>
-                <button type="button" class="bg-transparent outline-0 border-0" data-review-info="terms">terms &amp; conditions</button>
+              <label for="reviewCheckbox" class="form-label fs-5">I agree to the</label>
+              <button type="button" class="bg-transparent outline-0 border-0" data-review-info="terms">terms &amp; conditions</button>
             </div>
           </div>
 
