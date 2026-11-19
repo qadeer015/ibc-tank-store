@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Review = require('../models/Review');
 const { deleteFile } = require('../middlewares/upload');
+const { truncate, absoluteUrl, buildProductSchema, SITE_URL } = require('../utils/seo');
 
 // ─────────────────────────────────────────────────────────────
 // Helper: parse the imageUrls field sent as JSON from the client
@@ -83,6 +84,8 @@ const productController = {
                 searchQuery,
                 selectedCategory,
                 viewPage: 'products',
+                metaDescription:
+                    'Browse new and used IBC tanks, drums, and storage solutions available at IBC Tank Store in Pakistan.',
                 minPrice,
                 maxPrice,
                 condition,
@@ -168,12 +171,65 @@ const productController = {
                 ? 'admin/products/show'
                 : 'public/products/show';
 
+            if (view === 'admin/products/show') {
+                return res.render(view, {
+                    title: product.name,
+                    viewPage: 'products-show',
+                    product,
+                    productImages,
+                    reviews,
+                });
+            }
+
+            const currency = (res.locals.settings && res.locals.settings.price_currency) || 'PKR';
+            const primaryImage = productImages[0] || product.image;
+            const productSchema = buildProductSchema(product, {
+                siteUrl: SITE_URL,
+                currency,
+                images: productImages,
+            });
+            const breadcrumbSchema = {
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    {
+                        '@type': 'ListItem',
+                        position: 1,
+                        name: 'Home',
+                        item: `${SITE_URL}/`,
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 2,
+                        name: 'Products',
+                        item: `${SITE_URL}/products`,
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 3,
+                        name: product.name,
+                        item: `${SITE_URL}/products/${product.id}`,
+                    },
+                ],
+            };
+
             res.render(view, {
                 title: product.name,
+                metaTitle: `${product.name} | IBC Tank Store`,
                 viewPage: 'products-show',
                 product,
                 productImages,
                 reviews,
+                metaDescription: truncate(
+                    product.description ||
+                        `${product.name} available at IBC Tank Store. Condition: ${product.product_condition || 'N/A'}.`,
+                    160
+                ),
+                canonicalPath: `/products/${product.id}`,
+                path: `/products/${product.id}`,
+                ogType: 'product',
+                ogImage: primaryImage ? absoluteUrl(primaryImage) : absoluteUrl('/img/brand/favicon.ico'),
+                schemaMarkup: [productSchema, breadcrumbSchema],
             });
         } catch (error) {
             console.error('Show error:', error);

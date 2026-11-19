@@ -14,11 +14,15 @@
   </title>
   <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Pakistan\'s trusted supplier of 1000 Liter IBC Tanks for water, chemical, fertilizer, and industrial storage. Nationwide delivery, bulk orders available. Get a free quote today!' %>">
   <meta name="keywords" content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'IBC Tank Pakistan, IBC Tank Lahore, 1000 Liter Water Tank, IBC Tank Price Pakistan, Chemical Storage Tank, Food Grade IBC Tank' %>">
+  <meta name="robots" content="index, follow, max-image-preview:large">
 
   <!-- Open Graph -->
   <meta property="og:title" content="<%= typeof metaTitle !== 'undefined' ? metaTitle : 'IBC Tank Store - Pakistan\'s Leading IBC Tank Supplier' %>">
   <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Pakistan\'s trusted supplier of 1000 Liter IBC Tanks. Water, chemical, fertilizer & industrial storage tanks with nationwide delivery.' %>">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+  <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://ibctankstore.com/img/brand/logo.png' %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://ibctankstore.com/img/brand/logo.png' %>">
   <meta property="og:url" content="https://ibctankstore.com<%= typeof path !== 'undefined' ? path : '/' %>">
   <meta property="og:site_name" content="IBC Tank Store">
   <meta property="og:locale" content="en_PK">
@@ -48,11 +52,14 @@
   <%- include('../shared/_styles') %>
 
   <!-- Schema.org Structured Data -->
-  <% if (typeof schemaMarkup !=='undefined' && schemaMarkup) { %>
+  <% if (typeof schemaMarkup !== 'undefined' && schemaMarkup) {
+       const schemaEntries = Array.isArray(schemaMarkup) ? schemaMarkup : [schemaMarkup];
+       schemaEntries.forEach(function(schema) { %>
   <script type="application/ld+json">
-    <%- JSON.stringify(schemaMarkup) %>
+    <%- JSON.stringify(schema) %>
   </script>
-  <% } %>
+  <%     });
+     } %>
 </head>
 
 <body>
