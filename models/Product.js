@@ -15,7 +15,7 @@ class Product {
         return products.map((product) => this.normalize(product));
     }
 
-    static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
+    static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null, sale_price = null, margin_percent = null) {
         // `images` can be a JSON string, array or single url string
         let imgs = [];
         if (images) {
@@ -49,8 +49,8 @@ class Product {
         }
 
         const [insertResult] = await db.execute(
-            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock, additional_info, specs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson)]
+            'INSERT INTO products (name, description, price, image, category_id, product_condition, stock, additional_info, specs, sale_price, margin_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson), sale_price, margin_percent]
         );
 
         const productId = insertResult.insertId;
@@ -224,7 +224,7 @@ class Product {
         }
     }
 
-    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock, additional_info = null, specs = null) {
+    static async updateProduct(id, name, description, price, image, category_id, product_condition, stock, additional_info = null, specs = null, sale_price = null, margin_percent = null) {
         // `image` may be a JSON array string, an array, or a single url
         let imgs = [];
         if (image) {
@@ -257,8 +257,8 @@ class Product {
         }
 
         const [result] = await db.execute(
-            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ?, additional_info = ?, specs = ? WHERE id = ?',
-            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson), id]
+            'UPDATE products SET name = ?, description = ?, price = ?, image = ?, category_id = ?, product_condition = ?, stock = ?, additional_info = ?, specs = ?, sale_price = ?, margin_percent = ? WHERE id = ?',
+            [name, description, price, primaryImage, category_id, product_condition, stock, JSON.stringify(additionalInfoJson), JSON.stringify(specsJson), sale_price, margin_percent, id]
         );
 
         // replace images in product_images

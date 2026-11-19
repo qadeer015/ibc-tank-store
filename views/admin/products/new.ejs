@@ -12,7 +12,17 @@
                     </div>
                     <div class="col-md-4 mb-2">
                         <label for="price" class="form-label fw-semibold">Price</label>
-                        <input type="number" name="price" class="form-control" placeholder="Price" required>
+                        <input type="number" name="price" class="form-control" placeholder="Price" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label for="sale_price" class="form-label fw-semibold">Sale price</label>
+                        <input type="number" name="sale_price" class="form-control" placeholder="Optional, lower than price" min="0" step="0.01">
+                        <small class="text-muted">Leave blank when the product is not on sale.</small>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label for="margin_percent" class="form-label fw-semibold">Margin %</label>
+                        <input type="number" name="margin_percent" class="form-control" placeholder="0–100" min="0" max="100" step="0.01">
+                        <small class="text-muted">Admin only. Profit margin on the selling price.</small>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label for="stock" class="form-label fw-semibold">Stock</label>

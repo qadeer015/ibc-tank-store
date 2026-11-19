@@ -4,6 +4,7 @@ const Category = require('../models/Category');
 const Review = require('../models/Review');
 const { deleteFile } = require('../middlewares/upload');
 const { truncate, absoluteUrl, buildProductSchema, SITE_URL } = require('../utils/seo');
+const { validateSaleAndMargin, pricingFrom } = require('../utils/pricing');
 
 // ─────────────────────────────────────────────────────────────
 // Helper: parse the imageUrls field sent as JSON from the client
@@ -65,7 +66,8 @@ const productController = {
             products = products.map(product => ({
                 ...product,
                 rating: parseFloat(product.rating).toFixed(1),
-                price: parseInt(product.price),
+                price: parseInt(product.price, 10),
+                pricing: pricingFrom(product),
             }));
 
             const searchQuery = req.query.search || '';
@@ -121,7 +123,7 @@ const productController = {
 
     async create(req, res) {
         try {
-            const { name, description, price, category_id, product_condition, stock } = req.body;
+            const { name, description, price, category_id, product_condition, stock, sale_price, margin_percent } = req.body;
             const {
                 additional_info_key = [],
                 additional_info_value = [],
@@ -138,6 +140,10 @@ const productController = {
             const imageField = JSON.stringify(imageUrls);
             const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value, 'additional information');
             const specsJson = buildKVObject(specs_key, specs_value, 'specification');
+            const pricing = validateSaleAndMargin({ price, salePrice: sale_price, marginPercent: margin_percent });
+            if (pricing.errors.length) {
+                throw new Error(pricing.errors[0]);
+            }
 
             const newProduct = await Product.create(
                 name,
@@ -149,6 +155,8 @@ const productController = {
                 stock,
                 additionalInfoJson,
                 specsJson,
+                pricing.salePrice,
+                pricing.marginPercent,
             );
 
             req.flash('success', 'Product created successfully');
@@ -174,7 +182,8 @@ const productController = {
             product = {
                 ...product,
                 rating: product.rating ? parseFloat(product.rating).toFixed(1) : 0,
-                price: parseInt(product.price),
+                price: parseInt(product.price, 10),
+                pricing: pricingFrom(product),
             };
 
             const view = (req.user && (req.user.role === 'admin' || req.user.role === 'developer') && req.baseUrl === '/admin')
@@ -289,7 +298,7 @@ const productController = {
     async update(req, res) {
         try {
             const { id } = req.params;
-            const { name, description, price, category_id, product_condition, stock } = req.body;
+            const { name, description, price, category_id, product_condition, stock, sale_price, margin_percent } = req.body;
             const {
                 additional_info_key = [],
                 additional_info_value = [],
@@ -331,11 +340,16 @@ const productController = {
             const imageField = JSON.stringify(imageUrls);
             const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value, 'additional information');
             const specsJson = buildKVObject(specs_key, specs_value, 'specification');
+            const pricing = validateSaleAndMargin({ price, salePrice: sale_price, marginPercent: margin_percent });
+            if (pricing.errors.length) {
+                throw new Error(pricing.errors[0]);
+            }
 
             await Product.updateProduct(
                 id, name, description, price, imageField,
                 category_id, product_condition, stock,
                 additionalInfoJson, specsJson,
+                pricing.salePrice, pricing.marginPercent,
             );
 
             req.flash('success', 'Product updated successfully');
