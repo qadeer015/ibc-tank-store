@@ -27,6 +27,24 @@
                 </div>
                 <!-- End Product Card -->
 
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <a href="/admin/orders" class="text-decoration-none">
+                                <h5 class="card-title">Orders</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-receipt"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6><%= typeof totalOrders !== 'undefined' ? totalOrders : 0 %></h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Contacts Card -->
                 <div class="col-xxl-4 col-md-6">
                     <div class="card info-card revenue-card">
