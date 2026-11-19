@@ -228,6 +228,47 @@
       </div>
     </div>
 
+    <% if (typeof relatedProducts !== 'undefined' && relatedProducts.length > 0) { %>
+      <section style="margin-top:48px" aria-labelledby="related-products-heading">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+          <div>
+            <h2 id="related-products-heading" style="font-size:28px;font-weight:800;color:var(--ibc-dark);margin:0">Related products</h2>
+            <p style="color:var(--ibc-gray-500);margin:6px 0 0">More <%= product.category_name || 'products' %> in this category.</p>
+          </div>
+          <% if (product.category_id) { %>
+            <a href="/products?category=<%= product.category_id %>" class="ibc-btn ibc-btn-dark ibc-btn-sm">View category</a>
+          <% } %>
+        </div>
+        <div class="ibc-products-grid">
+          <% relatedProducts.forEach(function(item) { %>
+            <a href="/products/<%= item.id %>" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+              <div class="ibc-product-img-wrapper">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.name %>" class="ibc-product-img" loading="lazy" width="400" height="220">
+                <% } else { %>
+                  <div style="height:220px;display:flex;align-items:center;justify-content:center;background:var(--ibc-gray-100);color:var(--ibc-gray-500)">
+                    <i class="bi bi-image" style="font-size:32px"></i>
+                  </div>
+                <% } %>
+              </div>
+              <div class="ibc-product-body">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <h3><%= item.name %></h3>
+                  <% if (item.product_condition) { %>
+                    <span class="ibc-info-badge"><%= item.product_condition %></span>
+                  <% } %>
+                </div>
+                <p style="margin:8px 0 0;font-weight:700;color:var(--ibc-dark)">
+                  <%= typeof currency !== 'undefined' ? currency : (settings.price_currency || 'PKR') %> <%= Number(item.price || 0).toLocaleString('en-PK') %>
+                </p>
+              </div>
+              <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
+            </a>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
     <!-- Quote Form Anchor -->
     <div id="quote-form-anchor"></div>
 

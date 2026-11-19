@@ -193,6 +193,16 @@ const productController = {
 
             const currency = (res.locals.settings && res.locals.settings.price_currency) || 'PKR';
             const primaryImage = productImages[0] || product.image;
+            let relatedProducts = [];
+            try {
+                relatedProducts = await Product.getRelated(product, 4);
+                relatedProducts = relatedProducts.map((item) => ({
+                    ...item,
+                    price: parseInt(item.price, 10) || 0,
+                }));
+            } catch (relatedError) {
+                console.error('Related products error:', relatedError);
+            }
             const productSchema = buildProductSchema(product, {
                 siteUrl: SITE_URL,
                 currency,
@@ -230,6 +240,8 @@ const productController = {
                 product,
                 productImages,
                 reviews,
+                relatedProducts,
+                currency,
                 metaDescription: truncate(
                     product.description ||
                         `${product.name} available at IBC Tank Store. Condition: ${product.product_condition || 'N/A'}.`,
