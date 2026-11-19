@@ -22,7 +22,7 @@
       <div class="ibc-cart-layout">
         <div style="display:grid;gap:16px">
           <% cartItems.forEach(function(item) { %>
-            <article class="ibc-cart-item" data-cart-item="<%= item.id %>">
+            <article class="ibc-cart-item" data-cart-item="<%= item.id %>" data-unit-price="<%= Number(item.price) %>">
               <a href="/products/<%= item.product_id %>">
                 <% if (item.image) { %>
                   <img src="<%= item.image %>" alt="<%= item.name %>" width="120" height="90">
@@ -50,23 +50,13 @@
         <aside class="ibc-cart-summary">
           <h2 style="font-size:20px;margin-top:0">Summary</h2>
           <p style="display:flex;justify-content:space-between"><span>Subtotal</span> <strong data-cart-subtotal><%= currency %> <%= subtotal.toLocaleString('en-PK') %></strong></p>
+          <p id="cart-status" style="color:#b42318;font-size:14px;min-height:1.2em" role="status"></p>
           <p style="color:var(--ibc-gray-500);font-size:14px">Delivery is confirmed when you place the order.</p>
           <a href="/checkout" class="ibc-btn ibc-btn-primary">Checkout</a>
           <a href="/products" class="ibc-btn ibc-btn-dark">Continue shopping</a>
         </aside>
       </div>
-      <script>
-        document.querySelectorAll('[data-qty-form]').forEach(function (form) {
-          form.querySelectorAll('[data-qty-step]').forEach(function (button) {
-            button.addEventListener('click', function () {
-              var input = form.querySelector('input[name="quantity"]');
-              var next = Number(input.value) + Number(button.getAttribute('data-qty-step'));
-              input.value = Math.max(0, next);
-              form.submit();
-            });
-          });
-        });
-      </script>
+      <script src="/js/cart.js"></script>
     <% } %>
   </div>
 </section>
