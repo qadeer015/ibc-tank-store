@@ -73,6 +73,16 @@
                   <h3><%= product.name %></h3>
                   <div class="ibc-product-capacity" title="Capacity: <%= product.specs && product.specs.capacity ? product.specs.capacity : '' %>"><i class="bi bi-box"></i><%= product.specs && product.specs.capacity ? product.specs.capacity : '' %></div>
                 </div>
+                <% const pricing = product.pricing || { onSale: false, current: product.price, list: product.price, discountPercent: 0 }; %>
+                <p style="margin:8px 0 0;font-weight:700;color:var(--ibc-dark)">
+                  <% if (pricing.onSale) { %>
+                    <span><%= settings.price_currency %><%= Number(pricing.current).toLocaleString('en-PK') %></span>
+                    <span style="text-decoration:line-through;color:var(--ibc-gray-500);font-weight:500;margin-left:6px"><%= settings.price_currency %><%= Number(pricing.list).toLocaleString('en-PK') %></span>
+                    <span class="ibc-info-badge" style="margin-left:6px"><%= pricing.discountPercent %>% off</span>
+                  <% } else { %>
+                    <%= settings.price_currency %><%= Number(product.price || 0).toLocaleString('en-PK') %>
+                  <% } %>
+                </p>
                 <!-- <p class="ibc-product-usage"><%- product.description %></p> -->
               </div>
               <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>

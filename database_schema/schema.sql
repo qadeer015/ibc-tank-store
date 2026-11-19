@@ -105,6 +105,8 @@ CREATE TABLE IF NOT EXISTS products (
     category_id INT,
     product_condition VARCHAR(100),
     stock INT DEFAULT 0,
+    sale_price DECIMAL(10,2) NULL,
+    margin_percent DECIMAL(5,2) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     additional_info JSON,
     specs JSON,

@@ -83,8 +83,16 @@
 
         <!-- Price -->
         <div class="ibc-product-show-price">
-          <span class="ibc-price-label">Price</span>
-          <span class="ibc-price-value"><%= settings.price_currency %><%= product.price %></span>
+          <% const pricing = product.pricing || { onSale: false, current: product.price, list: product.price, discountPercent: 0 }; %>
+          <% if (pricing.onSale) { %>
+            <span class="ibc-price-label">Sale price</span>
+            <span class="ibc-price-value"><%= settings.price_currency %><%= Number(pricing.current).toLocaleString('en-PK') %></span>
+            <span style="text-decoration:line-through;color:var(--ibc-gray-500);margin-left:8px"><%= settings.price_currency %><%= Number(pricing.list).toLocaleString('en-PK') %></span>
+            <span class="ibc-info-badge" style="margin-left:8px"><%= pricing.discountPercent %>% off</span>
+          <% } else { %>
+            <span class="ibc-price-label">Price</span>
+            <span class="ibc-price-value"><%= settings.price_currency %><%= product.price %></span>
+          <% } %>
         </div>
 
         <!-- Stock Status -->

@@ -43,6 +43,20 @@
                         <%= product.price %>
                     </span>
                 </div>
+                <div class="my-2">
+                    <strong class="fw-semibold">Sale price :</strong>
+                    <span class="lead"><%= product.sale_price != null && product.sale_price !== '' ? product.sale_price : '—' %></span>
+                    <% if (product.pricing && product.pricing.onSale) { %>
+                        <span class="badge bg-success ms-2"><%= product.pricing.discountPercent %>% off</span>
+                    <% } %>
+                </div>
+                <div class="my-2">
+                    <strong class="fw-semibold">Margin :</strong>
+                    <span class="lead"><%= product.margin_percent != null && product.margin_percent !== '' ? product.margin_percent + '%' : '—' %></span>
+                    <% if (product.pricing && product.pricing.estimatedCost != null) { %>
+                        <span class="text-muted ms-2">Estimated cost <%= product.pricing.estimatedCost %></span>
+                    <% } %>
+                </div>
 
                 <!-- Stock -->
                 <div class="my-2">
