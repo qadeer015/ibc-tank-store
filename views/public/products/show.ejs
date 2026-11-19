@@ -120,6 +120,17 @@
           <a href="#quote-form-anchor" class="ibc-btn ibc-btn-primary ibc-btn-lg">
             <i class="bi bi-chat-quote"></i> Get Free Quote
           </a>
+          <form action="/cart/add" method="POST" class="ibc-add-cart">
+            <input type="hidden" name="productId" value="<%= product.id %>">
+            <label class="ibc-sr-only" for="cart-quantity">Quantity</label>
+            <input id="cart-quantity" type="number" name="quantity" value="1" min="1" max="<%= Math.max(product.stock || 0, 1) %>" <%= product.stock > 0 ? '' : 'disabled' %>>
+            <button type="submit" class="ibc-btn ibc-btn-dark ibc-btn-lg" <%= product.stock > 0 ? '' : 'disabled' %>>
+              <i class="bi bi-cart-plus"></i> Add to cart
+            </button>
+            <button type="submit" class="ibc-btn ibc-btn-primary ibc-btn-lg" formaction="/buy-now" <%= product.stock > 0 ? '' : 'disabled' %>>
+              <i class="bi bi-lightning-charge"></i> Buy now
+            </button>
+          </form>
         </div>
 
         <!-- Specifications -->

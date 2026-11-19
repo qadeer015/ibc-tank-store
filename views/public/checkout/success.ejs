@@ -1,0 +1,24 @@
+<section class="ibc-page-hero">
+  <div class="ibc-container">
+    <h1>Order placed</h1>
+    <p>Reference <%= order.order_number %></p>
+  </div>
+</section>
+
+<section class="ibc-section ibc-bg-white">
+  <div class="ibc-container" style="max-width:760px">
+    <p>Thank you, <%= order.full_name %>. We will call <%= order.phone %> to confirm delivery to <%= order.city %>.</p>
+    <% if (order.payment_method === 'bank_transfer') { %>
+      <p>Payment is pending. Our team will send the bank details. The order stays pending until the transfer is confirmed.</p>
+    <% } else { %>
+      <p>Pay the rider in cash when the tanks are delivered.</p>
+    <% } %>
+    <ul>
+      <% order.items.forEach(function(item) { %>
+        <li><%= item.quantity %> × <%= item.product_name %> — <%= currency %> <%= (Number(item.price_at_purchase) * item.quantity).toLocaleString('en-PK') %></li>
+      <% }) %>
+    </ul>
+    <p><strong>Total <%= currency %> <%= Number(order.total_amount).toLocaleString('en-PK') %></strong></p>
+    <a class="ibc-btn ibc-btn-dark" href="/order-tracking?order=<%= encodeURIComponent(order.order_number) %>">Track this order</a>
+  </div>
+</section>

@@ -1,0 +1,31 @@
+<div class="pagetitle">
+  <h1>Orders</h1>
+</div>
+<section class="section">
+  <div class="card">
+    <div class="card-body pt-3">
+      <% if (!orders.length) { %>
+        <p class="mb-0">No orders yet.</p>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Placed</th></tr>
+            </thead>
+            <tbody>
+              <% orders.forEach(function(order) { %>
+                <tr>
+                  <td><a href="/admin/orders/<%= order.id %>"><%= order.order_number %></a></td>
+                  <td><%= order.full_name %><br><small><%= order.phone %></small></td>
+                  <td><%= Number(order.total_amount).toLocaleString('en-PK') %></td>
+                  <td><%= order.order_status %></td>
+                  <td><%= new Date(order.created_at).toLocaleString('en-PK') %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
