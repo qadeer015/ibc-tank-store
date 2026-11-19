@@ -129,15 +129,7 @@ router.get('/terms', function (req, res) {
   });
 });
 
-router.get('/order-tracking', function (req, res) {
-  res.render('public/pages/track-order', {
-    title: 'Order Tracking',
-    path: '/order-tracking',
-    canonicalPath: '/order-tracking',
-    metaDescription:
-      'Track your IBC Tank Store order status and get delivery updates for purchases across Pakistan.',
-  });
-});
+router.get('/order-tracking', require('../controllers/orderController').track);
 
 router.get('/returns-and-refunds', function (req, res) {
   res.render('public/pages/return-refund-policy', {

@@ -1,10 +1,13 @@
-const mongoose = require('mongoose');
+const db = require('../config/db');
 
-const orderItemSchema = new mongoose.Schema({
-  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true, index: true },
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  quantity: { type: Number, required: true, min: 1 },
-  priceAtPurchase: { type: Number, required: true, min: 0 }
-}, { timestamps: true });
+class OrderItem {
+    static async forOrder(orderId) {
+        const [rows] = await db.execute(
+            'SELECT * FROM order_items WHERE order_id = ? ORDER BY id',
+            [orderId]
+        );
+        return rows;
+    }
+}
 
-module.exports = mongoose.model('OrderItem', orderItemSchema);
+module.exports = OrderItem;

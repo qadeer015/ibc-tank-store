@@ -224,6 +224,13 @@
            MOBILE HAMBURGER
       ====================================================== -->
 
+      <a href="/cart" class="ibc-icon-btn ibc-cart-link" aria-label="Cart, <%= typeof cartCount !== 'undefined' ? cartCount : 0 %> items">
+        <i class="bi bi-cart3"></i>
+        <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+          <span class="ibc-cart-count"><%= cartCount > 99 ? '99+' : cartCount %></span>
+        <% } %>
+      </a>
+
       <button type="button" class="ibc-hamburger" id="ibcHamburger" onclick="ibcOpenMobileMenu()" aria-label="Open menu" aria-expanded="false" aria-controls="ibcMobileMenu">
         <span></span>
         <span></span>
