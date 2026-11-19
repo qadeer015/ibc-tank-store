@@ -12,13 +12,23 @@
 
 <section class="ibc-section ibc-bg-white">
   <div class="ibc-container">
-    <div style="display:grid;grid-template-columns:1fr;gap:32px">
+    <style>
+      .ibc-catalog-layout { display: grid; grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); gap: 28px; align-items: start; }
+      .ibc-filter-fields { display: grid; gap: 12px; }
+      .ibc-filter-fields label { font-size: 13px; font-weight: 600; color: var(--ibc-gray-700); margin-bottom: 4px; display: block; }
+      .ibc-filter-fields input, .ibc-filter-fields select { width: 100%; padding: 10px 14px; border: 2px solid var(--ibc-gray-300); border-radius: var(--ibc-radius-sm); font-size: 14px; background: var(--ibc-white); }
+      .ibc-filter-check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+      .ibc-filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+      .ibc-filter-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--ibc-gray-100); color: var(--ibc-dark); text-decoration: none; font-size: 13px; font-weight: 600; }
+      @media (max-width: 860px) { .ibc-catalog-layout { grid-template-columns: 1fr; } }
+    </style>
+    <div class="ibc-catalog-layout">
       <!-- Filters -->
       <div class="ibc-filter-card">
-        <form action="/products" method="GET" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
-          <div style="flex:1;min-width:150px">
-            <label style="font-size:13px;font-weight:600;color:var(--ibc-gray-700);margin-bottom:4px;display:block">Category</label>
-            <select name="category" style="width:100%;padding:10px 14px;border:2px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm);font-size:14px;background:var(--ibc-white)">
+        <form action="/products" method="GET" class="ibc-filter-fields">
+          <div>
+            <label for="filter-category">Category</label>
+            <select id="filter-category" name="category">
               <option value="">All Categories</option>
               <% categories.forEach(category => { %>
                 <option value="<%= category.id %>" <%= selectedCategory == category.id ? 'selected' : '' %>>
@@ -27,24 +37,37 @@
               <% }); %>
             </select>
           </div>
-          <div style="flex:1;min-width:120px">
-            <label style="font-size:13px;font-weight:600;color:var(--ibc-gray-700);margin-bottom:4px;display:block">Min Price (PKR)</label>
-            <input type="number" name="minPrice" placeholder="Min" value="<%= minPrice || '' %>" style="width:100%;padding:10px 14px;border:2px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm);font-size:14px">
+          <div>
+            <label for="filter-min">Min price (<%= settings.price_currency || 'PKR' %>)</label>
+            <input id="filter-min" type="number" name="minPrice" min="0" placeholder="Min" value="<%= minPrice != null ? minPrice : '' %>">
           </div>
-          <div style="flex:1;min-width:120px">
-            <label style="font-size:13px;font-weight:600;color:var(--ibc-gray-700);margin-bottom:4px;display:block">Max Price (PKR)</label>
-            <input type="number" name="maxPrice" placeholder="Max" value="<%= maxPrice || '' %>" style="width:100%;padding:10px 14px;border:2px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm);font-size:14px">
+          <div>
+            <label for="filter-max">Max price (<%= settings.price_currency || 'PKR' %>)</label>
+            <input id="filter-max" type="number" name="maxPrice" min="0" placeholder="Max" value="<%= maxPrice != null ? maxPrice : '' %>">
           </div>
-          <div style="flex:1;min-width:120px">
-            <label style="font-size:13px;font-weight:600;color:var(--ibc-gray-700);margin-bottom:4px;display:block">Condition</label>
-            <select name="condition" style="width:100%;padding:10px 14px;border:2px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm);font-size:14px;background:var(--ibc-white)">
+          <div>
+            <label for="filter-condition">Condition</label>
+            <select id="filter-condition" name="condition">
               <option value="">Any</option>
               <option value="new" <%= condition === 'new' ? 'selected' : '' %>>New</option>
               <option value="used" <%= condition === 'used' ? 'selected' : '' %>>Used</option>
               <option value="refurbished" <%= condition === 'refurbished' ? 'selected' : '' %>>Refurbished</option>
             </select>
           </div>
-          <div style="display:flex;gap:8px">
+          <div>
+            <label for="filter-sort">Sort</label>
+            <select id="filter-sort" name="sort">
+              <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
+              <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>Price: low to high</option>
+              <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>Price: high to low</option>
+              <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name</option>
+            </select>
+          </div>
+          <label class="ibc-filter-check">
+            <input type="checkbox" name="inStock" value="1" <%= inStock ? 'checked' : '' %>>
+            In stock only
+          </label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="submit" class="ibc-btn ibc-btn-primary">Apply Filters</button>
             <a href="/products" class="ibc-btn ibc-btn-dark">Clear</a>
           </div>
@@ -53,6 +76,14 @@
 
       <!-- Product Results -->
       <div>
+        <% if (chips && chips.length) { %>
+          <div class="ibc-filter-chips" aria-label="Active filters">
+            <% chips.forEach(function(chip) { %>
+              <a class="ibc-filter-chip" href="<%= chip.href %>"><%= chip.label %> <i class="bi bi-x"></i></a>
+            <% }) %>
+            <a class="ibc-filter-chip" href="/products">Clear all</a>
+          </div>
+        <% } %>
         <% if (products.length === 0) { %>
           <div style="text-align:center;padding:48px 24px;background:var(--ibc-gray-100);border-radius:var(--ibc-radius-lg)">
             <i class="bi bi-box" style="font-size:48px;color:var(--ibc-gray-500);margin-bottom:16px;display:block"></i>

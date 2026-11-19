@@ -2,6 +2,7 @@
 const db = require("../config/db");
 const { parseJsonField } = require("../utils/jsonField");
 const { escapeLike } = require("../utils/search");
+const { catalogQuery } = require("../utils/catalogFilters");
 
 class Product {
     static normalize(product) {
@@ -294,6 +295,12 @@ class Product {
             [product.category_id, product.id, condition]
         );
 
+        return await this.attachImages(rows);
+    }
+
+    static async filter(filters) {
+        const { sql, params } = catalogQuery(filters);
+        const [rows] = await db.execute(sql, params);
         return await this.attachImages(rows);
     }
 
