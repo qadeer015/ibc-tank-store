@@ -77,6 +77,11 @@ function ibcInitTabs() {
             if (target) target.style.display = 'block';
         });
     });
+
+    if (window.location.hash === '#reviews') {
+        var reviewsTab = document.querySelector('.ibc-tab-btn[data-tab="reviews"]');
+        if (reviewsTab) reviewsTab.click();
+    }
 }
 
 function ibcInitRatingForm() {
