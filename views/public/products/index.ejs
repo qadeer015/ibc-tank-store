@@ -6,7 +6,7 @@
       <span>Products</span>
     </div>
     <h1>All Products</h1>
-    <p>Browse our complete range of IBC tanks for every application.</p>
+    <p>Browse <%= products.length %> IBC tank<%= products.length === 1 ? '' : 's' %> for water, chemical, fertilizer, and food-grade storage.</p>
   </div>
 </section>
 
@@ -64,16 +64,34 @@
           <p style="font-size:14px;color:var(--ibc-gray-500);margin-bottom:16px"><%= products.length %> product<%= products.length > 1 ? 's' : '' %> found</p>
           <div class="ibc-products-grid">
             <% products.forEach(function(product) { %>
-            <a href="/products/<%= product.id %>" class="ibc-product-card ibc-animate" style="text-decoration:none;color:inherit;display:block">
+            <% const capacity = product.specs && typeof product.specs === 'object' ? (product.specs.capacity || product.specs.Capacity || '') : ''; %>
+            <a href="/products/<%= product.id %>" class="ibc-product-card ibc-catalog-card ibc-animate">
               <div class="ibc-product-img-wrapper">
-                <img src="<%= product.image %>" alt="<%= product.name %>" class="ibc-product-img" loading="lazy" width="400" height="220">
+                <% if (product.image) { %>
+                  <img src="<%= product.image %>" alt="<%= product.name %>" class="ibc-product-img" loading="lazy" width="400" height="220">
+                <% } else { %>
+                  <div class="ibc-catalog-fallback" aria-hidden="true"><i class="bi bi-box-seam"></i></div>
+                <% } %>
+                <% if (product.product_condition) { %>
+                  <span class="ibc-catalog-badge"><%= product.product_condition %></span>
+                <% } %>
               </div>
               <div class="ibc-product-body">
-                <div class="d-flex align-items-center justify-content-between">
+                <% if (product.category_name) { %>
+                  <p class="ibc-catalog-category"><%= product.category_name %></p>
+                <% } %>
+                <div class="d-flex align-items-center justify-content-between gap-2">
                   <h3><%= product.name %></h3>
-                  <div class="ibc-product-capacity" title="Capacity: <%= product.specs && product.specs.capacity ? product.specs.capacity : '' %>"><i class="bi bi-box"></i><%= product.specs && product.specs.capacity ? product.specs.capacity : '' %></div>
+                  <% if (capacity) { %>
+                    <div class="ibc-product-capacity" title="Capacity: <%= capacity %>"><i class="bi bi-box"></i><%= capacity %></div>
+                  <% } %>
                 </div>
-                <!-- <p class="ibc-product-usage"><%- product.description %></p> -->
+                <div class="ibc-catalog-meta">
+                  <strong><%= settings.price_currency || 'PKR' %> <%= Number(product.price || 0).toLocaleString('en-PK') %></strong>
+                  <span class="<%= Number(product.stock) > 0 ? 'is-available' : 'is-unavailable' %>">
+                    <%= Number(product.stock) > 0 ? 'In stock' : 'Out of stock' %>
+                  </span>
+                </div>
               </div>
               <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
             </a>
