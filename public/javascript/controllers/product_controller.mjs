@@ -116,6 +116,26 @@ export default class ProductController extends CRUDController {
         );
     }
 
+    addPresetSpec(event) {
+        event.preventDefault();
+        const key = event.currentTarget?.dataset?.specKey || "";
+        this._addDynamicRow(
+            "specs_container", "specs-row",
+            "specs_key[]", "specs_value[]",
+            key
+        );
+    }
+
+    addPresetInfo(event) {
+        event.preventDefault();
+        const key = event.currentTarget?.dataset?.infoKey || "";
+        this._addDynamicRow(
+            "additional_info_container", "additional-info-row",
+            "additional_info_key[]", "additional_info_value[]",
+            key
+        );
+    }
+
     // ─────────────────────────────────────────────
     // PRIVATE HELPERS
     // ─────────────────────────────────────────────
@@ -266,35 +286,49 @@ export default class ProductController extends CRUDController {
     // ─── Dynamic key/value rows ───
 
     _setupDynamicRows() {
-        // Visibility pass for rows that are pre-rendered on the edit page
-        document.querySelectorAll("[id$='_container']").forEach(c => {
-            this._refreshDeleteButtons(c);
-        });
         this._rebindDeleteButtons();
     }
 
-    _addDynamicRow(containerId, rowClass, keyName, valueName) {
+    _addDynamicRow(containerId, rowClass, keyName, valueName, presetKey = "") {
         const container = document.getElementById(containerId);
         if (!container) return;
 
+        if (presetKey) {
+            const existing = Array.from(container.querySelectorAll(`input[name="${keyName}"]`))
+                .some((input) => input.value.trim().toLowerCase() === presetKey.toLowerCase());
+            if (existing) {
+                const match = Array.from(container.querySelectorAll(`input[name="${keyName}"]`))
+                    .find((input) => input.value.trim().toLowerCase() === presetKey.toLowerCase());
+                match?.focus();
+                return;
+            }
+        }
+
         const row = document.createElement("div");
-        row.className = `row ${rowClass} mb-2`;
+        row.className = `row ${rowClass} mb-2 g-2 align-items-center`;
+        const safeKey = presetKey.replace(/"/g, "&quot;");
         row.innerHTML = `
             <div class="col-md-5">
-                <input type="text" class="form-control" placeholder="Key" name="${keyName}">
+                <input type="text" class="form-control" placeholder="Label" name="${keyName}" value="${safeKey}">
             </div>
             <div class="col-md-5">
                 <input type="text" class="form-control" placeholder="Value" name="${valueName}">
             </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-outline-danger btn-sm w-100 delete-row">
+            <div class="col-md-2 d-flex gap-1">
+                <button type="button" class="btn btn-outline-secondary btn-sm move-up" title="Move up" aria-label="Move up">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm move-down" title="Move down" aria-label="Move down">
+                    <i class="bi bi-arrow-down"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm delete-row" title="Remove" aria-label="Remove row">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>`;
 
         container.appendChild(row);
         this._rebindDeleteButtons();
-        this._refreshDeleteButtons(container);
+        row.querySelector(`input[name="${valueName}"]`)?.focus();
     }
 
     _rebindDeleteButtons() {
@@ -305,20 +339,24 @@ export default class ProductController extends CRUDController {
             fresh.addEventListener("click", e => {
                 e.preventDefault();
                 const row = fresh.closest(".row");
-                const container = row.parentElement;
                 row.remove();
-                this._refreshDeleteButtons(container);
             });
         });
-    }
 
-    /** Show delete button only when more than one row exists in a container */
-    _refreshDeleteButtons(container) {
-        if (!container) return;
-        const rows = container.querySelectorAll(".row");
-        rows.forEach(row => {
-            const btn = row.querySelector(".delete-row");
-            if (btn) btn.style.display = rows.length > 1 ? "block" : "none";
+        document.querySelectorAll(".move-up, .move-down").forEach(btn => {
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
+            fresh.addEventListener("click", e => {
+                e.preventDefault();
+                const row = fresh.closest(".row");
+                const container = row.parentElement;
+                if (fresh.classList.contains("move-up") && row.previousElementSibling) {
+                    container.insertBefore(row, row.previousElementSibling);
+                }
+                if (fresh.classList.contains("move-down") && row.nextElementSibling) {
+                    container.insertBefore(row.nextElementSibling, row);
+                }
+            });
         });
     }
 

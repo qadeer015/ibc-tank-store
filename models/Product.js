@@ -1,7 +1,20 @@
 // models/Product.js
 const db = require("../config/db");
+const { parseJsonField } = require("../utils/jsonField");
 
 class Product {
+    static normalize(product) {
+        if (!product) return product;
+        product.additional_info = parseJsonField(product.additional_info);
+        product.specs = parseJsonField(product.specs);
+        return product;
+    }
+
+    static normalizeAll(products) {
+        if (!Array.isArray(products)) return products;
+        return products.map((product) => this.normalize(product));
+    }
+
     static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
         // `images` can be a JSON string, array or single url string
         let imgs = [];
@@ -57,7 +70,7 @@ class Product {
             'SELECT * FROM products WHERE id = ?',
             [productId]
         );
-        return rows[0];
+        return this.normalize(rows[0]);
     }
 
     static async count() {
@@ -73,7 +86,7 @@ class Product {
             ORDER BY p.created_at DESC
         `;
         const [rows] = await db.execute(sqlQuery);
-        return await this.attachImages(rows);
+        return await this.attachImages(this.normalizeAll(rows));
     }
 
     static async getSitemapEntries() {
@@ -93,7 +106,7 @@ class Product {
             ORDER BY p.created_at DESC
         `;
         const [rows] = await db.execute(sqlQuery, [categoryId]);
-        return await this.attachImages(rows);
+        return await this.attachImages(this.normalizeAll(rows));
     }
 
     static async getById(id) {
@@ -128,7 +141,7 @@ class Product {
             product.images = product.image ? [product.image] : [];
         }
 
-        return product;
+        return this.normalize(product);
     }
 
     // Helper: Attach images array to products from product_images table
@@ -184,7 +197,7 @@ class Product {
     `;
 
             const [rows] = await db.execute(sql);
-            return await this.attachImages(rows);
+            return await this.attachImages(this.normalizeAll(rows));
 
         } catch (error) {
             console.error('Error in getTopRated:', error);
@@ -204,7 +217,7 @@ class Product {
                  ORDER BY p.created_at DESC
                  LIMIT ${limit}`
             );
-            return await this.attachImages(rows);
+            return await this.attachImages(this.normalizeAll(rows));
         } catch (error) {
             console.error('Error in getLatest:', error);
             throw error;
@@ -301,7 +314,7 @@ class Product {
             sql += ` ORDER BY p.created_at DESC`;
 
             const [rows] = await db.execute(sql, params);
-            return await this.attachImages(rows);
+            return await this.attachImages(this.normalizeAll(rows));
         } catch (error) {
             console.error('Error in search:', error);
             throw error;

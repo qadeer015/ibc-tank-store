@@ -31,15 +31,25 @@ function parseImageUrls(body) {
 // Helper: build a key→value object from parallel arrays
 // Skips pairs where the key is blank.
 // ─────────────────────────────────────────────────────────────
-function buildKVObject(keys, values) {
+function buildKVObject(keys, values, label) {
     const rawKeys = Array.isArray(keys) ? keys : [keys].filter(Boolean);
     const rawVals = Array.isArray(values) ? values : [values].filter(Boolean);
 
     const obj = {};
+    const seen = new Set();
     rawKeys.forEach((key, idx) => {
-        if (key && key.trim()) {
-            obj[key.trim()] = rawVals[idx] ?? '';
+        const trimmed = typeof key === 'string' ? key.trim() : '';
+        if (!trimmed) return;
+
+        const value = rawVals[idx] == null ? '' : String(rawVals[idx]).trim();
+        if (!value) return;
+
+        const lookup = trimmed.toLowerCase();
+        if (seen.has(lookup)) {
+            throw new Error(`Duplicate ${label} label "${trimmed}". Use each label only once.`);
         }
+        seen.add(lookup);
+        obj[trimmed] = value;
     });
 
     return Object.keys(obj).length > 0 ? obj : null;
@@ -126,8 +136,8 @@ const productController = {
             }
 
             const imageField = JSON.stringify(imageUrls);
-            const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value);
-            const specsJson = buildKVObject(specs_key, specs_value);
+            const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value, 'additional information');
+            const specsJson = buildKVObject(specs_key, specs_value, 'specification');
 
             const newProduct = await Product.create(
                 name,
@@ -307,8 +317,8 @@ const productController = {
             }
 
             const imageField = JSON.stringify(imageUrls);
-            const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value);
-            const specsJson = buildKVObject(specs_key, specs_value);
+            const additionalInfoJson = buildKVObject(additional_info_key, additional_info_value, 'additional information');
+            const specsJson = buildKVObject(specs_key, specs_value, 'specification');
 
             await Product.updateProduct(
                 id, name, description, price, imageField,
