@@ -264,6 +264,25 @@ class Product {
         return result;
     }
 
+    static async getRelated(product, limit = 4) {
+        if (!product || !product.category_id) return [];
+
+        const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 4, 1), 12);
+        const condition = product.product_condition || '';
+
+        const [rows] = await db.execute(
+            `SELECT p.*, c.name AS category_name
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.category_id = ? AND p.id <> ?
+             ORDER BY (LOWER(IFNULL(p.product_condition, '')) = LOWER(?)) DESC, p.created_at DESC
+             LIMIT ${safeLimit}`,
+            [product.category_id, product.id, condition]
+        );
+
+        return await this.attachImages(rows);
+    }
+
     static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
         try {
             // Build query safely for TiDB
