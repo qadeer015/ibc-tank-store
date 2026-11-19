@@ -2,6 +2,37 @@ const express = require("express");
 const router = express.Router();
 const Review = require("../models/Review");
 const validator = require("validator");
+const { cleanComment } = require("../utils/reviewComment");
+
+router.post("/:reviewId/comments", async (req, res, next) => {
+    try {
+        if (!/^\d+$/.test(req.params.reviewId)) {
+            return res.status(400).json({ success: false, message: "Review not found." });
+        }
+
+        const review = await Review.findById(req.params.reviewId);
+        if (!review) {
+            req.flash("error", "That review could not be found.");
+            return res.redirect("/products");
+        }
+
+        const comment = cleanComment({
+            authorName: req.body.author_name,
+            email: req.body.email,
+            body: req.body.body,
+        });
+        if (comment.errors.length) {
+            req.flash("error", comment.errors[0]);
+            return res.redirect(`/products/${review.product_id}#reviews`);
+        }
+
+        await Review.addComment(review.id, comment);
+        req.flash("success", "Comment posted.");
+        res.redirect(`/products/${review.product_id}#reviews`);
+    } catch (error) {
+        next(error);
+    }
+});
 
 router.post("/:productId/create", async (req, res, next) => {
     try {

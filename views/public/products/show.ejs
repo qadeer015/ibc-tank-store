@@ -195,6 +195,20 @@
       <div class="ibc-tab-content" id="reviews" style="display:none">
         <div class="ibc-tab-panel">
           <h3>Customer Reviews</h3>
+          <% if (reviews.length > 0) { %>
+            <% const ratingCounts = [0, 0, 0, 0, 0]; reviews.forEach(function(item) { const index = Math.round(Number(item.rating)) - 1; if (index >= 0 && index < 5) ratingCounts[index] += 1; }); %>
+            <div style="display:grid;gap:8px;max-width:360px;margin-bottom:24px">
+              <% for (let stars = 5; stars >= 1; stars--) { %>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px">
+                  <span style="width:52px"><%= stars %> star</span>
+                  <span style="flex:1;height:8px;background:var(--ibc-gray-100);border-radius:99px;overflow:hidden">
+                    <span style="display:block;height:100%;width:<%= Math.round((ratingCounts[stars - 1] / reviews.length) * 100) %>%;background:var(--ibc-accent)"></span>
+                  </span>
+                  <span style="width:24px;text-align:right"><%= ratingCounts[stars - 1] %></span>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
           <% if (reviews.length === 0) { %>
             <p style="color:var(--ibc-gray-500);text-align:center;padding:32px 0">No reviews yet. Be the first to review this product!</p>
           <% } else { %>
@@ -227,6 +241,25 @@
                   <% if (rating.review) { %>
                     <p class="ibc-review-text"><%= rating.review %></p>
                   <% } %>
+                  <% if (rating.comments && rating.comments.length) { %>
+                    <div style="margin-top:12px;display:grid;gap:8px">
+                      <% rating.comments.forEach(function(comment) { %>
+                        <div style="padding:10px 12px;background:var(--ibc-gray-100);border-radius:var(--ibc-radius-sm)">
+                          <strong><%= comment.author_name %></strong>
+                          <span style="color:var(--ibc-gray-500);font-size:12px;margin-left:8px"><%= new Date(comment.created_at).toLocaleDateString('en-PK', {year:'numeric',month:'short',day:'numeric'}) %></span>
+                          <p style="margin:6px 0 0"><%= comment.body %></p>
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                  <form action="/reviews/<%= rating.id %>/comments" method="POST" style="margin-top:12px;display:grid;gap:8px">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <input type="text" name="author_name" required minlength="2" maxlength="100" placeholder="Your name" aria-label="Your name" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm)">
+                      <input type="email" name="email" maxlength="255" placeholder="Email, optional" aria-label="Email, optional" style="flex:1;min-width:160px;padding:8px 10px;border:1px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm)">
+                    </div>
+                    <textarea name="body" required minlength="2" maxlength="1000" rows="2" placeholder="Add a comment" aria-label="Comment" style="padding:8px 10px;border:1px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm)"></textarea>
+                    <button type="submit" class="ibc-btn ibc-btn-dark ibc-btn-sm" style="justify-self:start">Post comment</button>
+                  </form>
                 </div>
               <% } %>
             </div>

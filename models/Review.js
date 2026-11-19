@@ -45,7 +45,50 @@ class Review {
              ORDER BY created_at DESC`,
             [productId]
         );
-        return rows;
+        const commentsByReview = await this.getCommentsForReviews(rows.map((row) => row.id));
+        return rows.map((row) => ({
+            ...row,
+            comments: commentsByReview[row.id] || [],
+        }));
+    }
+
+    static async findById(reviewId) {
+        const [rows] = await db.execute(
+            'SELECT id, product_id FROM reviews WHERE id = ? LIMIT 1',
+            [reviewId]
+        );
+        return rows[0] || null;
+    }
+
+    static async getCommentsForReviews(reviewIds) {
+        if (!reviewIds.length) return {};
+        try {
+            const placeholders = reviewIds.map(() => '?').join(', ');
+            const [rows] = await db.execute(
+                `SELECT id, review_id, author_name, body, created_at
+                 FROM review_comments
+                 WHERE review_id IN (${placeholders})
+                 ORDER BY created_at ASC`,
+                reviewIds
+            );
+            return rows.reduce((grouped, row) => {
+                if (!grouped[row.review_id]) grouped[row.review_id] = [];
+                grouped[row.review_id].push(row);
+                return grouped;
+            }, {});
+        } catch (error) {
+            console.error('Review comments unavailable:', error.message);
+            return {};
+        }
+    }
+
+    static async addComment(reviewId, { authorName, email, body }) {
+        const [result] = await db.execute(
+            `INSERT INTO review_comments (review_id, author_name, email, body)
+             VALUES (?, ?, ?, ?)`,
+            [reviewId, authorName, email, body]
+        );
+        return result.insertId;
     }
 }
 
