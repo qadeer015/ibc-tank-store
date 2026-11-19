@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { cartKey } = require('../utils/cartRules');
+const { pricingFrom } = require('../utils/pricing');
 
 class CartItem {
     static identity(req) {
@@ -46,14 +47,17 @@ class CartItem {
 
     static async list(identity) {
         const [rows] = await db.execute(
-            `SELECT ci.id, ci.quantity, p.id AS product_id, p.name, p.price, p.image, p.stock, p.product_condition
+            `SELECT ci.id, ci.quantity, p.id AS product_id, p.name, p.price, p.sale_price, p.image, p.stock, p.product_condition
              FROM cart_items ci
              JOIN products p ON p.id = ci.product_id
              WHERE ci.cart_key = ?
              ORDER BY ci.created_at ASC`,
             [identity.key]
         );
-        return rows;
+        return rows.map((row) => {
+            const pricing = pricingFrom(row);
+            return { ...row, list_price: pricing.list, price: pricing.current, on_sale: pricing.onSale };
+        });
     }
 
     static async count(identity) {

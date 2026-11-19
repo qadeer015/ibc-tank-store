@@ -1,5 +1,10 @@
 const db = require('../config/db');
 const calculateTotals = require('../utils/calculateTotals');
+const { pricingFrom } = require('../utils/pricing');
+
+function sellingPrice(row) {
+    return pricingFrom(row).current;
+}
 
 class Order {
     static async createFromCart(identity, input, userId) {
@@ -7,13 +12,14 @@ class Order {
         try {
             await connection.beginTransaction();
             const [items] = await connection.execute(
-                `SELECT ci.product_id, ci.quantity, p.name, p.price, p.stock
+                `SELECT ci.product_id, ci.quantity, p.name, p.price, p.sale_price, p.stock
                  FROM cart_items ci
                  JOIN products p ON p.id = ci.product_id
                  WHERE ci.cart_key = ?
                  FOR UPDATE`,
                 [identity.key]
             );
+            for (const item of items) item.price = sellingPrice(item);
             if (!items.length) {
                 const error = new Error('Your cart is empty.');
                 error.status = 400;
@@ -29,7 +35,7 @@ class Order {
             }
 
             const totals = calculateTotals(items.map((item) => ({ price: item.price, quantity: item.quantity })));
-            const placeholder = `TMP-${require('crypto').randomUUID()}`;
+            const placeholder = `TMP-${require('crypto').randomUUID().replace(/-/g, '').slice(0, 20)}`;
             const [inserted] = await connection.execute(
                 `INSERT INTO orders
                     (order_number, user_id, full_name, phone, email, address_line1, address_line2, city, notes,
