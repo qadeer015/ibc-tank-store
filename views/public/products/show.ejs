@@ -122,7 +122,7 @@
               <% Object.entries(product.specs).forEach(([key, value]) => { %>
                 <tr>
                   <td><%= key %></td>
-                  <td><%= value %></td>
+                  <td><%= value != null && typeof value === 'object' ? JSON.stringify(value) : value %></td>
                 </tr>
               <% }) %>
             </table>
@@ -174,7 +174,7 @@
               <% Object.entries(product.additional_info).forEach(([key, value]) => { %>
                 <tr>
                   <td><%= key %></td>
-                  <td><%= value %></td>
+                  <td><%= value != null && typeof value === 'object' ? JSON.stringify(value) : value %></td>
                 </tr>
               <% }) %>
             </table>
