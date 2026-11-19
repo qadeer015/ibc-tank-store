@@ -14,6 +14,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const pool = require('./db'); // MySQL connection pool
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { highlightText, optionalNumber } = require('../utils/search');
 const settingMiddleware = require("../middlewares/settings");
 
 // Routes
@@ -188,38 +189,58 @@ app.get('/', async (req, res, next) => {
     }
 });
 
+app.get('/search/suggest', async (req, res) => {
+    try {
+        const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 80) : '';
+        const suggestions = await Product.suggest(q, 6);
+        res.json({
+            suggestions: suggestions.map((item) => ({
+                id: item.id,
+                name: item.name,
+                category: item.category_name,
+                price: item.price,
+            })),
+        });
+    } catch (error) {
+        console.error('Search suggest error:', error);
+        res.status(500).json({ suggestions: [] });
+    }
+});
+
 // Search endpoint
 app.get('/search', async (req, res) => {
     try {
         const { q, category, minPrice, maxPrice, condition } = req.query;
+        const searchQuery = typeof q === 'string' ? q.trim().slice(0, 80) : '';
         let products = await Product.search({
-            query: q,
+            query: searchQuery,
             categoryId: category,
-            minPrice: parseInt(minPrice),
-            maxPrice: parseInt(maxPrice),
+            minPrice: optionalNumber(minPrice),
+            maxPrice: optionalNumber(maxPrice),
             condition
         });
 
         products = products.map(product => ({
             ...product,
             rating: parseFloat(product.rating).toFixed(1),
-            price: parseInt(product.price)
+            price: parseInt(product.price, 10) || 0,
+            highlightedName: highlightText(product.name, searchQuery),
         }));
 
         const categories = await Category.getAll();
         res.render('public/search', {
-            title: q ? `Search: ${q}` : 'Search Results',
+            title: searchQuery ? `Search: ${searchQuery}` : 'Search Results',
             products,
             categories,
-            searchQuery: q,
+            searchQuery,
             selectedCategory: category,
             minPrice,
             maxPrice,
             condition,
             productImages: [],
             user: req.user,
-            metaDescription: q
-                ? `Search results for "${q}" at IBC Tank Store — new and used IBC tanks and storage solutions in Pakistan.`
+            metaDescription: searchQuery
+                ? `Search results for "${searchQuery}" at IBC Tank Store — new and used IBC tanks and storage solutions in Pakistan.`
                 : 'Search IBC Tank Store for new and used IBC tanks, drums, and storage solutions in Pakistan.',
         });
     } catch (error) {

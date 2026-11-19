@@ -1,5 +1,6 @@
 // models/Product.js
 const db = require("../config/db");
+const { escapeLike } = require("../utils/search");
 
 class Product {
     static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
@@ -266,39 +267,72 @@ class Product {
 
     static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
         try {
-            // Build query safely for TiDB
-            let sql = `SELECT p.*, c.name AS category_name 
+            let sql = `SELECT p.*, c.name AS category_name`;
+            const params = [];
+            const term = typeof query === 'string' ? query.trim() : '';
+
+            if (term) {
+                const like = `%${escapeLike(term)}%`;
+                const prefix = `${escapeLike(term)}%`;
+                sql += `,
+                    (
+                        (LOWER(p.name) = LOWER(?)) * 100 +
+                        (LOWER(p.name) LIKE LOWER(?) ESCAPE '\\\\') * 50 +
+                        (LOWER(p.name) LIKE LOWER(?) ESCAPE '\\\\') * 30 +
+                        (LOWER(c.name) LIKE LOWER(?) ESCAPE '\\\\') * 20 +
+                        (LOWER(IFNULL(p.description, '')) LIKE LOWER(?) ESCAPE '\\\\') * 10 +
+                        (LOWER(CAST(IFNULL(p.specs, '') AS CHAR)) LIKE LOWER(?) ESCAPE '\\\\') * 10 +
+                        (LOWER(CAST(IFNULL(p.additional_info, '') AS CHAR)) LIKE LOWER(?) ESCAPE '\\\\') * 5
+                    ) AS relevance`;
+                params.push(term, prefix, like, like, like, like, like);
+            } else {
+                sql += `, 0 AS relevance`;
+            }
+
+            sql += `
                        FROM products p
                        JOIN categories c ON p.category_id = c.id
                        WHERE 1=1`;
-            const params = [];
 
-            if (query) {
-                sql += ` AND (p.name LIKE ? OR p.description LIKE ?)`;
-                params.push(`%${query}%`, `%${query}%`);
+            if (term) {
+                const like = `%${escapeLike(term)}%`;
+                sql += ` AND (
+                    p.name LIKE ? ESCAPE '\\\\'
+                    OR IFNULL(p.description, '') LIKE ? ESCAPE '\\\\'
+                    OR c.name LIKE ? ESCAPE '\\\\'
+                    OR CAST(IFNULL(p.specs, '') AS CHAR) LIKE ? ESCAPE '\\\\'
+                    OR CAST(IFNULL(p.additional_info, '') AS CHAR) LIKE ? ESCAPE '\\\\'
+                    OR IFNULL(p.product_condition, '') LIKE ? ESCAPE '\\\\'
+                )`;
+                params.push(like, like, like, like, like, like);
             }
 
             if (categoryId) {
-                sql += ` AND p.category_id = ?`;
-                params.push(parseInt(categoryId, 10));
+                const id = parseInt(categoryId, 10);
+                if (Number.isInteger(id)) {
+                    sql += ` AND p.category_id = ?`;
+                    params.push(id);
+                }
             }
 
-            if (minPrice) {
+            if (minPrice != null && minPrice !== '' && Number.isFinite(Number(minPrice))) {
                 sql += ` AND p.price >= ?`;
-                params.push(parseFloat(minPrice));
+                params.push(Number(minPrice));
             }
 
-            if (maxPrice) {
+            if (maxPrice != null && maxPrice !== '' && Number.isFinite(Number(maxPrice))) {
                 sql += ` AND p.price <= ?`;
-                params.push(parseFloat(maxPrice));
+                params.push(Number(maxPrice));
             }
 
             if (product_condition) {
                 sql += ` AND LOWER(p.product_condition) = ?`;
-                params.push(product_condition.toLowerCase());
+                params.push(String(product_condition).toLowerCase());
             }
 
-            sql += ` ORDER BY p.created_at DESC`;
+            sql += term
+                ? ` ORDER BY relevance DESC, p.created_at DESC`
+                : ` ORDER BY p.created_at DESC`;
 
             const [rows] = await db.execute(sql, params);
             return await this.attachImages(rows);
@@ -306,6 +340,26 @@ class Product {
             console.error('Error in search:', error);
             throw error;
         }
+    }
+
+    static async suggest(query, limit = 6) {
+        const term = typeof query === 'string' ? query.trim() : '';
+        if (term.length < 2) return [];
+
+        const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 6, 1), 8);
+        const like = `%${escapeLike(term)}%`;
+        const prefix = `${escapeLike(term)}%`;
+        const [rows] = await db.execute(
+            `SELECT p.id, p.name, p.price, c.name AS category_name
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.name LIKE ? ESCAPE '\\\\'
+                OR c.name LIKE ? ESCAPE '\\\\'
+             ORDER BY (LOWER(p.name) LIKE LOWER(?) ESCAPE '\\\\') DESC, p.name ASC
+             LIMIT ${safeLimit}`,
+            [like, like, prefix]
+        );
+        return rows;
     }
     // static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
     //     let sql = `SELECT p.*, c.name AS category_name 
