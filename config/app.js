@@ -27,6 +27,7 @@ const adminRoutes = require("../routes/adminRoutes");
 const reviewRoutes = require("../routes/reviewsRoutes");
 const aiRoutes = require("../routes/aiRoutes");
 const quoteRoutes = require("../routes/quoteRoutes");
+const sitemapRoutes = require('../routes/sitemapRoutes');
 
 require('dotenv').config({
     quiet: true
@@ -47,6 +48,9 @@ app.set('views', path.join(__dirname, '../views'));
 app.use(expressLayouts);
 
 app.set("layout", "layouts/public");
+
+// Dynamic sitemap before static files (replaces stale public/sitemap.xml)
+app.use(sitemapRoutes);
 
 app.use(express.static(path.join(__dirname, '../public')));
 // Serve static files from uploads directory in development
@@ -204,7 +208,7 @@ app.get('/search', async (req, res) => {
 
         const categories = await Category.getAll();
         res.render('public/search', {
-            title: 'Search Results',
+            title: q ? `Search: ${q}` : 'Search Results',
             products,
             categories,
             searchQuery: q,
@@ -213,7 +217,10 @@ app.get('/search', async (req, res) => {
             maxPrice,
             condition,
             productImages: [],
-            user: req.user
+            user: req.user,
+            metaDescription: q
+                ? `Search results for "${q}" at IBC Tank Store — new and used IBC tanks and storage solutions in Pakistan.`
+                : 'Search IBC Tank Store for new and used IBC tanks, drums, and storage solutions in Pakistan.',
         });
     } catch (error) {
         console.error('Search error:', error);

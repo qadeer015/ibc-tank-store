@@ -76,6 +76,13 @@ class Product {
         return await this.attachImages(rows);
     }
 
+    static async getSitemapEntries() {
+        const [rows] = await db.execute(
+            'SELECT id, created_at FROM products ORDER BY created_at DESC'
+        );
+        return rows;
+    }
+
     // Every product of a category (no stock filter / no limit) — used by the admin category detail page.
     static async getByCategory(categoryId) {
         const sqlQuery = `
