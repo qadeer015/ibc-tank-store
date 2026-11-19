@@ -469,3 +469,9 @@ img{max-width:100%;height:auto}
 
 /* Mobile Overrides */
 @media(max-width:575px){.ibc-section{padding:36px 0}.ibc-hero-buttons{flex-direction:column}.ibc-hero-buttons .ibc-btn{width:100%}.ibc-whatsapp-float a{width:50px;height:50px;font-size:24px}.ibc-whatsapp-float{bottom:16px;right:16px}}
+
+.ibc-search-suggest{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;background:var(--ibc-white);border:1px solid var(--ibc-gray-300);border-radius:var(--ibc-radius-sm);box-shadow:var(--ibc-shadow-lg);overflow:hidden}
+.ibc-search-suggest-item{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;background:transparent;border:0;padding:10px 12px;font:inherit;color:var(--ibc-dark);cursor:pointer}
+.ibc-search-suggest-item span{color:var(--ibc-gray-500);font-size:13px}
+.ibc-search-suggest-item:hover,.ibc-search-suggest-item.is-active{background:var(--ibc-gray-100)}
+mark{background:#ffe08a;color:inherit;padding:0 2px;border-radius:3px}

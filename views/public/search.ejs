@@ -5,9 +5,11 @@
       <a href="/">Home</a> <i class="bi bi-chevron-right" style="font-size:10px"></i>
       <span>Search Results</span>
     </div>
-    <h1>Search Results</h1>
+    <h1><%= searchQuery ? 'Results for “' + searchQuery + '”' : 'Search products' %></h1>
     <% if (products.length > 0) { %>
-      <p><%= products.length %> product<%= products.length > 1 ? 's' : '' %> found</p>
+      <p><%= products.length %> product<%= products.length > 1 ? 's' : '' %> found<%= searchQuery ? ', best matches first' : '' %></p>
+    <% } else if (searchQuery) { %>
+      <p>No matches for “<%= searchQuery %>”.</p>
     <% } %>
   </div>
 </section>
@@ -78,10 +80,16 @@
                 </div>
                 <div class="ibc-product-body">
                   <div class="d-flex align-items-center justify-content-between">
-                    <h3><%= product.name %></h3>
+                    <h3><%- product.highlightedName || product.name %></h3>
                     <div class="ibc-product-capacity" title="Capacity: <%= product.specs && product.specs.capacity ? product.specs.capacity : '' %>"><i class="bi bi-box"></i><%= product.specs && product.specs.capacity ? product.specs.capacity : '' %></div>
                   </div>
-                  <!-- <p class="ibc-product-usage"><%- product.description %></p> -->
+                  <p style="margin:8px 0 0;font-size:14px;color:var(--ibc-gray-500)">
+                    <%= product.category_name || '' %>
+                    <% if (product.product_condition) { %> · <%= product.product_condition %><% } %>
+                  </p>
+                  <p style="margin:6px 0 0;font-weight:700;color:var(--ibc-dark)">
+                    <%= settings.price_currency || 'PKR' %><%= Number(product.price || 0).toLocaleString('en-PK') %>
+                  </p>
                 </div>
                 <div class="ibc-product-hover-arrow"><i class="bi bi-arrow-right"></i></div>
               </a>
