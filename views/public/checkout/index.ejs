@@ -1,0 +1,40 @@
+<section class="ibc-page-hero">
+  <div class="ibc-container">
+    <div class="ibc-breadcrumb">
+      <a href="/cart">Cart</a> <i class="bi bi-chevron-right" style="font-size:10px"></i>
+      <span>Checkout</span>
+    </div>
+    <h1>Checkout</h1>
+  </div>
+</section>
+
+<section class="ibc-section ibc-bg-white">
+  <div class="ibc-container">
+    <form action="<%= typeof checkoutAction !== 'undefined' ? checkoutAction : '/checkout' %>" method="POST" class="ibc-cart-layout">
+      <div style="display:grid;gap:12px">
+        <label>Full name<input name="fullName" required value="<%= form.fullName || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>Phone<input name="phone" required value="<%= form.phone || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>Email<input type="email" name="email" value="<%= form.email || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>Address<input name="addressLine1" required value="<%= form.addressLine1 || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>Address line 2<input name="addressLine2" value="<%= form.addressLine2 || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>City<input name="city" required value="<%= form.city || '' %>" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"></label>
+        <label>Notes<textarea name="notes" rows="3" style="width:100%;padding:10px;border:1px solid var(--ibc-gray-300);border-radius:8px"><%= form.notes || '' %></textarea></label>
+        <fieldset style="border:1px solid var(--ibc-gray-300);border-radius:8px;padding:12px">
+          <legend>Payment</legend>
+          <label><input type="radio" name="paymentMethod" value="cod" <%= form.paymentMethod !== 'bank_transfer' ? 'checked' : '' %>> Cash on delivery</label><br>
+          <label><input type="radio" name="paymentMethod" value="bank_transfer" <%= form.paymentMethod === 'bank_transfer' ? 'checked' : '' %>> Bank transfer</label>
+        </fieldset>
+      </div>
+      <aside class="ibc-cart-summary">
+        <h2 style="font-size:20px;margin-top:0">Order</h2>
+        <% cartItems.forEach(function(item) { %>
+          <p style="display:flex;justify-content:space-between;gap:8px"><span><%= item.quantity %> × <%= item.name %></span> <span><%= currency %> <%= (Number(item.price) * item.quantity).toLocaleString('en-PK') %></span></p>
+        <% }) %>
+        <p style="display:flex;justify-content:space-between"><span>Subtotal</span> <strong><%= currency %> <%= totals.subtotal.toLocaleString('en-PK') %></strong></p>
+        <p style="display:flex;justify-content:space-between"><span>Delivery</span> <strong><%= totals.deliveryCharges ? currency + ' ' + totals.deliveryCharges.toLocaleString('en-PK') : 'Free' %></strong></p>
+        <p style="display:flex;justify-content:space-between;font-size:18px"><span>Total</span> <strong><%= currency %> <%= totals.total.toLocaleString('en-PK') %></strong></p>
+        <button type="submit" class="ibc-btn ibc-btn-primary">Place order</button>
+      </aside>
+    </form>
+  </div>
+</section>

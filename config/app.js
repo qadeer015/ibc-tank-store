@@ -15,6 +15,7 @@ const pool = require('./db'); // MySQL connection pool
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const settingMiddleware = require("../middlewares/settings");
+const sessionCart = require("../middlewares/sessionCart");
 
 // Routes
 const productRoutes = require('../routes/productRoutes');
@@ -28,6 +29,9 @@ const reviewRoutes = require("../routes/reviewsRoutes");
 const aiRoutes = require("../routes/aiRoutes");
 const quoteRoutes = require("../routes/quoteRoutes");
 const sitemapRoutes = require('../routes/sitemapRoutes');
+const cartRoutes = require('../routes/cartRoutes');
+const orderRoutes = require('../routes/orderRoutes');
+const buyNowRoutes = require('../routes/buyNowRoutes');
 
 require('dotenv').config({
     quiet: true
@@ -97,6 +101,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(settingMiddleware);
+app.use(sessionCart);
 
 app.use((req, res, next) => {
     res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -232,6 +237,9 @@ app.get('/search', async (req, res) => {
 // Routes
 app.use('/', pageRoutes);
 app.use('/products', productRoutes);
+app.use('/cart', cartRoutes);
+app.use('/checkout', orderRoutes);
+app.use('/buy-now', buyNowRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/contact', contactRoutes);
 app.use("/auth", authRoutes);

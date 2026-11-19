@@ -8,6 +8,9 @@ const contactController = require('../controllers/contactController');
 const categoryController = require('../controllers/categoryController');
 const settingsController = require('../controllers/settingsController');
 const analyticsController = require('../controllers/analyticsController');
+const orderController = require('../controllers/orderController');
+const paymentController = require('../controllers/paymentController');
+const Order = require('../models/Order');
 const router = express.Router();
 router.use(isAuthenticated);
 router.use(isAdmin);
@@ -17,7 +20,9 @@ router.get("/dashboard", async (req, res) => {
             let totalProducts = await Product.count();
             let totalCustomers = await User.count('customer');
             let totalContacts = await contactController.getTotal();
-            res.render("admin/dashboard", { totalProducts, totalCustomers, totalContacts, title: 'Dashboard', viewPage: 'dashboard' });
+            let totalOrders = 0;
+            try { totalOrders = await Order.count(); } catch (orderError) { totalOrders = 0; }
+            res.render("admin/dashboard", { totalProducts, totalCustomers, totalContacts, totalOrders, title: 'Dashboard', viewPage: 'dashboard' });
       } catch (error) {
             console.log(error);
       }
@@ -87,6 +92,11 @@ router.delete('/customers/:id/delete', async (req, res) => {
             console.log(error);
       }
 });
+
+router.get('/orders', orderController.adminList);
+router.get('/orders/:id', orderController.adminShow);
+router.post('/orders/:id/status', orderController.adminUpdateStatus);
+router.post('/orders/:id/payment', paymentController.recordPayment);
 
 // Analytics
 router.get("/analytics", analyticsController.getAnalyticsDashboard);
