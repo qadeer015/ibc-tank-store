@@ -4,6 +4,7 @@ const Category = require('../models/Category');
 const Review = require('../models/Review');
 const { deleteFile } = require('../middlewares/upload');
 const { truncate, absoluteUrl, buildProductSchema, SITE_URL } = require('../utils/seo');
+const { readCatalogFilters, filterChips } = require('../utils/catalogFilters');
 
 // ─────────────────────────────────────────────────────────────
 // Helper: parse the imageUrls field sent as JSON from the client
@@ -49,20 +50,24 @@ const productController = {
 
     async list(req, res, next) {
         try {
-            let products = await Product.getAll();
             const categories = await Category.getAll();
+            const filters = readCatalogFilters(req.query);
+            let products = await Product.filter(filters);
 
             products = products.map(product => ({
                 ...product,
                 rating: parseFloat(product.rating).toFixed(1),
-                price: parseInt(product.price),
+                price: parseInt(product.price, 10) || 0,
             }));
 
-            const searchQuery = req.query.search || '';
-            const selectedCategory = req.query.category || '';
-            const minPrice = parseFloat(req.query.minPrice) || 0;
-            const maxPrice = parseFloat(req.query.maxPrice) || 1000;
-            const condition = req.query.condition || '';
+            const selectedCategory = filters.categoryId || '';
+            const categoryName = categories.find((category) => Number(category.id) === filters.categoryId)?.name || '';
+            const minPrice = filters.minPrice;
+            const maxPrice = filters.maxPrice;
+            const condition = filters.condition;
+            const inStock = filters.inStock;
+            const sort = filters.sort;
+            const chips = filterChips(filters, categoryName);
 
             // Guarded + parenthesised: the old expression crashed with a
             // TypeError for logged-out visitors (req.user.role on undefined).
@@ -81,7 +86,7 @@ const productController = {
                 title: 'Products',
                 products,
                 categories,
-                searchQuery,
+                searchQuery: '',
                 selectedCategory,
                 viewPage: 'products',
                 metaDescription:
@@ -89,6 +94,9 @@ const productController = {
                 minPrice,
                 maxPrice,
                 condition,
+                inStock,
+                sort,
+                chips,
                 success: req.flash('success'),
                 error: req.flash('error'),
             });

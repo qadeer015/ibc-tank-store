@@ -1,5 +1,6 @@
 // models/Product.js
 const db = require("../config/db");
+const { catalogQuery } = require("../utils/catalogFilters");
 
 class Product {
     static async create(name, description, price, images, category_id, product_condition, stock, additional_info = null, specs = null) {
@@ -262,6 +263,12 @@ class Product {
         }
 
         return result;
+    }
+
+    static async filter(filters) {
+        const { sql, params } = catalogQuery(filters);
+        const [rows] = await db.execute(sql, params);
+        return await this.attachImages(rows);
     }
 
     static async search({ query, categoryId, minPrice, maxPrice, product_condition }) {
