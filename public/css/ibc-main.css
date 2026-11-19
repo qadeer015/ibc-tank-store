@@ -467,6 +467,18 @@ img{max-width:100%;height:auto}
   .ibc-icon-btn{width:38px;height:38px;flex-basis:38px}
 }
 
+.ibc-catalog-card{display:flex;flex-direction:column;text-decoration:none;color:inherit;height:100%}
+.ibc-catalog-card .ibc-product-body{display:flex;flex-direction:column;gap:8px;flex:1}
+.ibc-catalog-card h3{font-size:18px;line-height:1.3;margin:0}
+.ibc-catalog-category{margin:0;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ibc-primary)}
+.ibc-catalog-badge{position:absolute;top:12px;left:12px;background:var(--ibc-dark);color:var(--ibc-white);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.ibc-catalog-fallback{height:220px;display:flex;align-items:center;justify-content:center;background:var(--ibc-gray-100);color:var(--ibc-gray-500);font-size:42px}
+.ibc-catalog-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;font-size:14px}
+.ibc-catalog-meta strong{color:var(--ibc-dark);font-size:16px}
+.ibc-catalog-meta .is-available{color:#157347;font-weight:700}
+.ibc-catalog-meta .is-unavailable{color:#b42318;font-weight:700}
+.ibc-product-img-wrapper{position:relative}
+
 /* Mobile Overrides */
 @media(max-width:575px){.ibc-section{padding:36px 0}.ibc-hero-buttons{flex-direction:column}.ibc-hero-buttons .ibc-btn{width:100%}.ibc-whatsapp-float a{width:50px;height:50px;font-size:24px}.ibc-whatsapp-float{bottom:16px;right:16px}}
 
