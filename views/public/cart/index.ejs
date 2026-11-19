@@ -1,0 +1,71 @@
+<section class="ibc-page-hero">
+  <div class="ibc-container">
+    <div class="ibc-breadcrumb">
+      <a href="/">Home</a> <i class="bi bi-chevron-right" style="font-size:10px"></i>
+      <span>Cart</span>
+    </div>
+    <h1>Your cart</h1>
+    <p><%= count %> item<%= count === 1 ? '' : 's' %></p>
+  </div>
+</section>
+
+<section class="ibc-section ibc-bg-white">
+  <div class="ibc-container">
+    <% if (!cartItems.length) { %>
+      <div style="text-align:center;padding:48px 24px;background:var(--ibc-gray-100);border-radius:var(--ibc-radius-lg)">
+        <i class="bi bi-cart" style="font-size:48px;color:var(--ibc-gray-500);display:block;margin-bottom:12px"></i>
+        <h2 style="font-size:22px">Your cart is empty</h2>
+        <p style="color:var(--ibc-gray-500)">Add a tank and it will stay here on this browser.</p>
+        <a href="/products" class="ibc-btn ibc-btn-primary" style="margin-top:16px">Browse products</a>
+      </div>
+    <% } else { %>
+      <div class="ibc-cart-layout">
+        <div style="display:grid;gap:16px">
+          <% cartItems.forEach(function(item) { %>
+            <article class="ibc-cart-item" data-cart-item="<%= item.id %>">
+              <a href="/products/<%= item.product_id %>">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.name %>" width="120" height="90">
+                <% } else { %>
+                  <span class="ibc-catalog-fallback" style="width:120px;height:90px;font-size:24px"><i class="bi bi-box-seam"></i></span>
+                <% } %>
+              </a>
+              <div>
+                <h2 style="font-size:18px;margin:0 0 4px"><a href="/products/<%= item.product_id %>" style="color:inherit;text-decoration:none"><%= item.name %></a></h2>
+                <p style="margin:0;color:var(--ibc-gray-500);font-size:14px"><%= item.product_condition || 'Available' %> · <%= item.stock %> in stock</p>
+                <p class="ibc-cart-line" data-line-total style="margin:8px 0 0;font-weight:700"><%= currency %> <%= (Number(item.price) * item.quantity).toLocaleString('en-PK') %></p>
+              </div>
+              <form action="/cart/<%= item.id %>/quantity" method="POST" class="ibc-cart-qty" data-qty-form>
+                <button type="button" data-qty-step="-1" aria-label="Decrease quantity">−</button>
+                <input type="number" name="quantity" value="<%= item.quantity %>" min="0" max="<%= item.stock %>" aria-label="Quantity for <%= item.name %>">
+                <button type="button" data-qty-step="1" aria-label="Increase quantity">+</button>
+                <button type="submit" class="ibc-btn ibc-btn-dark ibc-btn-sm">Update</button>
+              </form>
+              <form action="/cart/<%= item.id %>/remove" method="POST">
+                <button type="submit" class="ibc-btn ibc-btn-dark ibc-btn-sm" aria-label="Remove <%= item.name %>">Remove</button>
+              </form>
+            </article>
+          <% }) %>
+        </div>
+        <aside class="ibc-cart-summary">
+          <h2 style="font-size:20px;margin-top:0">Summary</h2>
+          <p style="display:flex;justify-content:space-between"><span>Subtotal</span> <strong data-cart-subtotal><%= currency %> <%= subtotal.toLocaleString('en-PK') %></strong></p>
+          <p style="color:var(--ibc-gray-500);font-size:14px">Delivery is confirmed when you place the order.</p>
+          <a href="/products" class="ibc-btn ibc-btn-dark">Continue shopping</a>
+        </aside>
+      </div>
+      <script>
+        document.querySelectorAll('[data-qty-form]').forEach(function (form) {
+          form.querySelectorAll('[data-qty-step]').forEach(function (button) {
+            button.addEventListener('click', function () {
+              var input = form.querySelector('input[name="quantity"]');
+              var next = Number(input.value) + Number(button.getAttribute('data-qty-step'));
+              input.value = Math.max(0, next);
+              form.submit();
+            });
+          });
+        });
+      </script>
+    <% } %>
+  </div>
+</section>
